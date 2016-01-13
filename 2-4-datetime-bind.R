@@ -21,3 +21,6 @@ final <- details[dt]
 
 # Drop ID which was just row numbers; not needed anymore
 final <- final[, c("ID") := NULL]
+
+rm(dt)
+rm(details)
