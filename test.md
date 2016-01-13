@@ -64,12 +64,10 @@ library(stargazer)
 ```
 
 ```r
-stargazer(attitude, type = "latex")
+stargazer(attitude, header = FALSE, type = "latex")
 ```
 
 
-% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Wed, Jan 13, 2016 - 5:15:57 PM
 \begin{table}[!htbp] \centering 
   \caption{} 
   \label{} 
