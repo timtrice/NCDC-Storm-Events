@@ -64,26 +64,17 @@ library(stargazer)
 ```
 
 ```r
-stargazer(attitude, header = FALSE, type = "latex")
+stargazer(attitude, header = FALSE, type = "html")
 ```
 
 
-\begin{table}[!htbp] \centering 
-  \caption{} 
-  \label{} 
-\begin{tabular}{@{\extracolsep{5pt}}lccccc} 
-\\[-1.8ex]\hline 
-\hline \\[-1.8ex] 
-Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
-\hline \\[-1.8ex] 
-rating & 30 & 64.633 & 12.173 & 40 & 85 \\ 
-complaints & 30 & 66.600 & 13.315 & 37 & 90 \\ 
-privileges & 30 & 53.133 & 12.235 & 30 & 83 \\ 
-learning & 30 & 56.367 & 11.737 & 34 & 75 \\ 
-raises & 30 & 64.633 & 10.397 & 43 & 88 \\ 
-critical & 30 & 74.767 & 9.895 & 49 & 92 \\ 
-advance & 30 & 42.933 & 10.289 & 25 & 72 \\ 
-\hline \\[-1.8ex] 
-\end{tabular} 
-\end{table} 
+<table style="text-align:center"><tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Statistic</td><td>N</td><td>Mean</td><td>St. Dev.</td><td>Min</td><td>Max</td></tr>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">rating</td><td>30</td><td>64.633</td><td>12.173</td><td>40</td><td>85</td></tr>
+<tr><td style="text-align:left">complaints</td><td>30</td><td>66.600</td><td>13.315</td><td>37</td><td>90</td></tr>
+<tr><td style="text-align:left">privileges</td><td>30</td><td>53.133</td><td>12.235</td><td>30</td><td>83</td></tr>
+<tr><td style="text-align:left">learning</td><td>30</td><td>56.367</td><td>11.737</td><td>34</td><td>75</td></tr>
+<tr><td style="text-align:left">raises</td><td>30</td><td>64.633</td><td>10.397</td><td>43</td><td>88</td></tr>
+<tr><td style="text-align:left">critical</td><td>30</td><td>74.767</td><td>9.895</td><td>49</td><td>92</td></tr>
+<tr><td style="text-align:left">advance</td><td>30</td><td>42.933</td><td>10.289</td><td>25</td><td>72</td></tr>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr></table>
 
