@@ -6,10 +6,9 @@ library(tidyr)
 # For the purposes of this script, only need date fields. 
 details <- fread("data/details.csv", 
                  na.strings = c("NA", ""), 
-                 select = c("V1", "BEGIN_YEARMONTH", "BEGIN_DAY", 
-                            "END_YEARMONTH", "END_DAY","BEGIN_DATE_TIME", 
-                            "CZ_TIMEZONE", "END_DATE_TIME", "YEAR", "MONTH_NAME", 
-                            "CZ_NAME", "STATE"))
+                 select = c("V1", "BEGIN_DAY", "END_DAY", "BEGIN_DATE_TIME", 
+                            "CZ_TIMEZONE", "END_DATE_TIME", "YEAR", 
+                            "MONTH_NAME", "CZ_NAME", "STATE"))
 
 # Rename V1 to ID
 setnames(details, "V1", "ID")
