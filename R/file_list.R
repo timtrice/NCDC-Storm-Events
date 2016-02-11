@@ -1,7 +1,3 @@
-# Load libraries
-library(devtools)
-library(roxygen2)
-
 #' file_list
 #'
 #' @param directory directory of files to read in
@@ -13,11 +9,16 @@ library(roxygen2)
 #' @return list of files
 #'
 #' @examples
-#' list_of_files <- file_list(directory = "data", pattern = "^[A-Z]+\\.csv", ...)
+#' list_of_files <- file_list(directory = 'data', pattern = '^[A-Z]+\\.csv', ...)
 file_list <- function(directory = "data", pattern, ...) {
+    # Load libraries
+    require(devtools)
+    require(roxygen2)
+    
     # Check if pattern provided
-    if(is.null(pattern)) stop("Must provide a pattern")
+    if (is.null(pattern)) 
+        stop("Must provide a pattern")
     
     # list.files
     x <- list.files(directory, pattern = pattern, ...)
-}
+} 
