@@ -26,3 +26,23 @@ The most recent codebook and naming conventions can be found on the [Storm Event
 
 > sample_var
 
+### Warning Messages
+
+When retrieving data, i.e., `get_data`, there are three types of warnings to know about:
+
+> Max file size exceeded. Max size (5e+06) < Aggregate (1e+07) To proceed, set warn = FALSE. Otherwise, select fewer years or types.
+
+This means no datasets were downloaded. The estimated size of all datasets requested is larger than the  `max_size` parameter. By default, `max_size` is 5MB (5e6). So if the estimated aggregate size of the datasets is greater than `max_size` then `get_data` will stop and throw the above error.
+
+To overcome this, you can either increase `max_size` which is advisable only if you have the proper resources (i.e., internet speed, processor speed, etc.). Or, you can simply turn off warnings by setting `warn` to **FALSE**. Changing the `warn` parameter *does not* turn off warnings. It only allows the script to skip the `max_size` check.
+
+Note that `max_size` is based on estimates of *.gz* files and the actual data imported will be larger. 
+
+> In get_data(c(), type = c("details", "fatalities", "locations"),  :
+  No check on aggregate max file size.
+
+This message simply states that the `warn` parameter was turned off or set to **FALSE**.
+
+> Total data size requested: 12825.20kb
+
+States the *estimated* total size of data requested. This estimate is based on *.gz* files, therefore the data actually imported after extraction will be larger. 
