@@ -1,9 +1,32 @@
 #' Get listing of files from NCDC Storm Events
 #'
-#' This function accesses the NCDC Storm Events dataset listings and returns a 
-#'      formatted data.table showing the StormEvents file names (Name), 
-#'      modified date (Modified), gzip file size (Size), Type (details, 
-#'      fatalities or locations) and Year.
+#' Get listing of all datasets off the NCDC Storm Events website. 
+#' 
+#' The function returns a data table showing all StormEvents files listed on
+#'      the NCDC server. 
+#' 
+#' The data table contains the following variables:  
+#' 
+#' * \emph{Name} Filename of the dataset
+#' 
+#' * \emph{Modified} Modified date of the dataset
+#' 
+#' * \emph{Size} Size of the gzip file. 
+#' 
+#' * \emph{Type} One of c("details", "fatalities", "locations")
+#' 
+#' * \emph{Year} Year of dataset
+#' 
+#' This function was created because many datasets listed are empty 
+#'      (typically those listed as 147b file size). And a large majority of 
+#'      them are very small but do have content. However, in the more recent 
+#'      years some of the datasets grow in size exponentially.
+#' 
+#' So this data table helps give insight into gathering data without 
+#'      overloading on resources. For example, you may want ten years of all 
+#'      data. And, in the early years you can do this very quickly. However, 
+#'      doing it in the 2000's will take a considerable amount of time 
+#'      depending on your resources.
 #' 
 #' The listings of datasets can be found at 
 #'      \url{http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/}
