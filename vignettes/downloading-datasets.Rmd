@@ -6,12 +6,13 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Downloading Datasets}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, 
-                      comment = "#>")
+                      comment = "#>", 
+                      fig.width = 7)
 library(NCDCStormEvents)
 ```
 
@@ -25,7 +26,7 @@ ds_list <- get_listings()
 
 Next, we need to decide what datasets we want to evaluate. First, let's see exactly what we're dealing with:
 
-```{r}
+```{r, fig.height = 5, fig.cap = "Details, Fatalities and Locations by Year, Size"}
 library(ggplot2)
 
 base_plot <- list( 
@@ -52,7 +53,7 @@ It might seem like we have no *details* datasets prior to 1957. However, this is
 
 Let's look at the data between 1950 and 1995:
 
-```{r}
+```{r, fig.height = 5, fig.cap = "Details, Fatalities and Locations by Year (1950-1995), Size"}
 tmp <- ds_list[Year <= 1995,]
 
 ggplot(tmp, aes(x = factor(Year), y = Size, fill = factor(Type))) + 
