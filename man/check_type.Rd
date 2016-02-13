@@ -6,6 +6,9 @@
 \usage{
 check_type(type)
 }
+\arguments{
+\item{type}{character, vector}
+}
 \description{
 Check if Type is valid character vector
 }

@@ -6,6 +6,9 @@
 \usage{
 check_year(year)
 }
+\arguments{
+\item{numeric, }{vector}
+}
 \description{
 Check if Year is numeric input
 }

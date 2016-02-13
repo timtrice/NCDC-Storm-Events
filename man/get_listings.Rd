@@ -7,8 +7,7 @@
 get_listings()
 }
 \value{
-a data table listing all files, gzip file sizes, modified date, 
-     type and year.
+a data table
 }
 \description{
 Get listing of all datasets off the NCDC Storm Events website.
@@ -44,7 +43,8 @@ The listings of datasets can be found at
      \url{http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/}
 }
 \examples{
-\dontrun{DT <- get_listings()}
+DT <- get_listings()
+head(DT, n = 5L)
 
 }
 
