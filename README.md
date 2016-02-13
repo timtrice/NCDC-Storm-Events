@@ -1,3 +1,5 @@
+[![Travis-CI Build Status](https://travis-ci.org/timtrice/NCDC-Storm-Events.svg?branch=master)](https://travis-ci.org/timtrice/NCDC-Storm-Events)
+
 # README
 
 ### Codebook
