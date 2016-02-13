@@ -1,0 +1,85 @@
+---
+title: "Downloading Datasets"
+author: "Tim Trice"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Downloading Datasets}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, 
+                      comment = "#>")
+library(NCDCStormEvents)
+```
+
+## Analysis of Files
+
+We access `get_listings` so we have all of the datasets available by `Year`, `Type` and `Size`:
+
+```{r}
+ds_list <- get_listings()
+```
+
+Next, we need to decide what datasets we want to evaluate. First, let's see exactly what we're dealing with:
+
+```{r}
+library(ggplot2)
+
+base_plot <- list( 
+    geom_bar(stat = "identity", position = position_dodge()), 
+    facet_grid(Type ~ ., scales = "free_y"), 
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5)), 
+    scale_fill_discrete(name = "Type"), 
+    xlab("Year"))
+
+ggplot(ds_list, aes(x = factor(Year), y = Size, fill = factor(Type))) + 
+    scale_y_continuous(label = function(x){x * 10^-6}) + 
+    ggtitle("Details, Fatalities and Locations by Year, Size") + 
+    ylab("Size (MB)") + 
+    base_plot
+```
+
+**Note the y-axis has been set to free scales for each `Type`.**
+
+Obviously, as we get intot he more recent years our datasets get largers; particularly *details*. This is why you should be careful requesting multiple years. Our fatalities isn't quite as large (a good thing) topping out around a very small 15kb (and that's an outlier). 
+
+We can also see we don't have *locations* until 1996. 
+
+It might seem like we have no *details* datasets prior to 1957. However, this is not correct; it's merely the scale of the later years dominating our graph. 
+
+Let's look at the data between 1950 and 1995:
+
+```{r}
+tmp <- ds_list[Year <= 1995,]
+
+ggplot(tmp, aes(x = factor(Year), y = Size, fill = factor(Type))) + 
+    scale_y_continuous(label = function(x){x * 10^-3}) + 
+    ggtitle("Details, Fatalities and Locations by Year (1950-1995), Size") + 
+    ylab("Size (KB)") + 
+    base_plot
+```
+
+Notice I've dropped the scale from MB to KB now.
+
+Now we can see a bit clearly our early *details* datasets and yes, they are there. 
+
+But, now we have all *locations* datasets the same size? Seems odd. These are, in fact, empty. These files contain only the header row. So, there really is no sense pulling them unless you want a bunch of empty data tables. 
+
+## Requesting Data
+
+If I just want to see the *details* for 1950, I first want to see the total file size of the data I'm requesting:
+
+```{r}
+year <- 1950
+type <- "details"
+
+x <- ds_list[Year == year & Type == type, Size]
+```
+
+Just pulling this one dataset is 'r formatC(x, format = "d", big.mark = ",")'b or approximately `r formatC(x*10^-3, format = "d", big.mark = ",")`kb. This is for a *gzip* file (all of the datasets are gzip). So the file size will be a bit larger; in this case though, it shouldn't be much.
+
+So, this isn't bad at all
+
