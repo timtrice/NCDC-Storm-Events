@@ -32,7 +32,11 @@
 #'      \url{http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/}
 #'
 #' @return a data table
+#' 
 #' @import data.table
+#' 
+#' @export
+#' 
 #' @examples
 #' DT <- get_listings()
 #' head(DT, n = 5L)
@@ -89,7 +93,11 @@ get_listings <- function() {
 #' @param type character, vector
 #'
 #' @import data.table
+#' 
+#' @export
+#' 
 #' @return Returns a data.table for each year and type requested. 
+#' 
 #' @examples
 #' \dontrun{
 #' get_data(year = c(1990:1995), type = c("details", "fatalities"))
@@ -101,6 +109,8 @@ get_data <- function(year = NULL, type = NULL) {
 }
 
 #' Check if Year is numeric input
+#' @param numeric, vector
+#' 
 check_year <- function(year) {
     ifelse(!is.numeric(year), 
            stop("Please provide a four-digit year."), 
@@ -108,6 +118,8 @@ check_year <- function(year) {
 }
 
 #' Check if Type is valid character vector
+#' @param type character, vector
+#' 
 check_type <- function(type) {
     type <- tolower(type)
     types_avail <- c("details", "fatalities", "locations")
