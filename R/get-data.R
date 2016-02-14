@@ -103,7 +103,8 @@ get_listings <- function() {
 #' get_data(year = c(1990:1995), type = c("details", "fatalities"))
 #' }
 #' 
-get_data <- function(year = NULL, type = NULL) {
+get_data <- function(year = NULL, 
+                     type = c("details", "fatalities", "locations")) {
     year <- check_year(year)
     type <- check_type(type)
 }
