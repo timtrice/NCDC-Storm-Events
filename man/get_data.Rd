@@ -4,7 +4,7 @@
 \alias{get_data}
 \title{Download NCDC Storm Events datasets}
 \usage{
-get_data(year = NULL, type = NULL)
+get_data(year = NULL, type = c("details", "fatalities", "locations"))
 }
 \arguments{
 \item{year}{numeric, vector}
