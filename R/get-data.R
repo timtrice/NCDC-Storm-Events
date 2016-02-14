@@ -80,7 +80,7 @@ get_listings <- function() {
     data.table::setcolorder(file_list, c("Name", "Modified", "Size",
                                          "Type", "Year"))
     
-    return(file_list)
+    file_list
 }
 
 #' Download NCDC Storm Events datasets
@@ -112,9 +112,8 @@ get_data <- function(year = NULL, type = NULL) {
 #' @param numeric, vector
 #' 
 check_year <- function(year) {
-    ifelse(!is.numeric(year), 
-           stop("Please provide a four-digit year."), 
-           return(year))
+    if(!is.numeric(year)) stop("Please provide year(s).")
+    year
 }
 
 #' Check if Type is valid character vector
@@ -128,4 +127,5 @@ check_type <- function(type) {
         stop(paste("Invalid type.",
                    "Please select c(\"details\", \"fatalities\", \"locations\").",
                    sep = " "))
+    type
 }
