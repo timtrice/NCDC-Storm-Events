@@ -4,9 +4,13 @@ language: r
 warnings_are_errors: true
 sudo: required
 
-install:
-  ## For installing all CRAN dependencies using rpack's DESCRIPTION
-  - ./travis-tool.sh install_deps
+r_packages:
+    - data.table
+    - lubridate
+    - R.utils
+    - stringr
+    - tidyr
+    - XML
 
 env:
   global:
