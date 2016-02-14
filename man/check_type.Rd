@@ -4,10 +4,13 @@
 \alias{check_type}
 \title{Check if Type is valid character vector}
 \usage{
-check_type(type)
+check_type(type = NULL)
 }
 \arguments{
 \item{type}{character, vector}
+}
+\value{
+type
 }
 \description{
 Check if Type is valid character vector

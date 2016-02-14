@@ -4,7 +4,7 @@
 \alias{get_data}
 \title{Download NCDC Storm Events datasets}
 \usage{
-get_data(year = NULL, type = c("details", "fatalities", "locations"))
+get_data(year = NULL, type = types_available())
 }
 \arguments{
 \item{year}{numeric, vector}
@@ -15,9 +15,9 @@ get_data(year = NULL, type = c("details", "fatalities", "locations"))
 Returns a data.table for each year and type requested.
 }
 \description{
-Loads all requested datasets. Strongly recommended to use get_listings() 
-     first to see what data is available and the file size of the datasets 
-     beforeDownloading Datasets
+Loads all requested datasets. Strongly recommended to use 
+     get_listings() first to see what data is available and the file 
+     size of the datasets before downloading datasets
 }
 \examples{
 \dontrun{

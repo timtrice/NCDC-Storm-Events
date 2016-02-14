@@ -4,10 +4,13 @@
 \alias{check_year}
 \title{Check if Year is numeric input}
 \usage{
-check_year(year)
+check_year(year = NULL)
 }
 \arguments{
 \item{numeric, }{vector}
+}
+\value{
+year
 }
 \description{
 Check if Year is numeric input

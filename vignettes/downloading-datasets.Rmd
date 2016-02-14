@@ -47,11 +47,11 @@ ggplot(ds_list, aes(x = factor(Year), y = Size, fill = factor(Type))) +
 
 **Note the y-axis has been set to free scales for each `Type`.**
 
-Obviously, as we get intot he more recent years our datasets get largers; particularly *details*. This is why you should be careful requesting multiple years. Our fatalities isn't quite as large (a good thing) topping out around a very small 15kb (and that's an outlier). 
+Obviously, as we get intot he more recent years our datasets get largers; particularly `details`. This is why you should be careful requesting multiple years. Our fatalities isn't quite as large (a good thing) topping out around a very small 15kb (and that's an outlier). 
 
-We can also see we don't have *locations* until 1996. 
+We can also see we don't have `locations` until 1996. 
 
-It might seem like we have no *details* datasets prior to 1957. However, this is not correct; it's merely the scale of the later years dominating our graph. 
+It might seem like we have no `details` datasets prior to 1957. However, this is not correct; it's merely the scale of the later years dominating our graph. 
 
 Let's look at the data between 1950 and 1995:
 
@@ -67,13 +67,13 @@ ggplot(tmp, aes(x = factor(Year), y = Size, fill = factor(Type))) +
 
 Notice I've dropped the scale from MB to KB now.
 
-Now we can see a bit clearly our early *details* datasets and yes, they are there. 
+Now we can see a bit clearly our early `details` datasets and yes, they are there. 
 
-But, now we have all *locations* datasets the same size? Seems odd. These are, in fact, empty. These files contain only the header row. So, there really is no sense pulling them unless you want a bunch of empty data tables. 
+But, now we have all `locations` datasets the same size? Seems odd. These are, in fact, empty. These files contain only the header row. So, there really is no sense pulling them unless you want a bunch of empty data tables. 
 
-## Requesting Data
+## Requesting Summary Data
 
-If I just want to see the *details* for 1950, I first want to see the total file size of the data I'm requesting:
+If I just want to see the `details` for 1950, I first want to see the total file size of the data I'm requesting:
 
 ```{r}
 year <- 1950
@@ -99,10 +99,34 @@ If we wanted *all* of the datasets we'd be looking at a total of `r sum(ds_list$
 
 And, again, these are for gzip files so the extracted CSV files will be larger. Keep this in mind.
 
+## Requesting Datasets
+
+The purpose of `get_listings` is to show you what is available. To get the data we have to use - and it took forever to come up with this name - `get_data`.
+
+`get_data` takes `year` as a required parameter. `type` is optional but will return the three main types of datasets, `details`, `fatalities` and `locations`. `get_data` merges the requested types on `EVENT_ID` provided each dataset has a minimum of one row of data (remember `locations` may have empty datasets).
+
+Here is a basic look at the `details` dataset for 1950:
+
 ```{r}
-get_data(1950)
-get_data(1950:1955)
-get_data(c(1950:1955))
-get_data(c(1950, 1955))
+DT <- get_data(1950, type = "details")
 ```
+
+What does `DT` contain?
+
+```{r}
+dim(DT)
+str(DT)
+```
+
+There is a lot of data in here. And you may notice a lot of it is redundant. We'll tackle that in the <u>Cleaning Datasets</u> vignette. 
+
+Looking at this, it's easy to see why they grow so exponentially in the later years!
+
+You don't have to provide `type`; by default it will return the three types of datasets.
+
+```{r}
+DT <- get_data(1950)
+```
+
+You see we got an error message stating *No locations returned* and, of course, we expected this. At this time that message should only generate for empty `locations` datasets as there are no empty `details` or `fatalities` datasets. But that may change with new datasets and the message will be similar.
 
