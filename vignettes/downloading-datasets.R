@@ -11,9 +11,11 @@ ds_list <- get_listings()
 library(ggplot2)
 
 base_plot <- list( 
+    scale_x_discrete(breaks = c(seq(1950, 2015, by = 10))), 
     geom_bar(stat = "identity", position = position_dodge()), 
     facet_grid(Type ~ ., scales = "free_y"), 
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5)), 
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10), 
+          legend.position = "none"), 
     scale_fill_discrete(name = "Type"), 
     xlab("Year"))
 
@@ -37,4 +39,10 @@ year <- 1950
 type <- "details"
 
 x <- ds_list[Year == year & Type == type, Size]
+
+## ------------------------------------------------------------------------
+year <- 2005:2010
+type <- "details"
+
+x <- ds_list[Year %in% year & Type == type, sum(Size)]
 

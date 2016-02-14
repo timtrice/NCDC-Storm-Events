@@ -30,9 +30,11 @@ Next, we need to decide what datasets we want to evaluate. First, let's see exac
 library(ggplot2)
 
 base_plot <- list( 
+    scale_x_discrete(breaks = c(seq(1950, 2015, by = 10))), 
     geom_bar(stat = "identity", position = position_dodge()), 
     facet_grid(Type ~ ., scales = "free_y"), 
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5)), 
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 10), 
+          legend.position = "none"), 
     scale_fill_discrete(name = "Type"), 
     xlab("Year"))
 
@@ -80,7 +82,27 @@ type <- "details"
 x <- ds_list[Year == year & Type == type, Size]
 ```
 
-Just pulling this one dataset is 'r formatC(x, format = "d", big.mark = ",")'b or approximately `r formatC(x*10^-3, format = "d", big.mark = ",")`kb. This is for a *gzip* file (all of the datasets are gzip). So the file size will be a bit larger; in this case though, it shouldn't be much.
+Just pulling this one dataset is `r formatC(x, format = "d", big.mark = ",")`b or approximately `r formatC(x*10^-3, format = "d", big.mark = ",")`kb. This is for a *gzip* file (all of the datasets are gzip). So the file size will be a bit larger; in this case though, it shouldn't be much.
 
-So, this isn't bad at all
+So, this isn't bad at all. But, what if we wanted to look at datasets between 2005 and 2010?
+
+```{r}
+year <- 2005:2010
+type <- "details"
+
+x <- ds_list[Year %in% year & Type == type, sum(Size)]
+```
+
+Here, we're dealing with `r formatC(x, format = "d", big.mark = ",")`b or `r formatC(x*10^-6, format = "d", big.mark = ",")`mb of data. So, we're sending a request to download five datasets at an average of `r formatC((x*10^-6)/5, format = "d", big.mark = ",")`mb per file. 
+
+If we wanted *all* of the datasets we'd be looking at a total of `r sum(ds_list$Size)`b or `r format(sum(ds_list$Size) * 10^-6, format = "d", big.mark = ",")`mb. 
+
+And, again, these are for gzip files so the extracted CSV files will be larger. Keep this in mind.
+
+```{r}
+get_data(1950)
+get_data(1950:1955)
+get_data(c(1950:1955))
+get_data(c(1950, 1955))
+```
 
