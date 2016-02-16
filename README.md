@@ -1,4 +1,4 @@
-[![Travis-CI Build Status](https://travis-ci.org/timtrice/NCDC-Storm-Events.svg?branch=v0.1)](https://travis-ci.org/timtrice/NCDC-Storm-Events)
+[![Travis-CI Build Status](https://travis-ci.org/timtrice/NCDCStormEvents.svg?branch=v0.1)](https://travis-ci.org/timtrice/NCDC-Storm-Events)
 
 # README
 
