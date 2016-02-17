@@ -1,0 +1,17 @@
+---
+title: "Common Errors and Messages"
+author: "Tim Trice"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Common Errors and Messages}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, 
+                      comment = "#>", 
+                      fig.width = 7)
+library(NCDCStormEvents)
+```
