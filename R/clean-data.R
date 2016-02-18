@@ -174,3 +174,37 @@ fips_tz_abbr <- function() {
     list("V" = "AST", "E" = "EST", "C" = "CST", "M" = "MST", "P" = "PST", 
          "A" = "AKST", "H" = "HAST", "G" = "ChST", "S" = "SST")
 }
+
+#' Add FIPS codes to LUDT
+#'
+#' @param DT 
+#'
+#' @return adds FIPS codes to lookup data table associated w/ EVENT_ID
+#' @export
+#'
+#' @examples
+#' add_fips(DT[, .(EVENT_ID, CZ_FIPS, STATE_FIPS)])
+#' 
+add_fips <- function(DT = NULL) {
+    if(!is.data.table(DT)) stop("No data table.")
+    if(!all(names(DT) %in% c("EVENT_ID", "CZ_FIPS", "STATE_FIPS")))
+        stop(paste("Expecting a data table with EVENT_ID, CZ_FIPS and", 
+                   "STATE_FIPS", 
+                   sep = " "))
+    
+    DT[, FIPS := sprintf("%02d%03d", STATE_FIPS, CZ_FIPS)]
+    
+    if(!exists("LUDT")) create_LUDT()
+
+    keycols <- c("EVENT_ID", "FIPS")
+    if(!c("FIPS") %in% names(LUDT))
+        LUDT[, FIPS := as.character()]
+    setkeyv(DT, keycols)
+    setkeyv(LUDT, keycols)
+    LUDT <- merge(LUDT, DT[, .(EVENT_ID, FIPS)], all = TRUE)
+}
+
+#' Create lookup data table (LUDT)
+create_LUDT <- function() {
+    assign("LUDT", data.table("EVENT_ID" = as.numeric()), envir = .GlobalEnv)
+}
