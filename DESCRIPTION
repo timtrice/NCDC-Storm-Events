@@ -26,6 +26,5 @@ Suggests:
     qpdf, 
     rmarkdown,
     testthat, 
-    maps, 
-    qpdf
+    maps
 VignetteBuilder: knitr
