@@ -195,20 +195,28 @@ add_fips <- function(DT = NULL) {
         stop(paste("Expecting a data table with EVENT_ID, CZ_FIPS and", 
                    "STATE_FIPS", 
                    sep = " "))
-    
     DT[, FIPS := sprintf("%02d%03d", STATE_FIPS, CZ_FIPS)]
-    
     if(!exists("LUDT")) create_LUDT()
-
-    keycols <- c("EVENT_ID", "FIPS")
-    if(!c("FIPS") %in% names(LUDT))
-        LUDT[, FIPS := as.character()]
-    setkeyv(DT, keycols)
-    setkeyv(LUDT, keycols)
-    LUDT <- merge(LUDT, DT[, .(EVENT_ID, FIPS)], all = TRUE)
+    LUDT <- merge(LUDT, DT[, .(EVENT_ID, FIPS)], by = "EVENT_ID", all = TRUE)
+    LUDT
 }
 
 #' Create lookup data table (LUDT)
 create_LUDT <- function() {
     assign("LUDT", data.table("EVENT_ID" = as.numeric()), envir = .GlobalEnv)
+}
+
+#' Add time zones to lookup table
+#'
+#' @param DT 
+#'
+#' @export
+#' 
+add_tz <- function(DT = NULL) {
+    if(!is.data.table(DT)) stop("No data table.")
+    if(!all(names(DT) %in% c("EVENT_ID", "TZ")))
+        stop("Expecting a data table with EVENT_ID, TZ")
+    if(!exists("LUDT")) create_LUDT()
+    LUDT <- merge(LUDT, DT, by = "EVENT_ID", all = TRUE)
+    LUDT
 }
