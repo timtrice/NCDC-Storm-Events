@@ -12,6 +12,7 @@ r_packages:
 env:
   global:
     - R_CHECK_ARGS="--no-build-vignettes --no-manual --timings"
+    - _R_CHECK_TIMINGS_="0"
 
 after_script:
   - ./travis-tool.sh dump_logs_by_extension "timings"
