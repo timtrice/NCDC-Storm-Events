@@ -42,11 +42,11 @@ fips_names <- function() {
 #' @return a character vector of required date/time variables
 #' @export
 #' @examples
-#' 
+#' \dontrun{
 #' if(all(names(DT)) %in% datetime_fields())...
 #' 
 #' names(DT) <- datetime_fields()
-#' 
+#' }
 datetime_fields <- function() {
     c("EVENT_ID", "YEAR", "MONTH_NAME", "BEGIN_DAY", "BEGIN_DATE_TIME", 
       "END_DAY", "END_DATE_TIME")
@@ -57,10 +57,11 @@ datetime_fields <- function() {
 #' @return character vector of required timezone variables
 #' @export
 #' @examples
+#' \dontrun{
 #' if(all(names(DT)) %in% timezone_fields())...
 #' 
 #' names(DT) <- timezone_fields()
-#' 
+#' }
 timezone_fields <- function() {
     c("EVENT_ID", "CZ_TIMEZONE")
 }
@@ -99,8 +100,9 @@ clean_datetime <- function(DT = NULL) {
 #' @return Creates individual data tables for each unique timezone
 #' @export
 #' @examples
+#' \dontrun{
 #' tz_to_dt(DT[, .(EVENT_ID, CZ_TIMEZONE)])
-#' 
+#' }
 tz_to_dt <- function(DT = NULL) {
     
     if(!is.data.table(DT)) stop("No data table.")
@@ -168,8 +170,9 @@ fips_dt <- function() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' tz_abbr <- fips_tz_abbr()
-#' 
+#' }
 fips_tz_abbr <- function() {
     list("V" = "AST", "E" = "EST", "C" = "CST", "M" = "MST", "P" = "PST", 
          "A" = "AKST", "H" = "HAST", "G" = "ChST", "S" = "SST")
@@ -183,8 +186,9 @@ fips_tz_abbr <- function() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' add_fips(DT[, .(EVENT_ID, CZ_FIPS, STATE_FIPS)])
-#' 
+#' }
 add_fips <- function(DT = NULL) {
     if(!is.data.table(DT)) stop("No data table.")
     if(!all(names(DT) %in% c("EVENT_ID", "CZ_FIPS", "STATE_FIPS")))
