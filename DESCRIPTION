@@ -23,6 +23,7 @@ RoxygenNote: 5.0.1
 Suggests:
     ggplot2, 
     knitr,
+    maps, 
     rmarkdown,
     testthat
 VignetteBuilder: knitr
