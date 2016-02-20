@@ -13,9 +13,10 @@ character vector of required timezone variables
 Required fields for timezone objects
 }
 \examples{
+\dontrun{
 if(all(names(DT)) \%in\% timezone_fields())...
 
 names(DT) <- timezone_fields()
-
+}
 }
 

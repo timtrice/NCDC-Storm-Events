@@ -10,7 +10,7 @@ fips_names()
 a character vector, length 10, of names to assign to fips_tz_dt()
 }
 \description{
-Names for fips data table
+Helps set the names of Fips data table
 }
 \examples{
 

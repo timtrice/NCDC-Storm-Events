@@ -19,19 +19,20 @@ zone boundary, which are located in the states of AK, FL, ID, ND, NE, OR
 and SD.
 
 \describe{
-     \item{V}{Atlantic Standard}
-     \item{E}{Eastern Standard (e = advanced time not observed)}
+     \item{A}{Alaska Standard}
      \item{C}{Central Standard}
+     \item{E}{Eastern Standard (e = advanced time not observed)}
+     \item{G}{Guam & Marianas}
+     \item{H}{Hawaii-Aleutian Standard}
      \item{M}{Mountain Standard (m = advanced time not observed)}
      \item{P}{Pacific Standard}
-     \item{A}{Alaska Standard}
-     \item{H}{Hawaii-Aleutian Standard}
-     \item{G}{Guam & Marianas}
      \item{S}{Samoa Standard}
+     \item{V}{Atlantic Standard}
 }
 }
 \examples{
+\dontrun{
 tz_abbr <- fips_tz_abbr()
-
+}
 }
 

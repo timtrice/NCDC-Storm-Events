@@ -13,10 +13,10 @@ a character vector of required date/time variables
 Required fields for datetime objects
 }
 \examples{
-
+\dontrun{
 if(all(names(DT)) \%in\% datetime_fields())...
 
 names(DT) <- datetime_fields()
-
+}
 }
 

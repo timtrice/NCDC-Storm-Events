@@ -17,7 +17,8 @@ Deprecated. Keeping for analysis of the crappy timezone data in the
      dataset but provides no general use, I don't think.
 }
 \examples{
+\dontrun{
 tz_to_dt(DT[, .(EVENT_ID, CZ_TIMEZONE)])
-
+}
 }
 
