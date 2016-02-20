@@ -183,15 +183,15 @@ fips_dt <- function() {
 #' and SD. 
 #' 
 #' \describe{
-#'      \item{V}{Atlantic Standard}
-#'      \item{E}{Eastern Standard (e = advanced time not observed)}
+#'      \item{A}{Alaska Standard}
 #'      \item{C}{Central Standard}
+#'      \item{E}{Eastern Standard (e = advanced time not observed)}
+#'      \item{G}{Guam & Marianas}
+#'      \item{H}{Hawaii-Aleutian Standard}
 #'      \item{M}{Mountain Standard (m = advanced time not observed)}
 #'      \item{P}{Pacific Standard}
-#'      \item{A}{Alaska Standard}
-#'      \item{H}{Hawaii-Aleutian Standard}
-#'      \item{G}{Guam & Marianas}
 #'      \item{S}{Samoa Standard}
+#'      \item{V}{Atlantic Standard}
 #' }
 #' 
 #' @return a character vector to map fips_tz_dt$TIME_ZONE to the true 
