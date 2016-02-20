@@ -204,8 +204,15 @@ fips_dt <- function() {
 #' tz_abbr <- fips_tz_abbr()
 #' }
 fips_tz_abbr <- function() {
-    list("V" = "AST", "E" = "EST", "C" = "CST", "M" = "MST", "P" = "PST", 
-         "A" = "AKST", "H" = "HAST", "G" = "ChST", "S" = "SST")
+    list("A" = "America/Anchorage", 
+         "C" = "America/Chicago", 
+         "E" = "America/New_York", 
+         "G" = "Pacific/Guam", 
+         "H" = "Pacific/Honolulu", 
+         "M" = "America/Denver", 
+         "P" = "America/Los_Angeles", 
+         "S" = "Pacific/Samoa", 
+         "V" = "America/Halifax")
 }
 
 #' Add FIPS codes to LUDT
