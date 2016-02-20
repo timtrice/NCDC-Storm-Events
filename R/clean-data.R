@@ -68,29 +68,57 @@ timezone_fields <- function() {
     c("EVENT_ID", "CZ_TIMEZONE")
 }
 
-clean_datetime <- function(DT = NULL) {
-
-    x <- get_data(1965, "details")
-
-    DT <- x[, .(EVENT_ID, YEAR, MONTH_NAME, BEGIN_DAY, BEGIN_DATE_TIME, 
-                END_DAY, END_DATE_TIME)]
-
+#' Add Date/Time variables
+#' 
+#' Expects a data table with the variables EVENT_ID, TZ, YEAR, MONTH_NAME, 
+#'      BEGIN_DAY, BEGIN_DATE_TIME, END_DAY, and END_DATE_TIME. All variables 
+#'      except TZ come in the get_data() call requesting the \emph{details} 
+#'      dataset.
+#' 
+#' Two new variables are created and added to the data table: BEGIN_DATE and 
+#'      END_DATE. These dates are formatted like %Y-%m-%d %h:%m:%s %z. Then 
+#'      each variable has time readjusted to UTC with lubridate::with_tz(). 
+#'      The new variables are then added to LUDT. 
+#' 
+#' @return LUDT with datetime variables formatted to long-string format. 
+#' 
+#' @param DT 
+#'
+#' @export
+#' 
+add_datetime <- function(DT = NULL) {
     if(!is.data.table(DT)) stop("No data table.")
-    if(!all(names(DT) %in% datetime_fields()))
-        stop(paste("Expecting a data table with EVENT_ID, YEAR, MONTH_NAME,", 
-                   "BEGIN_DAY, END_DAY, BEGIN_DATE_TIME and END_DATE_TIME.", 
-                   sep = " "))
+    if(!all(names(DT) %in% c("EVENT_ID", "TZ", "YEAR", "MONTH_NAME", 
+                             "BEGIN_DAY", "BEGIN_DATE_TIME", "END_DAY", 
+                             "END_DATE_TIME")))
+        stop(paste("Expecting a data table with EVENT_ID, TZ, YEAR,", 
+                   "MONTH_NAME, BEGIN_DAY, END_DAY, BEGIN_DATE_TIME and", 
+                   "END_DATE_TIME.", sep = " "))
     
-    DT <- DT[, BeginDateTime := ymd_hms(paste(paste(YEAR, MONTH_NAME, 
-                                                    BEGIN_DAY, sep = "-"), 
-                                              sub("[0-9A-Z-]+ ([0-9:]+)", 
-                                                  "\\1", DT$BEGIN_DATE_TIME), 
-                                              sep = " "))]
-    DT <- DT[, EndDateTime := ymd_hms(paste(paste(YEAR, MONTH_NAME, END_DAY, 
-                                                  sep = "-"), 
-                                              sub("[0-9A-Z-]+ ([0-9:]+)", 
-                                                  "\\1",DT$END_DATE_TIME), 
-                                              sep = " "))]
+    
+    
+    DT[, BEGIN_DATE := ymd_hms(paste(paste(YEAR, MONTH_NAME, 
+                                                 BEGIN_DAY, sep = "-"), 
+                                           sub("[0-9A-Z-]+ ([0-9:]+)", 
+                                               "\\1", BEGIN_DATE_TIME), 
+                                           sep = " "))]
+    DT[, END_DATE := ymd_hms(paste(paste(YEAR, MONTH_NAME, END_DAY, 
+                                               sep = "-"), 
+                                         sub("[0-9A-Z-]+ ([0-9:]+)", 
+                                             "\\1", END_DATE_TIME), 
+                                         sep = " "))]
+    
+    DT[, BEGIN_DATE := force_tz(BEGIN_DATE, tz = TZ), by = TZ]
+    DT[, END_DATE := force_tz(END_DATE, tz = TZ), by = TZ]
+
+    # Reset to UTC
+    DT[, BEGIN_DATE := with_tz(BEGIN_DATE, tz = "UTC")]
+    DT[, END_DATE := with_tz(END_DATE, tz = "UTC")]
+
+    if(!exists("LUDT")) create_LUDT()
+    LUDT <- merge(LUDT, DT[, .(EVENT_ID, BEGIN_DATE, END_DATE)], 
+                  by = "EVENT_ID", all = TRUE)
+    LUDT
 }
 
 #' Seperate timezones into data tables
