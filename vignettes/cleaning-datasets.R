@@ -4,10 +4,12 @@ knitr::opts_chunk$set(collapse = TRUE,
                       fig.width = 7)
 
 ## ---- echo = FALSE, message = FALSE--------------------------------------
-library(NCDCStormEvents)
 library(data.table)
 library(ggplot2)
+library(knitr)
+library(lubridate)
 library(maps)
+library(NCDCStormEvents)
 
 ## ------------------------------------------------------------------------
 DT <- get_data(1965, "details")
@@ -68,29 +70,54 @@ datetime_fields()
 ## ------------------------------------------------------------------------
 vars <- c(datetime_fields(), "CZ_FIPS", "STATE_FIPS")
 
-tmp <- DT[, vars, with = FALSE]
+DT <- DT[, vars, with = FALSE]
 
 ## ------------------------------------------------------------------------
-tmp[, FIPS := sprintf("%02d%03d", STATE_FIPS, CZ_FIPS)]
+LUDT <- add_fips(DT[, .(EVENT_ID, CZ_FIPS, STATE_FIPS)])
+
+str(LUDT)
+
+head(LUDT)
 
 ## ------------------------------------------------------------------------
-setkey(tmp, FIPS)
-setkey(Fips, FIPS)
-clean <- Fips[tmp, mult = "first"]
+setkey(LUDT, FIPS)
+setkeyv(Fips, c("FIPS", "TIME_ZONE"))
+tmp <- Fips[LUDT, .(EVENT_ID, FIPS, TIME_ZONE), mult = "first"]
+unique(tmp$TIME_ZONE)
 
 ## ------------------------------------------------------------------------
-unique(clean$TIME_ZONE)
+tmp[TIME_ZONE %in% "MP", TIME_ZONE := "M"]
+tmp[TIME_ZONE %in% "CM", TIME_ZONE := "C"]
 
 ## ------------------------------------------------------------------------
-clean[TIME_ZONE %in% "MP", TIME_ZONE := "M"]
-clean[TIME_ZONE %in% "CM", TIME_ZONE := "C"]
-
-## ------------------------------------------------------------------------
-clean$TIME_ZONE <- toupper(clean$TIME_ZONE)
+tmp$TIME_ZONE <- toupper(tmp$TIME_ZONE)
 
 ## ------------------------------------------------------------------------
 time_zones <- fips_tz_abbr()
 
-# Not sure I like handling it this way... print str()
-clean[, TZ := time_zones[TIME_ZONE]]
+tmp[, TZ := as.character(time_zones[TIME_ZONE]), by = TIME_ZONE]
+
+## ------------------------------------------------------------------------
+LUDT <- add_tz(tmp[, .(EVENT_ID, TZ)])
+str(LUDT)
+
+## ------------------------------------------------------------------------
+tmp <- merge(LUDT[, .(EVENT_ID, TZ)], 
+             DT[, c("CZ_FIPS", "STATE_FIPS") := NULL], by = "EVENT_ID")
+
+## ------------------------------------------------------------------------
+LUDT <- add_datetime(tmp)
+
+## ------------------------------------------------------------------------
+DT <- get_data(1965, "details")
+tmp <- merge(LUDT[, .(EVENT_ID, TZ, BEGIN_DATE, END_DATE)], 
+             DT[, .(EVENT_ID, BEGIN_DATE_TIME, END_DATE_TIME, STATE, 
+                    CZ_NAME)], by = "EVENT_ID")
+
+set.seed(1)
+kable(tmp[, .SD[sample(.N, min(.N, 2))], by = "TZ"])
+
+## ------------------------------------------------------------------------
+kable(DT[EVENT_ID == 10148785 | EVENT_ID == 10065754, .(CZ_FIPS, 
+                                                        STATE_FIPS)])
 
