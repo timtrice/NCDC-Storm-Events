@@ -257,3 +257,4 @@ add_tz <- function(DT = NULL) {
     LUDT <- merge(LUDT, DT, by = "EVENT_ID", all = TRUE)
     LUDT
 }
+
