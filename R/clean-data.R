@@ -1,7 +1,3 @@
-library(tidyr)
-library(data.table)
-library(lubridate)
-
 #' FIPS URL
 #' 
 #' This file is an ASCII "dump" in pipe ("|") delimited form, of a "master" 
