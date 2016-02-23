@@ -27,8 +27,9 @@ fips <- function() {
 #' @return a character vector, length 10, of names to assign to fips_tz_dt()
 #' @export
 #' @examples
-#' 
-#' setnames(fips_dt) <- fips_names()
+#' \dontrun{
+#' names(fips_dt) <- fips_names()
+#' }
 #' 
 fips_names <- function() {
     c("STATE", "ZONE", "CWA", "NAME", "STATE_ZONE", "COUNTYNAME", "FIPS", 
