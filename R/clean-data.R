@@ -168,7 +168,7 @@ fips_dt <- function() {
     url <- fips()
     fips_dt <- as.data.table(readr::read_delim(url, delim = "|", 
                                                col_names = FALSE))
-    setnames(fips_dt, fips_names())
+    data.table::setnames(fips_dt, fips_names())
     fips_dt
 }
 
