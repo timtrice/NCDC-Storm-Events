@@ -79,7 +79,8 @@ timezone_fields <- function() {
 #' 
 #' @return LUDT with datetime variables formatted to long-string format. 
 #' 
-#' @param DT 
+#' @param DT data table consisting of EVENT_ID, TZ, YEAR, MONTH_NAME, 
+#'      BEGIN_DAY, BEGIN_DATE_TIME, END_DAY, END_DATE_TIME
 #'
 #' @export
 #' 
@@ -214,7 +215,7 @@ fips_tz_abbr <- function() {
 
 #' Add FIPS codes to LUDT
 #'
-#' @param DT 
+#' @param DT data table consisting of EVENT_ID, CZ_FIPS, STATE_FIPS
 #'
 #' @return adds FIPS codes to lookup data table associated w/ EVENT_ID
 #' @export
@@ -242,7 +243,7 @@ create_LUDT <- function() {
 
 #' Add time zones to lookup table
 #'
-#' @param DT 
+#' @param DT data table consisting of EVENT_ID, TZ
 #'
 #' @export
 #' 
