@@ -13,8 +13,9 @@ a character vector, length 10, of names to assign to fips_tz_dt()
 Helps set the names of Fips data table
 }
 \examples{
-
-setnames(fips_dt) <- fips_names()
+\dontrun{
+names(fips_dt) <- fips_names()
+}
 
 }
 

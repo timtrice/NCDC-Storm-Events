@@ -7,7 +7,7 @@
 add_fips(DT = NULL)
 }
 \arguments{
-\item{DT}{}
+\item{DT}{data table consisting of EVENT_ID, CZ_FIPS, STATE_FIPS}
 }
 \value{
 adds FIPS codes to lookup data table associated w/ EVENT_ID

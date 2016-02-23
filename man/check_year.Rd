@@ -7,10 +7,10 @@
 check_year(year = NULL)
 }
 \arguments{
-\item{numeric, }{vector}
+\item{year}{numeric vector}
 }
 \value{
-year
+year if valid, otherwise stops
 }
 \description{
 Check if Year is numeric input

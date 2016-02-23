@@ -7,7 +7,8 @@
 add_datetime(DT = NULL)
 }
 \arguments{
-\item{DT}{}
+\item{DT}{data table consisting of EVENT_ID, TZ, YEAR, MONTH_NAME, 
+BEGIN_DAY, BEGIN_DATE_TIME, END_DAY, END_DATE_TIME}
 }
 \value{
 LUDT with datetime variables formatted to long-string format.

@@ -7,7 +7,7 @@
 add_tz(DT = NULL)
 }
 \arguments{
-\item{DT}{}
+\item{DT}{data table consisting of EVENT_ID, TZ}
 }
 \description{
 Add time zones to lookup table
