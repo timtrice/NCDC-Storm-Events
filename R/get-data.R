@@ -175,8 +175,9 @@ get_datasets <- function(dt_names) {
 }
 
 #' Check if Year is numeric input
-#' @param numeric, vector
-#' @return year
+#' @param year numeric vector
+#' @return year if valid, otherwise stops
+#' 
 check_year <- function(year = NULL) {
     if(!is.numeric(year)) stop("Please provide year(s).")
     
