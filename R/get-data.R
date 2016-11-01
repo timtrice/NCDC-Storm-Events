@@ -169,7 +169,19 @@ get_data <- function(year = NULL, type = types_available()) {
 #' @export
 get_datasets <- function(dt_names) {
     dt_names <- paste(ds_url(), dt_names, sep = "/")
-    dt_list <- lapply(dt_names, readr::read_csv)
+    
+    # Get column names first
+    cn <- readr::read_csv(dt_names[1], n_max = 1L)
+    cn <- names(cn)
+    
+    # Now, with names we know how many columns exist in dataset. Those columns 
+    # must be imported as character classes in order to preserve all information. 
+    # Otherwise, if readr::read_csv sees only integers in the first n-number of 
+    # rows it will read any following float values as NA (since they are not 
+    # integers).
+    dt_list <- lapply(dt_names, readr::read_csv, col_names = cn, 
+                      col_types = paste0(rep("c", length(cn)), collapse = ""), 
+                      skip = 1L)
     dt <- rbindlist(dt_list)
     dt
 }
