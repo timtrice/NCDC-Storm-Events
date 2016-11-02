@@ -35,7 +35,7 @@ details_col_types <- function() {
   x <- paste0("iiii", 
               "iiiic", 
               "iiccc", 
-              "ccccc", 
+              "icccc", 
               "cii", 
               "iicc", 
               "cncci", 
