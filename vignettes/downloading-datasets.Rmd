@@ -121,12 +121,3 @@ str(DT)
 There is a lot of data in here. And you may notice a lot of it is redundant. We'll tackle that in the <u>Cleaning Datasets</u> vignette. 
 
 Looking at this, it's easy to see why they grow so exponentially in the later years!
-
-You don't have to provide `type`; by default it will return the three types of datasets.
-
-```{r}
-DT <- get_data(1950)
-```
-
-You see we got an error message stating *No locations returned* and, of course, we expected this. At this time that message should only generate for empty `locations` datasets as there are no empty `details` or `fatalities` datasets. But that may change with new datasets and the message will be similar.
-
