@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this 
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.0.0.9003] - 2016-11-02
+
+### Added
+  - NA
+
+### Changed
+  - In `details_col_types`, `CZ_FIPS` from character class to integer class. 
+  - In "Downloading Datasets" vignette, removed content about merging datasets 
+    automatically which at the moment produces errors.
+
+### Removed
+  - `Cleaning Datasets` vignette
+  - `Comment Errors and Messages` vignette which was never written.
+
 ## [v0.0.0.9002] - 2016-11-02
 
 ### Added
