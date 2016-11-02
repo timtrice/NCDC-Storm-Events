@@ -1,9 +1,86 @@
+#' @title ds_url
+#' @description URL to download files
 ds_url <- function() {
     "http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles"
 }
 
+#' @title types_available
+#' @description types of datasets available
 types_available <- function() {
     c("details", "fatalities", "locations")
+}
+
+#' @title details_names
+#' @description return column names for readr::readr_csv
+details_names <- function() {
+  x <- c("BEGIN_YEARMONTH", "BEGIN_DAY", "BEGIN_TIME", "END_YEARMONTH", 
+         "END_DAY", "END_TIME", "EPISODE_ID", "EVENT_ID", "STATE", 
+         "STATE_FIPS", "YEAR", "MONTH_NAME", "EVENT_TYPE", "CZ_TYPE", 
+         "CZ_FIPS", "CZ_NAME", "WFO", "BEGIN_DATE_TIME", "CZ_TIMEZONE", 
+         "END_DATE_TIME", "INJURIES_DIRECT", "INJURIES_INDIRECT", 
+         "DEATHS_DIRECT", "DEATHS_INDIRECT", "DAMAGE_PROPERTY", "DAMAGE_CROPS", 
+         "SOURCE", "MAGNITUDE", "MAGNITUDE_TYPE", "FLOOD_CAUSE", "CATEGORY", 
+         "TOR_F_SCALE", "TOR_LENGTH", "TOR_WIDTH", "TOR_OTHER_WFO", 
+         "TOR_OTHER_CZ_STATE", "TOR_OTHER_CZ_FIPS", "TOR_OTHER_CZ_NAME", 
+         "BEGIN_RANGE", "BEGIN_AZIMUTH", "BEGIN_LOCATION", "END_RANGE", 
+         "END_AZIMUTH", "END_LOCATION", "BEGIN_LAT", "BEGIN_LON", "END_LAT", 
+         "END_LON", "EPISODE_NARRATIVE", "EVENT_NARRATIVE", "DATA_SOURCE")
+  return(x)
+}
+
+#' @title details_col_types
+#' @description return column types for readr::read_csv
+details_col_types <- function() {
+  # separated by line break based on details_names() for legibility
+  x <- paste0("iiii", 
+              "iiiic", 
+              "iiccc", 
+              "ccccc", 
+              "cii", 
+              "iicc", 
+              "cncci", 
+              "cnnc", 
+              "cic", 
+              "icci", 
+              "ccnnn", 
+              "nccc")
+  return(x)
+}
+
+#' @title fatalities_names
+#' @description return column names for readr::read_csv
+fatalities_names <- function() {
+  x <- c("FAT_YEARMONTH", "FAT_DAY", "FAT_TIME", "FATALITY_ID", "EVENT_ID", 
+         "FATALITY_TYPE", "FATALITY_DATE", "FATALITY_AGE", "FATALITY_SEX", 
+         "FATALITY_LOCATION", "EVENT_YEARMONTH")
+  return(x)
+}
+
+#' @title fatalities_col_types
+#' @description return column types for readr::read_csv
+fatalities_col_types <- function() {
+  # separated by line break based on fatalities_names() for legibility
+  x <- paste0("iiiii", 
+              "ccic", 
+              "ci")
+  return(x)
+}
+
+#' @title locations_names
+#' @description return column names for readr::read_csv
+locations_names <- function() {
+  x <- c("YEARMONTH", "EPISODE_ID", "EVENT_ID", "LOCATION_INDEX", "RANGE", 
+         "AZIMUTH", "LOCATION", "LATITUDE", "LONGITUDE", "LAT2", "LON2")
+  return(x)
+}
+
+#' @title locations_col_types
+#' @description return column types for readr::read_csv
+locations_col_types <- function() {
+  # separated by line break based on fatalities_names() for legibility
+  x <- paste0("iiiin", 
+              "ccnnii")
+  return(x)
 }
 
 #' Get listing of files from NCDC Storm Events
@@ -121,17 +198,19 @@ get_data <- function(year = NULL, type = types_available()) {
     requested <- summary[Type %in% type & Year %in% year]
 
     if("details" %in% type) {
-        dataset <- get_datasets(requested[Type == "details", Name])
+        dataset <- get_datasets(requested[Type == "details", Name], 
+                                details_names(), 
+                                details_col_types())
         if(nrow(dataset) > 0) {
-            setkey(dataset, EVENT_ID)
         } else {
             warning("No details returned.")
         }
     }
     if("fatalities" %in% type){
-        ds_fatalities <- get_datasets(requested[Type == "fatalities", Name])
+        ds_fatalities <- get_datasets(requested[Type == "fatalities", Name], 
+                                      fatalities_names(), 
+                                      fatalities_col_types())
         if(nrow(ds_fatalities) > 0) {
-            setkey(ds_fatalities, EVENT_ID)
             if(exists("dataset")) {
                 dataset <- ds_fatalities[dataset]
             } else {
@@ -142,9 +221,10 @@ get_data <- function(year = NULL, type = types_available()) {
         }
     }
     if("locations" %in% type) {
-        ds_locations <- get_datasets(requested[Type == "locations", Name])
+        ds_locations <- get_datasets(requested[Type == "locations", Name], 
+                                     locations_names(), 
+                                     locations_col_types())
         if(nrow(ds_locations) > 0) {
-            setkey(ds_locations, EVENT_ID)
             if(exists("ds_details")) {
                 dataset <- ds_locations[dataset]
             } else if(exists("ds_fatalities")) {
@@ -161,26 +241,15 @@ get_data <- function(year = NULL, type = types_available()) {
     
 }
 
-#' Get datasets
-#'
+#' @title get_datasets
+#' @description get datasets
 #' @param dt_names list of Name from get_listings
-#'
+#' @param cn list of column names for Type
+#' @param ct vector of column types for Type
 #' @return a data table of all years requested by Type
-#' @export
-get_datasets <- function(dt_names) {
+get_datasets <- function(dt_names, cn, ct) {
     dt_names <- paste(ds_url(), dt_names, sep = "/")
-    
-    # Get column names first
-    cn <- readr::read_csv(dt_names[1], n_max = 1L)
-    cn <- names(cn)
-    
-    # Now, with names we know how many columns exist in dataset. Those columns 
-    # must be imported as character classes in order to preserve all information. 
-    # Otherwise, if readr::read_csv sees only integers in the first n-number of 
-    # rows it will read any following float values as NA (since they are not 
-    # integers).
-    dt_list <- lapply(dt_names, readr::read_csv, col_names = cn, 
-                      col_types = paste0(rep("c", length(cn)), collapse = ""), 
+    dt_list <- lapply(dt_names, readr::read_csv, col_names = cn, col_types = ct, 
                       skip = 1L)
     dt <- rbindlist(dt_list)
     dt

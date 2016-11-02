@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this 
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.0.0.9002] - 2016-11-02
+
+### Added
+  - `details_names`, `details_col_types`, `fatalities_names`, 
+    `fatalities_col_types`, `locations_names`, `locations_col_types` to assign 
+    column names and types when using `readr::read_csv`.
+
+### Changed
+
+### Removed
+  - setkey; no longer needed for Data.Table joins since v1.9.6
+  - removed the modifications from v0.0.0.9001 (2016-11-01)
+
 ## [v0.0.0.9001] - 2016-11-01
 
 ### Added
