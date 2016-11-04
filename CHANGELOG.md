@@ -14,7 +14,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
   - NA
 
 ### Removed
-  - NA
+  - R/env-variables.R - repetitive or unnecessary code
 
 ## [v0.0.0.9003] - 2016-11-02
 
