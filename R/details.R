@@ -35,9 +35,16 @@ details_names <- function() {
   return(x)
 }
 
-get_details <- function() {
-  dataset <- get_datasets(requested[Type == "details", Name], 
+get_details <- function(year = NULL, clean = TRUE) {
+  year <- check_year(year)
+  summary <- get_listings()
+  requested <- summary[Type == "details" & Year %in% year]
+  dataset <- get_datasets(requested[, Name], 
                           details_names(), 
                           details_col_types())
+  if(!clean)
+    return(dataset)
+  if(clean)
+    stop('ok')
 }
 
