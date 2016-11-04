@@ -15,8 +15,15 @@ locations_names <- function() {
   return(x)
 }
 
-get_locations <- function() {
-  ds_locations <- get_datasets(requested[Type == "locations", Name], 
-                               locations_names(), 
-                               locations_col_types())
+get_locations <- function(year = NULL, clean = TRUE) {
+  year <- check_year(year)
+  summary <- get_listings()
+  requested <- summary[Type == "locations" & Year %in% year]
+  dataset <- get_datasets(requested[, Name], 
+                          locations_names(), 
+                          locations_col_types())
+  if(!clean)
+    return(dataset)
+  if(clean)
+    stop('ok')
 }
