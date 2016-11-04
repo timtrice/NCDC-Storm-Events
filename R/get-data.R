@@ -17,7 +17,7 @@ check_type <- function(type = NULL) {
 #' @return year if valid, otherwise stops
 check_year <- function(year = NULL) {
   if(!is.numeric(year)) stop("Please provide year(s).")
-  if(year < 1951) stop("There are no datasets prior to 1951.")
+  if(min(year) < 1951) stop("There are no datasets prior to 1951.")
   return(year)
 }
 
