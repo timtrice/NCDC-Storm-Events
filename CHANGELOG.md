@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
   - R/details.R - store code for processing details dataset
   - R/fatalities.R - code for processing fatalities dataset
+  - R/locations.R - code for processing locations dataset
 
 ### Changed
   - NA
