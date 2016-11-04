@@ -24,6 +24,10 @@ get_locations <- function(year = NULL, clean = TRUE) {
                           locations_col_types())
   if(!clean)
     return(dataset)
-  if(clean)
-    stop('ok')
+  if(clean) {
+    dataset <- dataset %>% 
+      dplyr::select(EVENT_ID, EPISODE_ID, LOCATION_INDEX, LOCATION, RANGE, 
+                    AZIMUTH, LATITUDE, LAT2, LONGITUDE, LON2)
+    return(dataset)
+  }
 }
