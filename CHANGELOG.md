@@ -8,7 +8,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [v0.0.0.9004] - yyyy-mm-dd
 
 ### Added
-  - NA
+  - R/details.R - store code for processing details dataset
 
 ### Changed
   - NA
