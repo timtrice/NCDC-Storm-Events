@@ -114,15 +114,14 @@ get_listings <- function() {
 get_data <- function(year = NULL, type = types_available(), clean = TRUE) {
   year <- check_year(year)
   type <- check_type(type)
-  summary <- get_listings()
-  requested <- summary[Type %in% type & Year %in% year]
 
   if("details" %in% type)
-    get_details(year, requested, clean)
+    dt <- get_details(year, clean)
   if("fatalities" %in% type)
-    get_fatalities(year, requested, clean)
+    dt <- get_fatalities(year, clean)
   if("locations" %in% type)
-    get_locations(year, requested, clean)
+    dt <- get_locations(year, clean)
+  return(dt)
 }
 
 #' @title get_datasets
