@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
   - R/fatalities.R - code for processing fatalities dataset
   - R/locations.R - code for processing locations dataset
   - R/get_data.R - write problems to global dataframe
+  - R/dataframes.R - build fatality_locations reference dataframe
 
 ### Changed
   - R/clean-data.R to R/fips.R
