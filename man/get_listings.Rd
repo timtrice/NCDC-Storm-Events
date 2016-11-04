@@ -2,7 +2,7 @@
 % Please edit documentation in R/get-data.R
 \name{get_listings}
 \alias{get_listings}
-\title{Get listing of files from NCDC Storm Events}
+\title{get_listings}
 \usage{
 get_listings()
 }
@@ -10,42 +10,32 @@ get_listings()
 a data table
 }
 \description{
-Get listing of all datasets off the NCDC Storm Events website.
+Get listing of files from NCDC Storm Events
 }
 \details{
+Get listing of all datasets off the NCDC Storm Events website. 
 The function returns a data table showing all StormEvents files listed 
-     on the NCDC server.
-
-The data table contains the following variables:
-
+     on the NCDC server. 
+The data table contains the following variables:  
 * \emph{Name} Filename of the dataset
-
 * \emph{Modified} Modified date of the dataset
-
-* \emph{Size} Size of the gzip file.
-
+* \emph{Size} Size of the gzip file. 
 * \emph{Type} One of c("details", "fatalities", "locations")
-
 * \emph{Year} Year of dataset
-
 This function was created because many datasets listed are empty 
-     (typically those listed as 147b file size). And a large majority of 
-     them are very small but do have content. However, in the more 
-     recent years some of the datasets grow in size exponentially.
-
+  (typically those listed as 147b file size). And a large majority of 
+  them are very small but do have content. However, in the more 
+  recent years some of the datasets grow in size exponentially.
 So this data table helps give insight into gathering data without 
-     overloading on resources. For example, you may want ten years of 
-     all data. And, in the early years you can do this very quickly. 
-     However, doing it in the 2000's will take a considerable amount of 
-     time 
-     depending on your resources.
-
+  overloading on resources. For example, you may want ten years of 
+  all data. And, in the early years you can do this very quickly. 
+  However, doing it in the 2000's will take a considerable amount of 
+  time depending on your resources.
 The listings of datasets can be found at 
-     \url{http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/}
+  \url{http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/}
 }
 \examples{
 DT <- get_listings()
 head(DT, n = 5L)
-
 }
 

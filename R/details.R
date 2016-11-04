@@ -35,6 +35,10 @@ details_names <- function() {
   return(x)
 }
 
+#' @title get_details
+#' @description Download the details datasets for \code{year}. 
+#' @param year numeric vector with year(s) to retrieve data. Can be time-consuming.
+#' @param clean clean the data if TRUE (default). Otherwise, return as-is.
 get_details <- function(year = NULL, clean = TRUE) {
   year <- check_year(year)
   summary <- get_listings()

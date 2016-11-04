@@ -1,4 +1,9 @@
 #' Initialize dataframes
+#' 
+#' These dataframes are generated as reference tables from the original three 
+#' datasets. For example, in details$STATE are set strings of values that sould 
+#' exist. In this file is a function to build a dataframe that holds those keys 
+#' and values.
 
 #' @title fatality_locations
 #' @description Dataframe to hold valid fatalities$location per p.8 of 

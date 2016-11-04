@@ -99,9 +99,11 @@ get_listings <- function() {
 
 #' @title get_data
 #' @description Download NCDC Storm Events datasets
-#' @details Loads all requested datasets. Strongly recommended to use 
+#' @details This is a wrapper function for \code{\link{get_details}}, 
+#'   \code{\link{get_fatalities}} and \code{\link{get_locations}}. This function 
+#'   can load all requested datasets. Strongly recommended to use 
 #'   get_listings() first to see what data is available and the file 
-#'   size of the datasets before downloading datasets
+#'   size of the datasets before downloading datasets.
 #' @param year A numeric vector
 #' @param type A character vector
 #' @param clean Clean the dataset. TRUE by default.
@@ -110,7 +112,6 @@ get_listings <- function() {
 #'   \dontrun{
 #'     get_data(year = c(2015), type = c("details"))
 #'   }
-#' @export
 get_data <- function(year = NULL, type = types_available(), clean = TRUE) {
   year <- check_year(year)
   type <- check_type(type)

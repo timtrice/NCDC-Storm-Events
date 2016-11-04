@@ -2,27 +2,33 @@
 % Please edit documentation in R/get-data.R
 \name{get_data}
 \alias{get_data}
-\title{Download NCDC Storm Events datasets}
+\title{get_data}
 \usage{
-get_data(year = NULL, type = types_available())
+get_data(year = NULL, type = types_available(), clean = TRUE)
 }
 \arguments{
-\item{year}{numeric, vector}
+\item{year}{A numeric vector}
 
-\item{type}{character, vector}
+\item{type}{A character vector}
+
+\item{clean}{Clean the dataset. TRUE by default.}
 }
 \value{
 Returns a data.table for each year and type requested.
 }
 \description{
-Loads all requested datasets. Strongly recommended to use 
-     get_listings() first to see what data is available and the file 
-     size of the datasets before downloading datasets
+Download NCDC Storm Events datasets
+}
+\details{
+This is a wrapper function for \code{\link{get_details}}, 
+  \code{\link{get_fatalities}} and \code{\link{get_locations}}. This function 
+  can load all requested datasets. Strongly recommended to use 
+  get_listings() first to see what data is available and the file 
+  size of the datasets before downloading datasets.
 }
 \examples{
-\dontrun{
-get_data(year = c(1990:1995), type = c("details", "fatalities"))
-}
-
+  \dontrun{
+    get_data(year = c(2015), type = c("details"))
+  }
 }
 

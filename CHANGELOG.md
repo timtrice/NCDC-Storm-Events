@@ -17,6 +17,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
   - R/clean-data.R to R/fips.R
   - can now get clean fatalities or raw dirty fatalities.
+  - modified documentation
 
 ### Removed
   - R/env-variables.R - repetitive or unnecessary code

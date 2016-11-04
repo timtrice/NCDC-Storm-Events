@@ -29,6 +29,8 @@ fatalities_names <- function() {
 #'   `fatality_location_id`. It contains a generalized list of locations such 
 #'   as business, home, golfing, in water, boating, etc. So it is a good field 
 #'   to analyze where these fatalities have occurred.
+#' @param year numeric vector with year(s) to retrieve data.
+#' @param clean clean the data if TRUE (default). Otherwise, return as-is.
 get_fatalities <- function(year = NULL, clean = TRUE) {
   year <- check_year(year)
   summary <- get_listings()
