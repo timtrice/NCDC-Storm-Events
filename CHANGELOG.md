@@ -14,7 +14,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
   - R/get_data.R - write problems to global dataframe
 
 ### Changed
-  - NA
+  - R/clean-data.R to R/fips.R
 
 ### Removed
   - R/env-variables.R - repetitive or unnecessary code
