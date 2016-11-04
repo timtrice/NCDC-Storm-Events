@@ -8,7 +8,7 @@ Depends:
     R (>= 3.2.3)
 Description: Accesses the NCDC Storm Events database and provides tools to parse
     the data. See https://www.ncdc.noaa.gov/stormevents/details.jsp for more details
-URL: http://timtrice.net/
+URL: http://timtrice.net/projects/ncdc-storm-events/index.html
 BugReports: https://github.com/timtrice/NCDC-Storm-Events/issues
 License: MIT + file LICENSE
 Imports:
