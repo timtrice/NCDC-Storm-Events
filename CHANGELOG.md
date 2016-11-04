@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
   - R/details.R - store code for processing details dataset
   - R/fatalities.R - code for processing fatalities dataset
   - R/locations.R - code for processing locations dataset
+  - R/get_data.R - write problems to global dataframe
 
 ### Changed
   - NA

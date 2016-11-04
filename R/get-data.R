@@ -133,14 +133,31 @@ get_data <- function(year = NULL, type = types_available(), clean = TRUE) {
 #' @return a data table of all years requested by Type
 get_datasets <- function(dt_names, cn, ct) {
   dt_names <- paste(ds_url(), dt_names, sep = "/")
-  dt_list <- lapply(dt_names, readr::read_csv, col_names = cn, col_types = ct, 
-                    skip = 1L)
+  dt_list <- lapply(dt_names, read_dataset, cn = cn, ct = ct)
   dt <- rbindlist(dt_list)
-  dt
+  return(dt)
+}
+
+read_dataset <- function(u, cn, ct) {
+  dt <- readr::read_csv(u, col_names = cn, col_types = ct, skip = 1L)
+  p <- readr::problems(dt)
+  if(nrow(p) > 0)
+    write_problems(p, u)
+  return(dt)
 }
 
 #' @title types_available
 #' @description types of datasets available
 types_available <- function() {
   c("details", "fatalities", "locations")
+}
+
+write_problems <- function(dt, u) {
+  dt$url <- u
+  if(!exists('problems')) {
+    assign('problems', dt, envir = .GlobalEnv)
+  } else {
+    problems <<- bind_rows(problems, dt)
+  }
+  return(TRUE)
 }
