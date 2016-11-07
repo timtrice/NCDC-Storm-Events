@@ -1,63 +1,64 @@
-#' Check if Type is valid character vector
-#' @param type character, vector
-#' @return type
-check_type <- function(type = NULL) {
-  if(is.null(type) | !is.character(type)) 
-    stop("Please provide a type.")
-  type <- tolower(type)
-  if(!all(type %in% types_available()))
-    stop(paste("Invalid type.",
-               "Please select any(details, fatalities, locations).",
+#' @title .check_datasets
+#' @description Is ds valid?
+#' @param ds character or vector, c("details", "fatalities", "locations")
+#' @return ds if valid, otherwise stop and throw error.
+.check_datasets <- function(ds = NULL) {
+  if(is.null(ds) | !is.character(ds)) 
+    stop("Please provide a dataset.")
+  ds <- tolower(ds)
+  if(!all(ds %in% .datasets_available()))
+    stop(paste("Invalid dataset. ",
+               "Please select one or all of c(\"details\", \"fatalities\", \"locations\").",
                sep = " "))
-  return(type)
+  return(ds)
 }
 
-#' Check if Year is numeric input
+#' @title .check_year
+#' @description Check if year is valid numeric input
 #' @param year numeric vector
-#' @return year if valid, otherwise stops
-check_year <- function(year = NULL) {
+#' @return year if valid, otherwise stop and throw error.
+.check_year <- function(year = NULL) {
   if(!is.numeric(year)) stop("Please provide year(s).")
   if(min(year) < 1951) stop("There are no datasets prior to 1951.")
   return(year)
 }
 
-#' @title ds_url
+#' @title .datasets_available
+#' @description datasets available: details, fatalities and/or locations
+.datasets_available <- function() {
+  c("details", "fatalities", "locations")
+}
+
+#' @title .ds_url
 #' @description URL to download datasets
-ds_url <- function() {
+.ds_url <- function() {
   return("http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles")
 }
 
 #' @title get_listings
 #' @description Get listing of files from NCDC Storm Events
-#' @details 
-#' Get listing of all datasets off the NCDC Storm Events website. 
-#' The function returns a data table showing all StormEvents files listed 
-#'      on the NCDC server. 
-#' The data table contains the following variables:  
-#' * \emph{Name} Filename of the dataset
-#' * \emph{Modified} Modified date of the dataset
-#' * \emph{Size} Size of the gzip file. 
-#' * \emph{Type} One of c("details", "fatalities", "locations")
-#' * \emph{Year} Year of dataset
-#' This function was created because many datasets listed are empty 
-#'   (typically those listed as 147b file size). And a large majority of 
-#'   them are very small but do have content. However, in the more 
-#'   recent years some of the datasets grow in size exponentially.
-#' So this data table helps give insight into gathering data without 
-#'   overloading on resources. For example, you may want ten years of 
-#'   all data. And, in the early years you can do this very quickly. 
-#'   However, doing it in the 2000's will take a considerable amount of 
-#'   time depending on your resources.
-#' The listings of datasets can be found at 
+#' @details Get listing of all datasets off the NCDC Storm Events website. 
+#'   The function returns a dataframe showing all StormEvents files listed on 
+#'   the NCDC server.
+#'   
+#'   The data table contains the following variables:
+#'   \itemize{
+#'     \item Name: Filename of the dataset
+#'     \item Modified: Modified date of the dataset
+#'     \item Size: Size of the gzip file in bytes
+#'     \item Dataset: One of c("details", "fatalities", "locations")
+#'     \item Year: Year of dataset
+#'   }
+#'   
+#'   The listings of datasets can be found at 
 #'   \url{http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/}
 #' @examples
-#' DT <- get_listings()
-#' head(DT, n = 5L)
+#' datasets <- get_listings()
 #' @import data.table
 #' @return a data table
 #' @export
 get_listings <- function() {
-  file_list <- as.data.frame(XML::readHTMLTable(ds_url()))
+  file_list <- as.data.frame(XML::readHTMLTable(.ds_url()))
   file_list <- data.table::as.data.table(file_list[,2:4])
   
   # Clean up the list a bit
@@ -71,10 +72,10 @@ get_listings <- function() {
                                                     "%d-%b-%Y %H:%M"))
   file_list$Size <- as.character(file_list$Size)
   
-  # Make Type and Year from Name
+  # Make Dataset and Year from Name
   pattern <- "^StormEvents_([:alpha:]+)-.+_d([0-9]{4})_c.+"
   matches <- stringr::str_match(file_list$Name, pattern)
-  file_list <- file_list[, `:=`(Type = matches[,2],
+  file_list <- file_list[, `:=`(Dataset = matches[,2],
                                 Year = as.numeric(matches[,3]))]
   
   
@@ -93,7 +94,7 @@ get_listings <- function() {
   data.table::setnames(file_list, "SizeB", "Size")
   # Reorder
   data.table::setcolorder(file_list, c("Name", "Modified", "Size",
-                                       "Type", "Year"))
+                                       "Dataset", "Year"))
   return(file_list)
 }
 
@@ -101,63 +102,86 @@ get_listings <- function() {
 #' @description Download NCDC Storm Events datasets
 #' @details This is a wrapper function for \code{\link{get_details}}, 
 #'   \code{\link{get_fatalities}} and \code{\link{get_locations}}. This function 
-#'   can load all requested datasets. Strongly recommended to use 
-#'   get_listings() first to see what data is available and the file 
-#'   size of the datasets before downloading datasets.
-#' @param year A numeric vector
-#' @param type A character vector
-#' @param clean Clean the dataset. TRUE by default.
-#' @return Returns a data.table for each year and type requested. 
+#'   can load all requested datasets. Use \code{\link{get_listings}} first to 
+#'   see what data is available and the file size of the datasets before 
+#'   downloading datasets.
+#' @param year A single number or numeric vector.
+#' @param ds A string or character vector.
+#' @param clean Clean and reorganize the dataset. TRUE by default.
+#' @return Returns a dataframe for each year and ds requested. 
 #' @examples
-#'   \dontrun{
-#'     get_data(year = c(2015), type = c("details"))
-#'   }
-get_data <- function(year = NULL, type = types_available(), clean = TRUE) {
-  year <- check_year(year)
-  type <- check_type(type)
+#' \dontrun{
+#'   # Return the details dataset cleaned for 2015.
+#'   get_data(year = 2015, ds = "details")
+#' }
+#' 
+#' \dontrun{
+#'   # Return the details, fatalities datasets for 2015 to 2016
+#'   get_data(year = 2015:2016, ds = c("details", "fatalities"))
+#' }
+#' 
+#' \dontrun{
+#'   # Get all datasets for 2015
+#'   get_data(year = 2015)
+#' }
+#' 
+#' \dontrun{
+#'   # details, fatalities and locations raw
+#'   get_data(year = 2015, clean = FALSE)
+#' }
+#' @export
+get_data <- function(year = NULL, ds = .datasets_available(), clean = TRUE) {
+  year <- .check_year(year)
+  ds <- .check_datasets(ds)
 
-  if("details" %in% type)
-    dt <- get_details(year, clean)
-  if("fatalities" %in% type)
-    dt <- get_fatalities(year, clean)
-  if("locations" %in% type)
-    dt <- get_locations(year, clean)
-  return(dt)
+  if("details" %in% ds)
+    get_details(year, clean)
+  if("fatalities" %in% ds)
+    get_fatalities(year, clean)
+  if("locations" %in% ds)
+    get_locations(year, clean)
+  return(TRUE)
 }
 
-#' @title get_datasets
-#' @description get datasets
-#' @param dt_names list of Name from get_listings
-#' @param cn list of column names for Type
-#' @param ct vector of column types for Type
-#' @return a data table of all years requested by Type
-get_datasets <- function(dt_names, cn, ct) {
-  dt_names <- paste(ds_url(), dt_names, sep = "/")
-  dt_list <- lapply(dt_names, read_dataset, cn = cn, ct = ct)
+#' @title .get_datasets
+#' @description Build list of requested datasets, bind and return
+#' @param gz_names list of Name from \code{get_listings}
+#' @param cn list of column names for ds
+#' @param ct vector of column types for ds
+#' @return a data table of all years requested by ds
+.get_datasets <- function(gz_names, cn, ct) {
+  gz_names <- paste(.ds_url(), gz_names, sep = "/")
+  dt_list <- lapply(gz_names, .read_dataset, cn = cn, ct = ct)
   dt <- rbindlist(dt_list)
   return(dt)
 }
 
-read_dataset <- function(u, cn, ct) {
-  dt <- readr::read_csv(u, col_names = cn, col_types = ct, skip = 1L)
-  p <- readr::problems(dt)
+#' @title read_dataset
+#' @description Download each requested dataset.
+#' @param u URL of requested dataset
+#' @param cn column names for the requested dataset
+#' @param ct column classes for each cn
+#' @return dataset
+.read_dataset <- function(u, cn, ct) {
+  df <- readr::read_csv(u, col_names = cn, col_types = ct, skip = 1L, 
+                        progress = TRUE)
+  p <- readr::problems(df)
   if(nrow(p) > 0)
     write_problems(p, u)
-  return(dt)
+  return(df)
 }
 
-#' @title types_available
-#' @description types of datasets available
-types_available <- function() {
-  c("details", "fatalities", "locations")
-}
-
-write_problems <- function(dt, u) {
-  dt$url <- u
+#' @title write_problems
+#' @description Generate or append problems dataframe
+#' @param df Problems dataframe as generated from readr::read_csv
+#' @param u URL of dataset that generated the problems.
+#' @return TRUE if successful
+.write_problems <- function(df, u) {
+  df$url <- u
   if(!exists('problems')) {
-    assign('problems', dt, envir = .GlobalEnv)
+    assign('problems', df, envir = .GlobalEnv)
   } else {
-    problems <<- bind_rows(problems, dt)
+    problems <<- bind_rows(problems, df)
   }
   return(TRUE)
 }
