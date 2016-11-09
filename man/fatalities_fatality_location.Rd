@@ -7,10 +7,10 @@
 fatalities_fatality_location(df)
 }
 \arguments{
-\item{df[, c("FATALITY_ID", }{"FATALITY_LOCATION")]}
+\item{df}{A dataframe with FATALITY_ID and FATALITY_LOCATION}
 }
 \value{
-df Clean dataframe
+df FATALITY_LOCATION cleaned per instructions.
 }
 \description{
 Clean FATALITY_LOCATION to match NWS specifications.

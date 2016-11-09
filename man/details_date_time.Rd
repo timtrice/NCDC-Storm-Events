@@ -7,10 +7,11 @@
 details_date_time(df)
 }
 \arguments{
-\item{df[, c("EVENT_ID", }{"[BEGIN|END]_YEARMONTH", "[BEGIN|END]_DAY", "[BEGIN|END]_DATE_TIME")]}
+\item{df}{A dataframe with EVENT_ID and *_YEARMONTH, *_DAY and *_DATE_TIME 
+where * is one of either BEGIN or END.}
 }
 \value{
-df[,c("EVENT_ID", "[BEGIN|END]_DATE_TIME")] with the datetime value in '%Y-%m-%d %T' format.
+A dataframe with EVENT_ID and *_DATE_TIME in in '%Y-%m-%d %H:%M:%S' format.
 }
 \description{
 Reformat BEGIN_DATE_TIME or END_DATE_TIME to '%Y-%m-%d %T' format.

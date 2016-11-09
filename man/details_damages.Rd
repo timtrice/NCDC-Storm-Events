@@ -6,8 +6,11 @@
 \usage{
 details_damages(df)
 }
+\arguments{
+\item{df}{A dataframe containing EVENT_ID and one of DAMAGE_PROPERTY or DAMAGE_CROPS}
+}
 \value{
-df[,c("EVENT_ID", ["DAMAGE_PROPERTY"|"DAMAGE_CROPS"])]
+A dataframe with EVENT_ID and cleaned DAMAGE_PROPERTY or DAMAGE_CROPS, numeric
 }
 \description{
 Clean DAMAGE_PROPERTY or DAMAGE_CROPS

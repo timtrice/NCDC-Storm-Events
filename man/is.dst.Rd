@@ -6,6 +6,9 @@
 \usage{
 is.dst(t)
 }
+\arguments{
+\item{t}{Time in '\%Y-\%m-\%d \%H:\%M:\%S' format, character class.}
+}
 \description{
 Is t in Daylight Savings Time?
 }

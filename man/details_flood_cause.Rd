@@ -7,7 +7,7 @@
 details_flood_cause(df)
 }
 \arguments{
-\item{df[, c("EVENT_ID", }{"FLOOD_CAUSE")]}
+\item{df}{A dataframe with EVENT_ID and FLOOD_CAUSE}
 }
 \value{
 Complete.cases dataframe with clean FLOOD_CAUSE values.
