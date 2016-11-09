@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this 
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [v0.0.0.9004] - yyyy-mm-dd
+## [v0.0.0.9004] - 2016-11-09
 
 ### Added
   - R/details.R - store code for processing details dataset
