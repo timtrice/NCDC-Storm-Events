@@ -198,7 +198,7 @@ is.dst <- function(t) {
                         progress = TRUE)
   p <- readr::problems(df)
   if(nrow(p) > 0)
-    write_problems(p, u)
+    .write_problems(p, u)
   return(df)
 }
 
@@ -216,13 +216,13 @@ is.dst <- function(t) {
   i <- intersect(intersect(x, y), z)
   
   s.details <- details %>% 
-    filter(EVENT_ID %in% i)
+    dplyr::filter(EVENT_ID %in% i)
   
   s.fatalities <- fatalities %>% 
-    filter(EVENT_ID %in% i)
+    dplyr::filter(EVENT_ID %in% i)
   
   s.locations <- locations %>% 
-    filter(EVENT_ID %in% i)
+    dplyr::filter(EVENT_ID %in% i)
   
   rm(details, fatalities, locations, i, x, y, z)
   
