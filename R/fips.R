@@ -1,5 +1,5 @@
-#' @title fips 
-#' @description FIPS URL
+#' @title cpfz
+#' @description County-Public Forecast Zones Correlation File
 #' @details This file is an ASCII "dump" in pipe ("|") delimited form, of a "master" 
 #'   shapefile maintained by AGMG for the maintenance of County, Public Forecast 
 #'   Zones, CWA boundaries, and Time zones. Each record represents a single 
@@ -9,218 +9,92 @@
 #'   been made to remove these seemingly duplicate entries from this text file. 
 #'   In addition, the coastal and offshore marine zone shapefiles are also 
 #'   "dumped" to this file. 
-#' @return url to fips dataset
-fips <- function() {
-    url <- "http://www.nws.noaa.gov/geodata/catalog/wsom/data/bp10nv15.dbx"
+#' @source \url{http://www.nws.noaa.gov/geodata/catalog/wsom/html/cntyzone.htm}
+#' @return dataframe
+#' @export
+cpfz <- function() {
+  cpfz <- as.data.frame(readr::read_delim(.cpfz_url(), delim = "|", 
+                                          col_names = .cpfz_names(), 
+                                          col_types = .cpfz_col_types()))
+  cpfz <- .cpfz_correction(cpfz)
+  assign("cpfz", cpfz, envir = .GlobalEnv)
+  return(TRUE)
 }
 
-#' Names for fips data table
-#' 
-#' Helps set the names of Fips data table
-#'
-#' @return a character vector, length 10, of names to assign to fips_tz_dt()
-#' @examples
-#'   \dontrun{
-#'     names(fips_dt) <- fips_names()
-#'   }
-fips_names <- function() {
-    c("STATE", "ZONE", "CWA", "NAME", "STATE_ZONE", "COUNTYNAME", "FIPS", 
-      "TIME_ZONE", "FE_AREA", "LAT", "LON")
+#' @title .cpfz_col_types
+#' @description Declare column types for cpfz dataframe
+.cpfz_col_types <- function() {
+  x <- c(paste0("cicccciccnn"))
+  return(x)
 }
 
-#' @title datetime_fields 
-#' @description Required fields for datetime objects
-#' @return a character vector of required date/time variables
-#' @examples
-#'   \dontrun{
-#'     if(all(names(DT)) %in% datetime_fields())...
-#'     names(DT) <- datetime_fields()
-#'   }
-datetime_fields <- function() {
-    c("EVENT_ID", "YEAR", "MONTH_NAME", "BEGIN_DAY", "BEGIN_DATE_TIME", 
-      "END_DAY", "END_DATE_TIME")
-}
-
-#' @title timezone_fields
-#' @description Required fields for timezone objects
-#' @return character vector of required timezone variables
-#' @examples
-#'  \dontrun{
-#'     if(all(names(DT)) %in% timezone_fields())...
-#'     names(DT) <- timezone_fields()
-#'   }
-timezone_fields <- function() {
-    c("EVENT_ID", "CZ_TIMEZONE")
-}
-
-#' @title add_datetime 
-#' @description Add Date/Time variables
-#' @details Expects a data table with the variables EVENT_ID, TZ, YEAR, MONTH_NAME, 
-#'    BEGIN_DAY, BEGIN_DATE_TIME, END_DAY, and END_DATE_TIME. All variables 
-#'    except TZ come in the get_data() call requesting the \emph{details} 
-#'    dataset.
-#'    
-#'    Two new variables are created and added to the data table: BEGIN_DATE and 
-#'    END_DATE. These dates are formatted like %Y-%m-%d %h:%m:%s %z. Then 
-#'    each variable has time readjusted to UTC with lubridate::with_tz(). 
-#'    The new variables are then added to LUDT. 
-#' @return LUDT with datetime variables formatted to long-string format. 
-#' @param DT data table consisting of EVENT_ID, TZ, YEAR, MONTH_NAME, 
-#'      BEGIN_DAY, BEGIN_DATE_TIME, END_DAY, END_DATE_TIME
-add_datetime <- function(DT = NULL) {
-    if(!is.data.table(DT)) stop("No data table.")
-    if(!all(names(DT) %in% c("EVENT_ID", "TZ", "YEAR", "MONTH_NAME", 
-                             "BEGIN_DAY", "BEGIN_DATE_TIME", "END_DAY", 
-                             "END_DATE_TIME")))
-        stop(paste("Expecting a data table with EVENT_ID, TZ, YEAR,", 
-                   "MONTH_NAME, BEGIN_DAY, END_DAY, BEGIN_DATE_TIME and", 
-                   "END_DATE_TIME.", sep = " "))
-    
-    
-    
-    DT[, BEGIN_DATE := ymd_hms(paste(paste(YEAR, MONTH_NAME, 
-                                                 BEGIN_DAY, sep = "-"), 
-                                           sub("[0-9A-Z-]+ ([0-9:]+)", 
-                                               "\\1", BEGIN_DATE_TIME), 
-                                           sep = " "))]
-    DT[, END_DATE := ymd_hms(paste(paste(YEAR, MONTH_NAME, END_DAY, 
-                                               sep = "-"), 
-                                         sub("[0-9A-Z-]+ ([0-9:]+)", 
-                                             "\\1", END_DATE_TIME), 
-                                         sep = " "))]
-    
-    DT[, BEGIN_DATE := force_tz(BEGIN_DATE, tz = TZ), by = TZ]
-    DT[, END_DATE := force_tz(END_DATE, tz = TZ), by = TZ]
-
-    # Reset to UTC
-    DT[, BEGIN_DATE := with_tz(BEGIN_DATE, tz = "UTC")]
-    DT[, END_DATE := with_tz(END_DATE, tz = "UTC")]
-
-    if(!exists("LUDT")) create_LUDT()
-    LUDT <- merge(LUDT, DT[, .(EVENT_ID, BEGIN_DATE, END_DATE)], 
-                  by = "EVENT_ID", all = TRUE)
-    LUDT
-}
-
-#' Seperate timezones into data tables
-#' 
-#' Deprecated. Keeping for analysis of the crappy timezone data in the 
-#'      dataset but provides no general use, I don't think.
-#'
-#' @param DT EVENT_ID and CZ_TIMEZONE field only
-#' @return Creates individual data tables for each unique timezone
-#' @examples
-#' \dontrun{
-#'   tz_to_dt(DT[, .(EVENT_ID, CZ_TIMEZONE)])
+#' @title .cpfz_correction
+#' @description Correct cpfz input
+#' @details Fix issues in cpfz()
+#' Issues:
+#' \describe{
+#'   \item{Row 272}{Expects FIPS but FIPS is missing}
 #' }
-tz_to_dt <- function(DT = NULL) {
-    
-    if(!is.data.table(DT)) stop("No data table.")
-    if(!all(names(DT) %in% timezone_fields()))
-        stop("Excepting only CZ_TIMEZONE.")
-    
-    unique_tz <- unique(DT$CZ_TIMEZONE)
-
-    # I would like to get rid of this for loop but at the moment 
-    # not having much luck. 
-    # Attempted with 1965 data:
-    # https://cran.r-project.org/doc/FAQ/R-FAQ.html#How-can-I-turn-a-string-into-a-variable_003f
-    # varname <- c("EST", "MDT", "CST")
-    # eval(substitute(DT[CZ_TIMEZONE %in% variable]), 
-        # list(variable = as.name(varname[1])))
-    for(tz in unique_tz){
-        assign(tz, DT[CZ_TIMEZONE %in% tz], envir = .GlobalEnv)
-    }
-
+#' @param df Dataframe created from cpfz()
+.cpfz_correction <- function(df) {
+  if(.cpfz_url() != "http://www.nws.noaa.gov/geodata/catalog/wsom/data/bp01nv16.dbx")
+    return(df)
+  
+  # Fix "1 parsing failure, row 272, col FIPS, expecting integer
+  # FIPS value is missing from dataset.
+  df$TIME_ZONE[df$STATE_ZONE == "VA515" & is.na(df$FIPS)] <- "E"
+  df$FE_AREA[df$STATE_ZONE == "VA515" & is.na(df$FIPS)] <- "cc"
+  df$LAT[df$STATE_ZONE == "VA515" & is.na(df$FIPS)] <- 37.529281
+  df$LON[df$STATE_ZONE == "VA515" & is.na(df$FIPS)] <- -77.475408
+  message("Parsing error for FIPS, row 272 is corrected.")
+  return(df)
 }
 
-#' @title fips_dt
-#' @description Return FIPS dataset
-#' @details See \url{http://www.nws.noaa.gov/geodata/catalog/wsom/html/cntyzone.htm}
-#' @return dataset of FIPS codes.
-#' @examples
-#'   \dontrun{
-#'     FIPS <- fips_dt()
-#'   }
-fips_dt <- function() {
-    url <- fips()
-    fips_dt <- as.data.table(readr::read_delim(url, delim = "|", 
-                                               col_names = FALSE))
-    data.table::setnames(fips_dt, fips_names())
-    fips_dt
+#' @title .cpfz_names
+#' @description Column names for County-Public Forecast Zones Correlation File
+#' @return character vector
+.cpfz_names <- function() {
+  x <- c("STATE", "ZONE", "CWA", "NAME", "STATE_ZONE", "COUNTYNAME", "FIPS", 
+         "TIME_ZONE", "FE_AREA", "LAT", "LON")
+  return(x)
 }
 
-#' Return timezone abbreviations for the FIPS dataset
-#'
-#' See \url{http://www.nws.noaa.gov/geodata/catalog/county/html/county.htm}
-#'
-#' Two letters appear for the ten (10) counties which are divided by a time 
+#' @title cpfz_tz_abbr
+#' @description Return timezone abbreviations for the cpfz dataframe
+#' @details Two letters appear for the ten (10) counties which are divided by a time 
 #' zone boundary, which are located in the states of AK, FL, ID, ND, NE, OR 
 #' and SD. 
-#' 
 #' \describe{
-#'      \item{A}{Alaska Standard}
-#'      \item{C}{Central Standard}
-#'      \item{E}{Eastern Standard (e = advanced time not observed)}
-#'      \item{G}{Guam & Marianas}
-#'      \item{H}{Hawaii-Aleutian Standard}
-#'      \item{M}{Mountain Standard (m = advanced time not observed)}
-#'      \item{P}{Pacific Standard}
-#'      \item{S}{Samoa Standard}
-#'      \item{V}{Atlantic Standard}
+#'   \item{A}{Alaska Standard}
+#'   \item{C}{Central Standard}
+#'   \item{E}{Eastern Standard (e = advanced time not observed)}
+#'   \item{G}{Guam & Marianas}
+#'   \item{H}{Hawaii-Aleutian Standard}
+#'   \item{M}{Mountain Standard (m = advanced time not observed)}
+#'   \item{P}{Pacific Standard}
+#'   \item{S}{Samoa Standard}
+#'   \item{V}{Atlantic Standard}
 #' }
-#' 
-#' @return a character vector to map fips_tz_dt$TIME_ZONE to the true 
-#'   timezone
-#' @examples
-#'   \dontrun{
-#'     tz_abbr <- fips_tz_abbr()
-#'   }
-fips_tz_abbr <- function() {
-    list("A" = "America/Anchorage", 
-         "C" = "America/Chicago", 
-         "E" = "America/New_York", 
-         "G" = "Pacific/Guam", 
-         "H" = "Pacific/Honolulu", 
-         "M" = "America/Denver", 
-         "P" = "America/Los_Angeles", 
-         "S" = "Pacific/Samoa", 
-         "V" = "America/Halifax")
+#' @return a list to map cpfz_tz_dt$TIME_ZONE to the true timezone
+#' @source \url{http://www.nws.noaa.gov/geodata/catalog/county/html/county.htm}
+#' @export
+cpfz_tz_abbr <- function() {
+  list("A" = "America/Anchorage", 
+       "C" = "America/Chicago", 
+       "E" = "America/New_York", 
+       "G" = "Pacific/Guam", 
+       "H" = "Pacific/Honolulu", 
+       "M" = "America/Denver", 
+       "P" = "America/Los_Angeles", 
+       "S" = "Pacific/Samoa", 
+       "V" = "America/Halifax")
 }
 
-#' @title add_fips
-#' @description Add FIPS codes to LUDT
-#' @param DT data table consisting of EVENT_ID, CZ_FIPS, STATE_FIPS
-#' @return adds FIPS codes to lookup data table associated w/ EVENT_ID
-#' @examples
-#'   \dontrun{
-#'     add_fips(DT[, .(EVENT_ID, CZ_FIPS, STATE_FIPS)])
-#'   }
-add_fips <- function(DT = NULL) {
-    if(!is.data.table(DT)) stop("No data table.")
-    if(!all(names(DT) %in% c("EVENT_ID", "CZ_FIPS", "STATE_FIPS")))
-        stop(paste("Expecting a data table with EVENT_ID, CZ_FIPS and", 
-                   "STATE_FIPS", 
-                   sep = " "))
-    DT[, FIPS := sprintf("%02d%03d", STATE_FIPS, CZ_FIPS)]
-    if(!exists("LUDT")) create_LUDT()
-    LUDT <- merge(LUDT, DT[, .(EVENT_ID, FIPS)], by = "EVENT_ID", all = TRUE)
-    LUDT
-}
-
-#' Create lookup data table (LUDT)
-create_LUDT <- function() {
-    assign("LUDT", data.table("EVENT_ID" = as.numeric()), envir = .GlobalEnv)
-}
-
-#' @title add_tz 
-#' @description Add time zones to lookup table
-#' @param DT data table consisting of EVENT_ID, TZ
-add_tz <- function(DT = NULL) {
-  if(!is.data.table(DT)) stop("No data table.")
-  if(!all(names(DT) %in% c("EVENT_ID", "TZ")))
-    stop("Expecting a data table with EVENT_ID, TZ")
-  if(!exists("LUDT")) create_LUDT()
-  LUDT <- merge(LUDT, DT, by = "EVENT_ID", all = TRUE)
-  LUDT
+#' @title .cpfz_url 
+#' @description County-Public Forecast Zones Correlation File URL
+#' @source \url{http://www.nws.noaa.gov/geodata/catalog/wsom/html/cntyzone.htm}
+#' @return url
+.cpfz_url <- function() {
+  url <- "http://www.nws.noaa.gov/geodata/catalog/wsom/data/bp01nv16.dbx"
+  return(url)
 }

@@ -11,19 +11,24 @@ get_fatalities(year = NULL, clean = TRUE)
 
 \item{clean}{clean the data if TRUE (default). Otherwise, return as-is.}
 }
+\value{
+dataframe fatalities dataset
+}
 \description{
 Download and, if clean is TRUE, clean fatalities datasets.
 }
 \details{
-fatalities is the smallest of the datasets and thus, easiest to 
-  clean. Originally, 11 variables are returned but many of those are related 
-  to date or time which is included already in the FATALITY_DATE field. That 
-  field is cleaned to a standard formatted date (%Y-%m-%d %T).
-  
-  Additionally, a second dataframe is generated: fatality_locations. This 
-  dataframe can be joined to the fatalities dataframe by 
-  `fatality_location_id`. It contains a generalized list of locations such 
-  as business, home, golfing, in water, boating, etc. So it is a good field 
-  to analyze where these fatalities have occurred.
+In this dataset, FATALITY_ID is the primary key. EVENT_ID is the 
+foreign key to JOIN to the details or locations dataset.
+}
+\examples{
+\dontrun{
+# Clean fatalities
+get_fatalities(2015)
+}
+\dontrun{
+# Raw fatalities
+get_fatalities(2015, clean = FALSE)
+}
 }
 

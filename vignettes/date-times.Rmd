@@ -1,0 +1,147 @@
+---
+title: "Dates and Times"
+author: "Tim Trice"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Dates and Times}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      include = TRUE, 
+                      fig.width = 7, 
+                      fig.aspect = 0.5)
+```
+
+```{r, message = FALSE}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(NCDCStormEvents)
+library(maps)
+```
+
+In the raw `details` dataset there is a variable, `CZ_TIMEZONE` that is very imprecise and untrustworthy. Thankfully there are two other variables that can give us at least *some* direction; `STATE_FIPS` and `CZ_FIPS`. With another dataset, `czfp` we can get more accurate data but still it is not 100% as we will see.
+
+I will load the `details` dataset for 1951 as it will help demonstrate clearly our issues and corrections.
+
+```{r}
+get_details(1951, clean = FALSE)
+```
+
+This sample dataset is raw so I need to clean it.
+
+```{r}
+c.details <- clean_details(details)
+```
+
+At this time we have well-formatted `BEGIN_DATE_TIME` and `END_DATE_TIME` variables in '%Y-%m-%d %H:%M:%S' format. They are character values and store no timezone information. I will create a subset of `c.details` to hold only the variables needed and name it `dt`.
+
+```{r}
+dt <- c.details %>% 
+  select(EVENT_ID, STATE_FIPS, CZ_FIPS, BEGIN_DATE_TIME, END_DATE_TIME, 
+         BEGIN_LAT, BEGIN_LON)
+```
+
+```{r}
+str(dt)
+```
+
+You can see both `STATE_FIPS` and `CZ_FIPS` are integer values. I need to join these values together with `CZ_FIPS` left-padded with 0 where necessary so that it is three characters in length. The new variable, `FIPS` does not have leading '0' so `STATE_FIPS` can be left alone.
+
+```{r}
+dt <- dt %>% 
+  mutate(FIPS = as.numeric(paste0(STATE_FIPS, 
+                       stringr::str_pad(CZ_FIPS, 3, side = "left", pad = "0"))))
+```
+
+Now I will create the `cpfz` dataframe.
+
+```{r}
+cpfz()
+```
+
+The message above tells us that there was supposed to be an integer value for FIPS but instead it received a character. In the [raw dataset](http://www.nws.noaa.gov/geodata/catalog/wsom/data/bp01nv16.dbx) on row 272 FIPS is actually missing. This throws off the import for that line. 
+
+The next line in the message, "Parsing error for FIPS, row 272 is corrected." is from a function I wrote that corrects that row. So we will have on NA value for FIPS but the remaining values are corrected.
+
+Back to `cpfz`, let's see the structure.
+
+```{r}
+str(cpfz)
+```
+
+You can see in `cpfz` we have a `FIPS` variable and also a `TIME_ZONE` variable. Let's go ahead and join that data to `dt`.
+
+```{r}
+dt <- dt %>% 
+  left_join(cpfz %>% 
+              select(FIPS, TIME_ZONE), 
+            by = "FIPS")
+```
+
+```{r}
+sort(unique(dt$TIME_ZONE))
+```
+
+The timezone values are explained in the help file for `cpfz_tz_abbr`. The lower-case "m" means this area does not observe advanced time (daylight savings time). "e" is the only other potential value with no observance. 
+
+By this alone we can already tell a significant improvement in the dataset.
+
+```{r}
+US <- map_data("state")
+ggplot(details, aes(x = BEGIN_LON, y = BEGIN_LAT, colour = CZ_TIMEZONE)) + 
+  geom_polygon(data = US, aes(x = long, y = lat, group = group), 
+               colour = "grey10", fill = "white") + 
+  geom_point(size = 1) + 
+  coord_quickmap()
+```
+
+```{r}
+ggplot(dt, aes(x = BEGIN_LON, y = BEGIN_LAT, colour = TIME_ZONE)) + 
+  geom_polygon(data = US, aes(x = long, y = lat, group = group), 
+               colour = "grey10", fill = "white") + 
+  geom_point(size = 1) + 
+  coord_quickmap()
+```
+
+Clearly, improvement.
+
+The next question you may ask is about daylight savings time; the new `TIME_ZONE` value doesn't give us that information. Thankfully there is a hard rule in place for DST. And I don't mean "spring forward, fall back". Changes always occur on the second Sunday in April and the first Sunday in November at 2AM local time. With this information we can easily identify if a time value is in period of DST or not. 
+
+I have already written a function to help you with this: `is.dst`.
+
+```{r}
+dt <- dt %>% 
+  mutate(dst = is.dst(BEGIN_DATE_TIME))
+```
+
+We can easily test now and make sure we have the right values. Daylight Savings Time will not apply for the months December through March.
+
+```{r}
+Hmisc::describe(dt %>% 
+                  filter(month(BEGIN_DATE_TIME) %in% c(1:3, 12)) %>% 
+                  select(dst))
+```
+
+Good deal. What about months between May and October?
+
+```{r}
+Hmisc::describe(dt %>% 
+                  filter(month(BEGIN_DATE_TIME) %in% c(5:10)) %>% 
+                  select(dst))
+```
+
+To apply the time zone information to `BEGIN_DATE_TIME` and `END_DATE_TIME` now we only need to match our `TIME_ZONE` variables to `cpfz_tz_abbr` and then we can apply modified valid datetime variables; I will name them `BDT` and `EDT`.
+
+```{r}
+tz <- cpfz_tz_abbr()
+x <- dt %>% 
+  group_by(TIME_ZONE) %>%
+  mutate(TZ = paste(BEGIN_DATE_TIME, tz[TIME_ZONE][[1]], sep = " "), 
+         BDT = lubridate::ymd_hms(TZ))
+```
+

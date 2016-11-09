@@ -1,18 +1,19 @@
-#' @title locations_col_types
-#' @description return column types for readr::read_csv
-locations_col_types <- function() {
-  # separated by line break based on fatalities_names() for legibility
-  x <- paste0("iiiin", 
-              "ccnnii")
-  return(x)
-}
-
-#' @title locations_names
-#' @description return column names for readr::read_csv
-locations_names <- function() {
-  x <- c("YEARMONTH", "EPISODE_ID", "EVENT_ID", "LOCATION_INDEX", "RANGE", 
-         "AZIMUTH", "LOCATION", "LATITUDE", "LONGITUDE", "LAT2", "LON2")
-  return(x)
+#' @title clean_locations
+#' @description "Clean" locations dataset
+#' @details Nothing is cleaned at the moment; it is just reorganized. EPISODE_ID 
+#' is dropped as it is redundant (in `details`).
+#' 
+#' I cannot find any documentation on what the purpose of LAT2 and LON2 is 
+#' therefore it is untouched for the moment. No other values require cleaning 
+#' at this time.
+#' @param df Raw locations dataset
+#' @return df Reorganized raw dataset
+#' @export
+clean_locations <- function(df) {
+  df <- df %>% 
+    dplyr::select(EVENT_ID, LOCATION_INDEX, LOCATION, RANGE, 
+                  AZIMUTH, LATITUDE, LAT2, LONGITUDE, LON2)
+  return(df)
 }
 
 #' @title get_locations
@@ -41,19 +42,39 @@ locations_names <- function() {
 #'   
 #' @param year numeric vector of year or years
 #' @param clean TRUE by default; clean and reorganize dataset.
+#' @return dataframe Raw if clean is FALSE, reorganized if TRUE (default)
+#' @export
 get_locations <- function(year = NULL, clean = TRUE) {
-  year <- check_year(year)
+  year <- .check_year(year)
   summary <- get_listings()
-  requested <- summary[Type == "locations" & Year %in% year]
-  dataset <- get_datasets(requested[, Name], 
-                          locations_names(), 
-                          locations_col_types())
-  if(!clean)
-    return(dataset)
+  requested <- summary %>% 
+    dplyr::filter(Dataset == "locations", 
+           Year %in% year)
+  df <- .get_datasets(gz_names = requested$Name, 
+                          cn = .locations_names(), 
+                          ct = .locations_col_types())
   if(clean) {
-    dataset <- dataset %>% 
-      dplyr::select(EVENT_ID, EPISODE_ID, LOCATION_INDEX, LOCATION, RANGE, 
-                    AZIMUTH, LATITUDE, LAT2, LONGITUDE, LON2)
-    return(dataset)
+    df <- clean_locations(df)
+    assign("c.locations", df, envir = .GlobalEnv)
+  } else {
+    assign("locations", df, envir = .GlobalEnv)
   }
+  return(TRUE)
+}
+
+#' @title .locations_col_types
+#' @description return column types for readr::read_csv
+.locations_col_types <- function() {
+  # separated by line break based on fatalities_names() for legibility
+  x <- paste0("iiiin", 
+              "ccnnii")
+  return(x)
+}
+
+#' @title .locations_names
+#' @description return column names for readr::read_csv
+.locations_names <- function() {
+  x <- c("YEARMONTH", "EPISODE_ID", "EVENT_ID", "LOCATION_INDEX", "RANGE", 
+         "AZIMUTH", "LOCATION", "LATITUDE", "LONGITUDE", "LAT2", "LON2")
+  return(x)
 }

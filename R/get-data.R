@@ -52,49 +52,47 @@
 #'   
 #'   The listings of datasets can be found at 
 #'   \url{http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/}
+#' @importFrom magrittr %>%
 #' @examples
 #' datasets <- get_listings()
-#' @import data.table
-#' @return a data table
+#' @return a dataframe
 #' @export
 get_listings <- function() {
   file_list <- as.data.frame(XML::readHTMLTable(.ds_url()))
-  file_list <- data.table::as.data.table(file_list[,2:4])
-  
-  # Clean up the list a bit
-  data.table::setnames(file_list, c("Name", "Modified", "Size"))
-  data.table::setkey(file_list, Name)
-  file_list <- file_list[grep("^StormEvents.", Name)]
-  
-  # Change class of cols
+  file_list <- file_list %>% dplyr::select(2:4)
+  colnames(file_list) <- c("Name", "Modified", "Size")
+  file_list <- file_list[grep("^StormEvents.", file_list$Name),]
   file_list$Name <- as.character(file_list$Name)
   file_list$Modified <- lubridate::ymd_hms(strptime(file_list$Modified,
                                                     "%d-%b-%Y %H:%M"))
   file_list$Size <- as.character(file_list$Size)
-  
   # Make Dataset and Year from Name
   pattern <- "^StormEvents_([:alpha:]+)-.+_d([0-9]{4})_c.+"
   matches <- stringr::str_match(file_list$Name, pattern)
-  file_list <- file_list[, `:=`(Dataset = matches[,2],
-                                Year = as.numeric(matches[,3]))]
-  
-  
+  file_list <- file_list %>% 
+    dplyr::mutate(Dataset = matches[,2], 
+           Year = as.numeric(matches[,3]))
+
   # Extract file size int and char from Size
   pattern <- "([0-9\\.]+)([:alpha:]?)"
   matches <- stringr::str_match(file_list$Size, pattern)
-  file_list <- file_list[, `:=`(SizeInt = as.numeric(matches[,2]),
-                                SizeChar = matches[,3])]
-  file_list <- file_list[SizeChar == "", SizeB := SizeInt]
-  file_list <- file_list[SizeChar == "K", SizeB := SizeInt * 10^3]
-  file_list <- file_list[SizeChar == "M", SizeB := SizeInt * 10^6]
-  
+  file_list <- file_list %>% 
+    dplyr::mutate(SizeInt = as.numeric(matches[,2]),
+           SizeChar = matches[,3])
+  k <- list("M" = 1e+06, "K" = 1e+03, "H" = 1e+02)
+  file_list$SizeChar[file_list$SizeChar == ""] <- "H"
+  file_list <- file_list %>% 
+    dplyr::mutate(SizeB = SizeInt * k[SizeChar][[1]])
+
   # Remove Size, SizeInt, and SizeChar
-  file_list <- file_list[, c("Size", "SizeInt", "SizeChar") := NULL]
+  file_list$Size <- NULL
+  file_list$SizeInt <- NULL
+  file_list$SizeChar <- NULL
   # Rename SizeB to  Size
-  data.table::setnames(file_list, "SizeB", "Size")
+  file_list <- file_list %>% dplyr::rename(Size = SizeB)
   # Reorder
-  data.table::setcolorder(file_list, c("Name", "Modified", "Size",
-                                       "Dataset", "Year"))
+  file_list <- file_list %>% 
+    dplyr::select(Name, Modified, Size, Dataset, Year)
   return(file_list)
 }
 
@@ -105,6 +103,9 @@ get_listings <- function() {
 #'   can load all requested datasets. Use \code{\link{get_listings}} first to 
 #'   see what data is available and the file size of the datasets before 
 #'   downloading datasets.
+#'   
+#'   Please see \href{https://www.ncdc.noaa.gov/stormevents/ftp.jsp}{Storm Events Database} 
+#'   for latest code book and file naming convention.
 #' @param year A single number or numeric vector.
 #' @param ds A string or character vector.
 #' @param clean Clean and reorganize the dataset. TRUE by default.
@@ -152,9 +153,38 @@ get_data <- function(year = NULL, ds = .datasets_available(), clean = TRUE) {
 .get_datasets <- function(gz_names, cn, ct) {
   gz_names <- paste(.ds_url(), gz_names, sep = "/")
   dt_list <- lapply(gz_names, .read_dataset, cn = cn, ct = ct)
-  dt <- rbindlist(dt_list)
+  dt <- dplyr::bind_rows(dt_list)
   return(dt)
 }
+
+#' @title is.dst
+#' @description Is t in Daylight Savings Time?
+#' @details Calculate if time value is in a period of DST
+#' @export
+is.dst <- function(t) {
+
+  f <- function(n, do) {
+    ifelse(do == "begin", return(8 + (7 - n)), return(8 - n))
+  }
+  
+  dst_date <- function(z, do) {
+    # What day of the week is April 1?
+    n = lubridate::wday(lubridate::ymd_hm(z, tz = "UTC"))
+    # Calculate days to 2nd Sunday
+    s = f(n, do)
+    # Calculate date
+    d = as.POSIXct(lubridate::ymd_hm(z)) + lubridate::days(s)
+    return(d)
+  }
+  
+  y = lubridate::year(t)
+  dst_begin <- dst_date(paste0(y, "-04-01 02:00"), do = "begin")
+  dst_end <- dst_date(paste0(y, "-11-01 02:00"), do = "end")
+  t <- as.POSIXct(t, tz = "UTC")
+  x <- ifelse(dst_begin <= t & dst_end > t, TRUE, FALSE)
+  return(x)
+}
+
 
 #' @title read_dataset
 #' @description Download each requested dataset.
@@ -169,6 +199,35 @@ get_data <- function(year = NULL, ds = .datasets_available(), clean = TRUE) {
   if(nrow(p) > 0)
     write_problems(p, u)
   return(df)
+}
+
+#' @title .sample_dataframes
+#' @description Build sample dataframes
+#' @details Takes common EVENT_ID in all three datasets and filters on those 
+#' values.
+.sample_dataframes <- function() {
+  get_data(2015, clean = FALSE)
+  
+  x <- as.vector(details$EVENT_ID)
+  y <- as.vector(fatalities$EVENT_ID)
+  z <- as.vector(locations$EVENT_ID)
+  
+  i <- intersect(intersect(x, y), z)
+  
+  s.details <- details %>% 
+    filter(EVENT_ID %in% i)
+  
+  s.fatalities <- fatalities %>% 
+    filter(EVENT_ID %in% i)
+  
+  s.locations <- locations %>% 
+    filter(EVENT_ID %in% i)
+  
+  rm(details, fatalities, locations, i, x, y, z)
+  
+  devtools::use_data(s.details, overwrite = TRUE)
+  devtools::use_data(s.fatalities, overwrite = TRUE)
+  devtools::use_data(s.locations, overwrite = TRUE)
 }
 
 #' @title write_problems

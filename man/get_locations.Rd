@@ -11,6 +11,9 @@ get_locations(year = NULL, clean = TRUE)
 
 \item{clean}{TRUE by default; clean and reorganize dataset.}
 }
+\value{
+dataframe Raw if clean is FALSE, reorganized if TRUE (default)
+}
 \description{
 Download the locations datasets for \code{year}.
 }

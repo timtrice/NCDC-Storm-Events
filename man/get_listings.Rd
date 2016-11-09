@@ -7,35 +7,29 @@
 get_listings()
 }
 \value{
-a data table
+a dataframe
 }
 \description{
 Get listing of files from NCDC Storm Events
 }
 \details{
 Get listing of all datasets off the NCDC Storm Events website. 
-The function returns a data table showing all StormEvents files listed 
-     on the NCDC server. 
-The data table contains the following variables:  
-* \emph{Name} Filename of the dataset
-* \emph{Modified} Modified date of the dataset
-* \emph{Size} Size of the gzip file. 
-* \emph{Type} One of c("details", "fatalities", "locations")
-* \emph{Year} Year of dataset
-This function was created because many datasets listed are empty 
-  (typically those listed as 147b file size). And a large majority of 
-  them are very small but do have content. However, in the more 
-  recent years some of the datasets grow in size exponentially.
-So this data table helps give insight into gathering data without 
-  overloading on resources. For example, you may want ten years of 
-  all data. And, in the early years you can do this very quickly. 
-  However, doing it in the 2000's will take a considerable amount of 
-  time depending on your resources.
-The listings of datasets can be found at 
+  The function returns a dataframe showing all StormEvents files listed on 
+  the NCDC server.
+  
+  The data table contains the following variables:
+  \itemize{
+    \item Name: Filename of the dataset
+    \item Modified: Modified date of the dataset
+    \item Size: Size of the gzip file in bytes
+    \item Dataset: One of c("details", "fatalities", "locations")
+    \item Year: Year of dataset
+  }
+  
+  The listings of datasets can be found at 
   \url{http://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/}
 }
 \examples{
-DT <- get_listings()
-head(DT, n = 5L)
+datasets <- get_listings()
 }
 
