@@ -6,22 +6,25 @@ Authors@R: person("Tim", "Trice", email = "tim.trice@gmail.com",
   role = c("aut", "cre"))
 Depends:
   R (>= 3.2.3)
-Description: Accesses the NCDC Storm Events database and provides tools to parse
-  the data. See https://www.ncdc.noaa.gov/stormevents/details.jsp for more details
+Description: Accesses the NCDC Storm Events database and provides tools to parse 
+  the data.
 URL: http://timtrice.net/projects/ncdc-storm-events/index.html
 BugReports: https://github.com/timtrice/NCDC-Storm-Events/issues
 License: MIT + file LICENSE
 LazyData: true
 Imports:
+  devtools (>= 1.12.0), 
   dplyr (>= 0.5.0), 
   lubridate (>= 1.5.0),
   magrittr (>= 1.5), 
   readr (>= 0.2.2), 
   stringr (>= 1.0.0),
+  tidyr (>= 0.6.0), 
   XML (>= 3.98-1.3)
 RoxygenNote: 5.0.1
 Suggests:
   ggplot2, 
+  Hmisc, 
   knitr,
   maps, 
   pryr, 
