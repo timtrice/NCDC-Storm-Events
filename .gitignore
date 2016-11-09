@@ -2,7 +2,6 @@
 .Rproj.user
 .Rhistory
 .RData
-data
 cache
 inst/doc
 *.html
