@@ -24,7 +24,6 @@ Imports:
 RoxygenNote: 5.0.1
 Suggests:
   ggplot2, 
-  Hmisc, 
   knitr,
   maps, 
   pryr, 
