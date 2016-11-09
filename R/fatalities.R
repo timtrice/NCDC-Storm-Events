@@ -44,8 +44,8 @@ clean_fatalities <- function(df) {
 #' @details See 
 #' \href{NWS Instruction 10-1605, March 23, 2016}{http://www.nws.noaa.gov/directives/sym/pd01016005curr.pdf}
 #' Section 2.6.1.2, p. 11 for valid fatality locations.
-#' @param df[,c("FATALITY_ID", "FATALITY_LOCATION")]
-#' @return df Clean dataframe
+#' @param df A dataframe with FATALITY_ID and FATALITY_LOCATION
+#' @return df FATALITY_LOCATION cleaned per instructions.
 #' @export
 fatalities_fatality_location <- function(df) {
   df_fatality_locations <- dff_fatality_locations()

@@ -160,6 +160,7 @@ get_data <- function(year = NULL, ds = .datasets_available(), clean = TRUE) {
 #' @title is.dst
 #' @description Is t in Daylight Savings Time?
 #' @details Calculate if time value is in a period of DST
+#' @param t Time in '\%Y-\%m-\%d \%H:\%M:\%S' format, character class.
 #' @export
 is.dst <- function(t) {
 

@@ -41,7 +41,7 @@
 #'   \item{MAGNITUDE_TYPE}{See \code{\link{dff_magnitude}}}
 #'   \item{FLOOD_CAUSE}{See \code{\link{dff_flood_causes}}}
 #'   \item{CATEGORY}{See \code{\link{dff_categories}}}
-#'   \item{TOR_F_SCALE}{See \code{\link{dff_tor_f_scale}}}
+#'   \item{TOR_F_SCALE}{See \code{\link{dff_tor_f_scales}}}
 #'   \item{TOR_LENGTH}{Length of tornado segment while on the ground, in miles}
 #'   \item{TOR_WIDTH}{Width of the tornado while on the ground, in feet}
 #'   \item{TOR_OTHER_WFO}{Secondary NWS Forecast Office if tornado crosses zones}
