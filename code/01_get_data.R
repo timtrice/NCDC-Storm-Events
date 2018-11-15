@@ -18,11 +18,7 @@ source(here("./code/functions.R"))
 ftp <- "ftp://ftp.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/"
 
 #' Three datasets to download and their expected width
-tables <- list(
-  "details" = 51L,
-  "fatalities" = 11L,
-  "locations" = 11L
-)
+tables <- c("details", "fatalities", "locations")
 
 # ---- connection ----
 #' Establish connection, get list of gz datasets
@@ -35,18 +31,18 @@ close(con)
 #' length 3 for each table containing all related dataset URLs
 by_table <-
   map(
-    .x = glue("^StormEvents_{names(tables)}"),
+    .x = glue("^StormEvents_{tables}"),
     .f = grep,
     x = tbl$V9,
     value = TRUE
   ) %>%
   map(~glue("{ftp}{.x}")) %>%
-  set_names(nm = names(tables))
+  set_names(nm = tables)
 
 # ---- load-data ----
 df <-
   map(
-    .x = names(by_table),
+    .x = tables,
     .f = function(x) {
       map_df(
         .x = by_table[[x]],
@@ -55,7 +51,7 @@ df <-
       )
     }
   ) %>%
-  set_names(nm = names(tables))
+  set_names(nm = tables)
 
 #' Bring `EVENT_ID` and table's respective ID field to front
 df$fatalities <- select(df$fatalities, EVENT_ID, FATALITY_ID, everything())
