@@ -40,14 +40,20 @@ by_table <-
     x = tbl$V9,
     value = TRUE
   ) %>%
+  map(~glue("{ftp}{.x}")) %>%
   set_names(nm = names(tables))
 
 # ---- load-data ----
 df <-
-  map2(
-    .x = names(tables),
-    .y = flatten_int(tables),
-    .f = import_datasets
+  map(
+    .x = names(by_table),
+    .f = function(x) {
+      map_df(
+        .x = by_table[[x]],
+        .f = read_csv,
+        col_types = cols(.default = col_character())
+      )
+    }
   ) %>%
   set_names(nm = names(tables))
 

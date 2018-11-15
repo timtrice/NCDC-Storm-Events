@@ -1,20 +1,3 @@
-# ---- import_datasets ----
-#' @title import_datasets
-#' @description Load all csv gzips of a table into one dataframe. All columns
-#'   are imported as character by default.
-#' @param x Table; details, fatalities, or locations
-#' @param y Expected width or number of columns
-#' @param ... Additional read_csv parameters
-import_datasets <- function(x, y, ...) {
-  map_df(
-    .x = glue("{ftp}{by_table[[{x}]]}"),
-    .f = read_csv,
-    #' Make character to avoid reading errors or warnings
-    col_types = glue_collapse(rep("c", y)),
-    ...
-  )
-}
-
 # ---- var_conversion ----
 #' @title var_conversion
 #' @description Test variables in dataframe and convert, without error, to
