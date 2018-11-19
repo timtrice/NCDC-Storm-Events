@@ -39,6 +39,10 @@ df <-
 #' dataframe and convert the column.
 df <- map(df, .f = mutate_all, .funs = var_conversion)
 
+#' For some reason, df$details$EPISODE_ID is convert to double but should be
+#' integer w/o warnings.
+df$details$EPISODE_ID <- as.integer(df$details$EPISODE_ID)
+
 #' Bring `EVENT_ID` and table's respective ID field to front
 df$fatalities <- select(df$fatalities, EVENT_ID, FATALITY_ID, everything())
 df$locations <- select(df$locations, EPISODE_ID, EVENT_ID, everything())
