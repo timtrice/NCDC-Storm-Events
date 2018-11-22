@@ -1,6 +1,6 @@
 The [NCDC Storm Events Database](https://www.ncdc.noaa.gov/stormevents/) is a collection of observations for significant weather events. The "database" contains information on property damage, loss of life, intensity of systems and more. 
 
-The dataset is updated somewhat regularly, but is not real-time. As of this writing, the dataset covers the time period January, 1950, to July, 2018. 
+The dataset is updated somewhat regularly, but is not real-time. As of this writing, the dataset covers the time period January, 1950, to Aug, 2018. 
 
 There are three tables within the database:
 
