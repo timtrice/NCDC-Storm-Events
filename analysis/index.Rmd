@@ -1,0 +1,812 @@
+---
+title: "NCDC Storm Events"
+site: workflowr::wflow_site
+output: workflowr::wflow_html
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  fig.width = 10, 
+  fig.asp = 1, 
+  fig.dpi = 180
+)
+```
+
+```{r library, message = FALSE}
+library(DT)
+library(glue)
+library(kableExtra)
+library(knitr)
+library(lubridate)
+library(tidyverse)
+```
+
+```{r data}
+details <- 
+  read_csv(
+    file = here::here("./output/details.csv"), 
+    col_types = cols(
+      .default = col_character(),
+      EPISODE_ID = col_integer(), 
+      EVENT_ID = col_integer(),
+      STATE_FIPS = col_integer(),
+      CZ_FIPS = col_integer(),
+      BEGIN_DATE_TIME = col_datetime(format = ""),
+      END_DATE_TIME = col_datetime(format = ""),
+      INJURIES_DIRECT = col_integer(),
+      INJURIES_INDIRECT = col_integer(),
+      DEATHS_DIRECT = col_integer(),
+      DEATHS_INDIRECT = col_integer(),
+      DAMAGE_PROPERTY = col_number(),
+      DAMAGE_CROPS = col_number(),
+      MAGNITUDE = col_double(),
+      TOR_LENGTH = col_double(),
+      TOR_WIDTH = col_double(),
+      BEGIN_RANGE = col_integer(),
+      END_RANGE = col_integer(),
+      BEGIN_LAT = col_double(),
+      BEGIN_LON = col_double(),
+      END_LAT = col_double(),
+      END_LON = col_double()
+    )
+  )
+
+fatalities <- 
+  read_csv(
+    file = here::here("./output/fatalities.csv"), 
+    col_types = cols()
+  )
+
+locations <- 
+  read_csv(
+    file = here::here("./output/locations.csv"), 
+    col_types = cols(
+      .default = col_character(), 
+      EPISODE_ID = col_integer(),
+      EVENT_ID = col_integer(),
+      LOCATION_INDEX = col_integer(),
+      RANGE = col_number(),
+      AZIMUTH = col_character(),
+      LOCATION = col_character(),
+      LATITUDE = col_double(),
+      LONGITUDE = col_double(),
+      LAT2 = col_number(),
+      LON2 = col_number()
+    )
+  )
+
+episode_narratives <- 
+  read_csv(
+    file = here::here("./output/episode_narratives.csv"), 
+    col_types = cols()
+  )
+
+event_narratives <- 
+  read_csv(
+    file = here::here("./output/event_narratives.csv"), 
+    col_types = cols(
+      EPISODE_ID = col_integer(),
+      EVENT_ID = col_integer(),
+      EVENT_NARRATIVE = col_character()
+    )
+  )
+```
+
+```{r data-clean}
+#' Make `STATE`, `CZ_NAME`, and `EVENT_TYPE` title-case
+details <- 
+  details %>% 
+  mutate_at(
+    .vars = c("STATE", "CZ_NAME", "EVENT_TYPE"), 
+    .funs = str_to_title
+  )
+
+#' Per NWS Directive 10-1605 (March 23, 2016), there are --48-- valid
+#' `EVENT_TYPE`s. Clean `details` to match these valid `EVENT_TYPE`s, split
+#' clean data into its own dataset, leaving original values.
+#' * Note; the website says there are 48 valid values but the directive lists 
+#' 55 valid values. 
+event_types <- 
+  details %>% 
+  select(EPISODE_ID, EVENT_ID, EVENT_TYPE) %>% 
+  mutate(
+    EVENT_TYPE = case_when(
+      EVENT_TYPE == "Hail Flooding" ~ "Hail, Flooding", 
+      EVENT_TYPE == "Hail/Icy Roads" ~ "Hail", 
+      EVENT_TYPE == "Heavy Wind" ~ "High Wind", 
+      EVENT_TYPE == "High Snow" ~ "Heavy Snow", 
+      EVENT_TYPE == "Hurricane" ~ "Hurricane (Typhoon)", 
+      EVENT_TYPE == "Landslide" ~ NA_character_, 
+      EVENT_TYPE == "Northern Lights" ~ NA_character_, 
+      EVENT_TYPE == "Other" ~ NA_character_, 
+      EVENT_TYPE == "Sneakerwave" ~ "Sneaker Wave", 
+      EVENT_TYPE == "Thunderstorm Wind/ Tree" ~ "Thunderstorm Wind", 
+      EVENT_TYPE == "Thunderstorm Wind/ Trees" ~ "Thunderstorm Wind", 
+      EVENT_TYPE == "Thunderstorm Winds Funnel Clou" ~ "Thunderstorm Wind, Funnel Cloud", 
+      EVENT_TYPE == "Thunderstorm Winds Heavy Rain" ~ "Thunderstorm Wind, Heavy Rain", 
+      EVENT_TYPE == "Thunderstorm Winds Lightning" ~ "Thunderstorm Wind, Lightning", 
+      EVENT_TYPE == "Thunderstorm Winds/ Flood" ~ "Thunderstorm Wind, Flood", 
+      EVENT_TYPE == "Thunderstorm Winds/Flash Flood" ~ "Thunderstorm Wind, Flash Flood", 
+      EVENT_TYPE == "Thunderstorm Winds/Flooding" ~ "Thunderstorm Wind, Flood", 
+      EVENT_TYPE == "Thunderstorm Winds/Heavy Rain" ~ "Thunderstorm Wind, Heavy Rain", 
+      EVENT_TYPE == "Tornado/Waterspout" ~ "Tornado, Waterspout", 
+      EVENT_TYPE == "Tornadoes, Tstm Wind, Hail" ~ "Tornado, Thunderstorm Wind, Hail", 
+      EVENT_TYPE == "Volcanic Ashfall" ~ "Volcanic Ash", 
+      TRUE ~ EVENT_TYPE
+    )
+  ) %>% 
+  #' Expect warnings of "Expected 3 pieces"; not all values have three entries.
+  separate(EVENT_TYPE, into = paste0("EVENT_TYPE.", seq(1, 3)), sep = ", ") %>% 
+  gather(key = "DROP", value = "EVENT_TYPE", starts_with("EVENT_TYPE.")) %>% 
+  select(-DROP) %>% 
+  drop_na(EVENT_TYPE)
+
+if (length(sort(unique(event_types$EVENT_TYPE))) != 55)
+  stop("Too many event types!")
+```
+
+```{r settings}
+#' Stops working at some point... ???
+theme_set(theme_bw())
+```
+
+Notes per the storm events database page.
+
+1. Only tornado events were recorded from 1950 to 1954
+
+```{r example-1}
+details %>% 
+  filter(year(BEGIN_DATE_TIME) <= 1954) %>% 
+  distinct(EVENT_TYPE)
+```
+
+2. From 1955 to 1992, only tornado and thunderstorm events (including hail) were recorded in the database.
+
+```{r example-2}
+details %>% 
+  filter(between(year(BEGIN_DATE_TIME), 1955, 1992)) %>% 
+  distinct(EVENT_TYPE)
+```
+
+3. All events were added in 1996. 
+
+4. No events exist for Jun - Jul, 1993; this data was "misplaced" during import.
+
+```{r example-3}
+details %>% 
+  filter(
+    year(BEGIN_DATE_TIME) == 1993, 
+    month(BEGIN_DATE_TIME) %in% c(6, 7)
+  )
+```
+
+## Details
+
+### Latitude and Longitude
+
+There are two sets of latitude/longitude variables; `BEGIN_LAT`, `BEGIN_LON`, `END_LAT`, and `END_LON`. 
+
+Validate these observations are within what should be expected (between -90 and 90 (south to north), 180 to -180 (east to west).
+
+```{r}
+details %>% 
+  filter(
+    !between(BEGIN_LAT, -90, 90) | !between(END_LAT, -90, 90) | !between(BEGIN_LON, -180, 180) | !between(END_LON, -180, 180)
+  ) %>% 
+  select(
+    EPISODE_ID, EVENT_ID, CZ_FIPS, STATE_FIPS, CZ_NAME, STATE, BEGIN_LAT,
+    BEGIN_LON, END_LAT, END_LON
+  )
+```
+
+```{r}
+details %>% 
+  select(BEGIN_LAT, END_LAT, BEGIN_LON, END_LON) %>% 
+  filter(
+    !between(BEGIN_LAT, -90, 90) | !between(END_LAT, -90, 90) | !between(BEGIN_LON, -180, 180) | !between(END_LON, -180, 180)
+  ) %>% 
+  gather(key = "X1", value = "LAT", ends_with("LAT")) %>% 
+  gather(key = "X2", value = "LON", ends_with("LON")) %>% 
+  select(-starts_with("X")) %>% 
+  gather(key = "Var", value = "Ob") %>% 
+  ggplot() + 
+  aes(x = Ob, y = Var) +
+  geom_point() + 
+  scale_x_continuous(
+    breaks = c(-180, -90, 90, 180), 
+    minor_breaks = c(seq(-900, -180, by = 50))
+  )
+
+bad_lon <- 
+  filter(details, !between(BEGIN_LON, -180, 180) | !between(END_LON, -180, 180))
+```
+
+### Events by state
+
+```{r state-events}
+details %>% 
+  group_by(STATE) %>% 
+  summarise(Events = n()) %>% 
+  mutate(STATE = fct_reorder(STATE, Events)) %>% 
+  ungroup() %>% 
+  ggplot() + 
+  aes(x = STATE, y =  Events) + 
+  geom_col() + 
+  scale_y_continuous(labels = scales::comma) + 
+  coord_flip() + 
+  labs(
+    title = "Total Events by State", 
+    subtitle = glue(
+      "{min(year(details$BEGIN_DATE_TIME))} - {max(year(details$END_DATE_TIME))}"
+    ), 
+    x = "State"
+  )
+```
+
+### Types of events
+
+```{r event-types}
+event_types %>% 
+  group_by(EVENT_TYPE) %>% 
+  summarise(Total = n()) %>% 
+  mutate(EVENT_TYPE = fct_reorder(EVENT_TYPE, Total)) %>% 
+  ungroup() %>% 
+  ggplot() + 
+  aes(x = EVENT_TYPE, y = Total) + 
+  geom_col() + 
+  scale_y_continuous(labels = scales::comma) + 
+  coord_flip() + 
+  labs(
+    title = "Event Types", 
+    subtitle = glue(
+      "{min(year(details$BEGIN_DATE_TIME))} - {max(year(details$END_DATE_TIME))}"
+    ), 
+    x = "Event Types"
+  )
+```
+
+### Events by year
+
+```{r events-by-year}
+details %>% 
+  group_by(Year = year(BEGIN_DATE_TIME)) %>% 
+  summarise(Events = n()) %>% 
+  ggplot() + 
+  aes(x = Year, y = Events) + 
+  geom_col() + 
+  scale_x_continuous(
+    breaks = seq(1950, 2020, by = 10), 
+    minor_breaks = seq(1950, 2020, by = 5)
+  ) +
+  scale_y_continuous(labels = scales::comma) + 
+  coord_flip() + 
+  labs(
+    title = "Events by Year"
+  )
+```
+
+### Events by type, month
+
+```{r events-by-month, message = FALSE, fig.asp = 1.5}
+set.seed(10L)
+details %>% 
+  sample_n(size = 1000L) %>% 
+  select(EVENT_ID, BEGIN_DATE_TIME) %>% 
+  left_join(event_types, by = "EVENT_ID") %>% 
+  mutate(MONTH = month(BEGIN_DATE_TIME)) %>% 
+  group_by(EVENT_TYPE, MONTH) %>% 
+  summarise(EVENTS = n()) %>% 
+  ungroup() %>% 
+  #' Order facet plot by max `EVENTS` per `EVENT_TYPE`
+  mutate(EVENT_TYPE = fct_reorder(
+    .f = EVENT_TYPE, 
+    .x = EVENTS, 
+    .fun = max, 
+    .desc = TRUE)
+  ) %>% 
+  #' Many `EVENTS` do not occur in some months. `dplyr` and `ggplot` will not 
+  #' show these values as 0 but rather just connect a line between observations 
+  #' which leads to a misleading chart. Need to add a default 0 value for every 
+  #' missing `MONTH` in the dataset.
+  #' See: https://kieranhealy.org/blog/archives/2018/11/19/zero-counts-in-dplyr/
+  complete(EVENT_TYPE, nesting(MONTH), fill = list(EVENTS = 0)) %>% 
+  ggplot() + 
+  aes(x = MONTH, y = EVENTS) + 
+  geom_line() + 
+  geom_point() + 
+  facet_wrap(~EVENT_TYPE, ncol = 4L, scales = "free_y") + 
+  scale_x_continuous(
+    labels = month.abb, 
+    breaks = seq(1, 12, by = 1), 
+    minor_breaks = NULL
+  ) +
+  scale_y_continuous(
+    #' Do not show doubles along y-axis
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))), 
+    #' Add a little cushion to top but none at bottom
+    expand = expand_scale(mult = c(0, multi = 0.5))
+  ) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) + 
+  labs(
+    title = "Events by Month, Event Type", 
+    subtitle = "In order of most active events"
+  )
+```
+
+### Most expensive events (property)
+
+```{r most-expensive-events-property}
+details %>% 
+  #' Apply filter to make query quicker
+  filter(DAMAGE_PROPERTY > 1e6) %>% 
+  mutate(YEAR = year(BEGIN_DATE_TIME)) %>% 
+  select(EVENT_ID, STATE, YEAR, EVENT_TYPE, DAMAGE_PROPERTY) %>% 
+  top_n(10) %>% 
+  arrange(desc(DAMAGE_PROPERTY)) %>% 
+  mutate_at(.vars = "DAMAGE_PROPERTY", .funs = scales::dollar) %>% 
+  left_join(select(event_narratives, -EPISODE_ID), by = "EVENT_ID") %>% 
+  datatable(rownames = FALSE, caption = "Top 10 Events by DAMAGE_PROPERTY")
+```
+
+### Most expensive episodes (property)
+
+```{r most-expensive-episodes-property}
+details %>% 
+  select(EPISODE_ID, DAMAGE_PROPERTY) %>% 
+  filter(!is.na(EPISODE_ID)) %>% 
+  group_by(EPISODE_ID) %>% 
+  summarise(n = sum(DAMAGE_PROPERTY, na.rm = TRUE)) %>% 
+  top_n(10L) %>% 
+  arrange(desc(n)) %>%
+  mutate_at(.vars = "n", .funs = scales::dollar) %>% 
+  rename(DAMAGE_PROPERTY = n) %>% 
+  left_join(episode_narratives, by = "EPISODE_ID") %>% 
+  datatable(rownames = FALSE, caption = "Top 10 Episodes by DAMAGE_PROPERTY")
+```
+
+### Most expensive events (crops)
+
+```{r most-expensive-events-crops}
+details %>% 
+  #' Apply filter to make query quicker
+  filter(DAMAGE_CROPS > 1e6) %>% 
+  mutate(YEAR = year(BEGIN_DATE_TIME)) %>% 
+  select(EVENT_ID, STATE, YEAR, EVENT_TYPE, DAMAGE_CROPS) %>% 
+  top_n(10) %>% 
+  arrange(desc(DAMAGE_CROPS)) %>%
+  mutate_at(.vars = "DAMAGE_CROPS", .funs = scales::dollar) %>% 
+  left_join(select(event_narratives, -EPISODE_ID), by = "EVENT_ID") %>% 
+  datatable(rownames = FALSE, caption = "Top 10 Events by DAMAGE_CROPS")
+```
+
+### Most expensive episodes (crops)
+
+```{r most-expensive-episodes-crops}
+details %>% 
+  select(EPISODE_ID, DAMAGE_CROPS) %>% 
+  filter(!is.na(EPISODE_ID)) %>% 
+  group_by(EPISODE_ID) %>% 
+  summarise(n = sum(DAMAGE_CROPS, na.rm = TRUE)) %>% 
+  top_n(10L) %>% 
+  arrange(desc(n)) %>%
+  mutate_at(.vars = "n", .funs = scales::dollar) %>% 
+  rename(DAMAGE_CROPS = n) %>% 
+  left_join(episode_narratives, by = "EPISODE_ID") %>% 
+  datatable(rownames = FALSE, caption = "Top 10 Episodes by DAMAGE_CROPS")
+```
+
+### Injuries by year
+
+```{r injuries-year, fig.asp = 0.5}
+details %>% 
+  mutate(YEAR = year(BEGIN_DATE_TIME)) %>%
+  select(YEAR, INJURIES_DIRECT, INJURIES_INDIRECT) %>% 
+  group_by(YEAR) %>% 
+  summarise(
+    INJURIES_DIRECT = sum(INJURIES_DIRECT, na.rm = TRUE), 
+    INJURIES_INDIRECT = sum(INJURIES_INDIRECT, na.rm = TRUE)
+  ) %>% 
+  gather(key = "TYPE", value = "INJURIES", starts_with("INJURIES")) %>% 
+  ggplot() + 
+  aes(x = YEAR, y = INJURIES, color = TYPE) + 
+  geom_line() + 
+  scale_x_continuous(
+    breaks = seq(1950, 2020, by = 10), 
+    minor_breaks = seq(1950, 2020, by = 5)
+  ) + 
+  scale_y_continuous(labels = scales::comma) + 
+  theme(legend.position = "bottom") + 
+  labs(
+    title = "Injuries by Year", 
+    x = "Year", 
+    y = "Injuries"
+  )
+```
+
+### Injuries by month
+
+```{r injuries-month, fig.asp = 0.5}
+details %>% 
+  mutate(MONTH = month(BEGIN_DATE_TIME)) %>%
+  select(MONTH, INJURIES_DIRECT, INJURIES_INDIRECT) %>% 
+  group_by(MONTH) %>% 
+  summarise(
+    INJURIES_DIRECT = sum(INJURIES_DIRECT, na.rm = TRUE), 
+    INJURIES_INDIRECT = sum(INJURIES_INDIRECT, na.rm = TRUE)
+  ) %>% 
+  gather(key = "TYPE", value = "INJURIES", starts_with("INJURIES")) %>% 
+  ggplot() + 
+  aes(x = MONTH, y = INJURIES, color = TYPE) + 
+  geom_line() + 
+  scale_x_continuous(
+    labels = month.abb, 
+    breaks = seq(1, 12, by = 1)
+  ) + 
+  scale_y_continuous(labels = scales::comma) + 
+  theme(legend.position = "bottom") + 
+  labs(
+    title = "Injuries by Month", 
+    x = "Month", 
+    y = "Injuries"
+  )
+```
+
+### Tornadoes
+
+#### Fujita Scales
+
+```{r tornado-scales}
+tornado_scales <- 
+  tibble(
+    EF_scale = c("EF0", "EF1", "EF2", "EF3", "EF4", "EF5"), 
+    EF_wind = c("65-85", "86-110", "111-135", "136-165", "166-200", ">200"), 
+    F_scale = c("F0", "F1", "F2", "F3", "F4", "F5"), 
+    F_wind = c("40-72", "73-112", "113-157", "158-206", "207-260", "261-318")
+  )
+
+tornado_scales %>% 
+  kable() %>% 
+  kable_styling(c("striped", "bordered")) %>% 
+  add_header_above(c("Enhanced Fujita Wind Scale" = 2L, "Fujita Scale" = 2L))
+```
+
+```{r}
+enhanced_fujita <- 
+  tibble(
+    Wind = seq(65, 320, by = 1), 
+    Scale = case_when(
+      between(Wind, 65, 85)   ~ "EF0", 
+      between(Wind, 86, 110)  ~ "EF1", 
+      between(Wind, 111, 135) ~ "EF2", 
+      between(Wind, 136, 165) ~ "EF3", 
+      between(Wind, 166, 200) ~ "EF4", 
+      between(Wind, 200, 320) ~ "EF5", 
+    )
+  )
+
+fujita <- 
+  tibble(
+    Wind = seq(40, 318, by = 1), 
+    Scale = case_when(
+      between(Wind, 40, 72)   ~ "F0", 
+      between(Wind, 73, 112)  ~ "F1", 
+      between(Wind, 113, 157) ~ "F2", 
+      between(Wind, 158, 206) ~ "F3", 
+      between(Wind, 207, 260) ~ "F4", 
+      between(Wind, 261, 318) ~ "F5", 
+    )
+  )
+```
+
+```{r plot-enhanced-fujita, fig.asp = 0.5, caption = "Enhanced Fujita Scale"}
+enhanced_fujita %>% 
+  ggplot() + 
+  aes(x = Wind, y = Scale, color = Scale) + 
+  geom_line(size = 10) + 
+  scale_x_continuous(
+    limits = c(0, 320), 
+    breaks = seq(0, 320, by = 20), 
+    minor_breaks = seq(0, 320, by = 10), 
+    expand = c(0, 0)
+  ) + 
+  theme(legend.position = "bottom") + 
+  guides(color = guide_legend(title = "Enhanced Fujita Scale", nrow = 1L))
+```
+
+```{r plot-fujita, fig.asp = 0.5, caption = "Fujita Scale"}
+fujita %>% 
+  ggplot() + 
+  aes(x = Wind, y = Scale, color = Scale) + 
+  geom_line(size = 10) + 
+  scale_x_continuous(
+    limits = c(0, 320), 
+    breaks = seq(0, 320, by = 20), 
+    minor_breaks = seq(0, 320, by = 10), 
+    expand = c(0, 0)
+  ) + 
+  theme(legend.position = "bottom") + 
+  guides(color = guide_legend(title = "Fujita Scale", nrow = 1L))
+```
+
+#### Invalid `TOR_F_SCALE` Values
+
+```{r}
+details %>%
+  filter(EVENT_TYPE == "Tornado") %>% 
+  #' Remove bad latitude/longitude values
+  group_by(TOR_F_SCALE) %>% 
+  summarise(n = n())
+```
+
+```{r}
+details %>% 
+  filter(
+    EVENT_TYPE == "Tornado", 
+    is.na(TOR_F_SCALE) | TOR_F_SCALE == "EFU"
+  ) %>% 
+  select(EPISODE_ID, EVENT_ID, EVENT_TYPE, TOR_F_SCALE, MAGNITUDE, MAGNITUDE_TYPE) %>% 
+  group_by(TOR_F_SCALE, MAGNITUDE, MAGNITUDE_TYPE) %>% 
+  summarise(n = n()) %>% 
+  arrange(TOR_F_SCALE, MAGNITUDE, MAGNITUDE_TYPE, n) %>% 
+  kable() %>% 
+  kable_styling("striped")
+```
+
+Where `TOR_F_SCALE` is NA or equals "EFU", there is no valuable data to correct this. The variable `MAGNITUDE` is used to mark the measured extent of wind speeds (or hail, in some cases) and `MAGNITUDE_TYPE` identifies how that observation was obtained. Both of these values are NA for "EFU" observations, and `MAGNITUDE` does not reflect valid wind speed values for a tornado where `TOR_F_SCALE` is NA. 
+
+With this, can make `TOR_F_SCALE` a `NA_character_` value where `TOR_F_SCALE` is "EFU".
+
+```{r}
+details$TOR_F_SCALE[details$TOR_F_SCALE == "EFU"] <- NA_character_
+```
+
+```{r plot-tornadoes, fig.asp = 0.72}
+details %>%
+  filter(
+    EVENT_TYPE == "Tornado", 
+    !is.na(TOR_F_SCALE)
+  ) %>% 
+  #' Remove observations with bad latitude/longitude values
+  setdiff(bad_lon) %>% 
+  select(EVENT_TYPE, TOR_F_SCALE, BEGIN_LAT, BEGIN_LON) %>% 
+  extract(
+    col = TOR_F_SCALE, 
+    into = "SCALE", 
+    regex = "^E*F([[:digit:]])$", 
+    convert = TRUE, 
+    remove = FALSE
+  ) %>% 
+  mutate(SCALE = fct_reorder(.f = as.character(SCALE), .x = SCALE)) %>% 
+  ggplot() + 
+  aes(
+    x = BEGIN_LON, 
+    y = BEGIN_LAT, 
+    color = SCALE
+  ) +
+  geom_polygon(
+    data = rnaturalearth::countries110, 
+    aes(x = long, y = lat, group = group), 
+    fill = "white", 
+    color = "black", 
+    size = 0.1
+  ) + 
+  geom_point() + 
+  coord_cartesian() + 
+  guides(color = guide_legend(nrow = 1L)) +
+  viridis::scale_color_viridis(discrete = TRUE) +
+  # scale_color_brewer(palette = "Set1") +
+  theme_void() + 
+  theme(legend.position = "bottom")
+```
+
+Where `TOR_F_SCALE` is "F*", do we have valid `MAGNITUDE` values?
+
+```{r}
+details %>% 
+  filter(grepl("^F[[:digit:]]$", TOR_F_SCALE)) %>% 
+  select(TOR_F_SCALE, MAGNITUDE) %>% 
+  group_by(TOR_F_SCALE) %>% 
+  summarise(
+    Min = min(MAGNITUDE), 
+    Max = max(MAGNITUDE)
+  )
+```
+
+...and "EF*"?
+
+```{r}
+details %>% 
+  filter(grepl("^EF[[:digit:]]$", TOR_F_SCALE)) %>% 
+  select(TOR_F_SCALE, MAGNITUDE) %>% 
+  group_by(TOR_F_SCALE) %>% 
+  summarise(
+    Min = min(MAGNITUDE), 
+    Max = max(MAGNITUDE)
+  )
+```
+
+So, at least one record for each scale has a NA value. 
+
+#### Severe Tornadoes
+
+Under the Enhanced Fujita Scale, tornadoes rated EF4 or higher (winds > 166mph) produce devastating damage. Corresponding to the Fujita Scale, this would be at least a F3. 
+
+Plot tornadic events produced by at least a F3 or EF4 tornado.
+
+```{r}
+details %>% 
+  filter(TOR_F_SCALE %in% c("F3", "F4", "F5", "EF4", "EF5")) %>% 
+  setdiff(bad_lon) %>% 
+  select(EVENT_TYPE, TOR_F_SCALE, BEGIN_LAT, BEGIN_LON) %>% 
+  extract(
+    col = TOR_F_SCALE, 
+    into = "SCALE", 
+    regex = "^E*F([[:digit:]])$", 
+    convert = TRUE, 
+    remove = FALSE
+  ) %>% 
+  mutate(SCALE = fct_reorder(.f = as.character(SCALE), .x = SCALE)) %>% 
+  ggplot() + 
+  aes(
+    x = BEGIN_LON, 
+    y = BEGIN_LAT, 
+    color = SCALE
+  ) +
+  borders("state") +
+  geom_point() +
+  coord_map() +
+  theme_void() + 
+  labs(
+    title = "Tornadic events of at least EF4 or F3", 
+    subtitle = "No events exist outside of the continental United"
+  )
+```
+
+#### Tornado Width
+
+```{r}
+details %>% 
+  filter(!is.na(TOR_WIDTH), !is.na(TOR_F_SCALE)) %>% 
+  select(TOR_F_SCALE, TOR_WIDTH) %>% 
+  ggplot() + 
+  aes(x = TOR_F_SCALE, y = TOR_WIDTH, fill = TOR_F_SCALE) + 
+  geom_boxplot() + 
+  coord_flip() + 
+  scale_y_continuous(
+    labels = scales::comma
+  ) + 
+  theme(legend.position = "none") + 
+  labs(
+    title = "Tornado Width by Scale", 
+    x = "(Enhanced) Fujita Scale",
+    y = "Tornado Width (feet)"
+  )
+```
+
+#### Tornado Length (Distance Travelled)
+
+```{r}
+details %>% 
+  filter(!is.na(TOR_LENGTH), !is.na(TOR_F_SCALE)) %>% 
+  select(TOR_F_SCALE, TOR_LENGTH) %>% 
+  ggplot() + 
+  aes(x = TOR_F_SCALE, y = TOR_LENGTH, fill = TOR_F_SCALE) + 
+  geom_boxplot() + 
+  coord_flip() + 
+  theme(legend.position = "none") + 
+  labs(
+    title = "Tornado Length by Scale", 
+    x = "(Enhanced) Fujita Scale",
+    y = "Tornado Length (miles)"
+  )
+```
+
+```{r}
+details %>% 
+  filter(
+    !is.na(TOR_LENGTH), 
+    !is.na(TOR_F_SCALE), 
+    TOR_LENGTH <= 100
+  ) %>% 
+  select(TOR_F_SCALE, TOR_LENGTH) %>% 
+  ggplot() + 
+  aes(x = TOR_F_SCALE, y = TOR_LENGTH, fill = TOR_F_SCALE) + 
+  geom_boxplot() + 
+  coord_flip() + 
+  theme(legend.position = "none") + 
+  labs(
+    title = "Tornado Length by Scale", 
+    subtitle = "Tornadoes with a length <= 100 miles", 
+    x = "(Enhanced) Fujita Scale",
+    y = "Tornado Length (miles)"
+  )
+```
+
+## Fatalities
+
+### Fatalities by Year
+
+```{r fatalities-year, fig.asp = 0.5}
+fatalities %>% 
+  mutate(YEAR = year(FATALITY_DATE_TIME_1)) %>% 
+  group_by(YEAR, FATALITY_TYPE) %>% 
+  summarise(n_FATALITIES = n()) %>%
+  ggplot() + 
+  aes(x = YEAR, y = n_FATALITIES, color = FATALITY_TYPE) + 
+  geom_line() + 
+  scale_x_continuous(
+    breaks = seq(1950, 2020, by = 10), 
+    minor_breaks = seq(1950, 2020, by = 5)
+  ) + 
+  scale_y_continuous(labels = scales::comma) + 
+  theme(legend.position = "bottom") + 
+  labs(
+    title = "Fatalities by Year", 
+    x = "Year", 
+    y = "Fatalities"
+  )
+```
+
+### Fatalities by Month
+
+```{r fatalities-month, fig.asp = 0.5}
+fatalities %>% 
+  mutate(MONTH = month(FATALITY_DATE_TIME_1)) %>% 
+  group_by(MONTH, FATALITY_TYPE) %>% 
+  summarise(n_FATALITIES = n()) %>% 
+  filter(!is.na(MONTH)) %>% 
+  ggplot() + 
+  aes(x = MONTH, y = n_FATALITIES, color = FATALITY_TYPE) + 
+  geom_line() + 
+  scale_x_continuous(
+    labels = month.abb, 
+    breaks = seq(1, 12, by = 1)
+  ) + 
+  scale_y_continuous(labels = scales::comma) + 
+  theme(legend.position = "bottom") + 
+  labs(
+    title = "Fatalities by Month", 
+    x = "Month", 
+    y = "Fatalities"
+  )
+```
+
+### Fatalities by Age
+
+```{r fatalities-age, fig.asp = 0.5}
+fatalities %>% 
+  group_by(FATALITY_AGE, FATALITY_TYPE) %>% 
+  summarise(n = n()) %>% 
+  ggplot() + 
+  aes(x = FATALITY_AGE, y = n, fill = FATALITY_TYPE) + 
+  geom_col() + 
+  scale_x_continuous(
+    breaks = seq(0, 110, by = 10), 
+    minor_breaks = seq(0, 110, by = 5)
+  ) + 
+  theme(legend.position = "bottom") + 
+  labs(
+    title = "Fatalities by Age", 
+    x = "Age", 
+    y = "Fatalities"
+  )
+```
+
+### Fatalities by Sex
+
+```{r fatalities-sex, fig.asp = 0.5}
+fatalities %>% 
+  group_by(FATALITY_SEX, FATALITY_TYPE) %>% 
+  summarise(n = n()) %>% 
+  ggplot() + 
+  aes(x = FATALITY_SEX, y = n, fill = FATALITY_TYPE) + 
+  geom_col() + 
+  scale_y_continuous(labels = scales::comma) +
+  theme(legend.position = "bottom") + 
+  labs(
+    title = "Fatalities by Sex", 
+    x = "Sex", 
+    y = "Fatalities"
+  )
+```

@@ -1,4 +1,7 @@
-# ncdc_storm_events
+---
+title: "ncdc_storm_events"
+output: workflowr::wflow_html
+---
 
 `ncdc_storm_events` is a project that downloads the [NCDC Storm Events](https://www.ncdc.noaa.gov/stormevents/) database from the National Oceanic and Atmospheric Administration. 
 
