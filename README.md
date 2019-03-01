@@ -62,6 +62,36 @@ When updating data, this repo will use BGP Repo-Cleaner to remove the history of
 
 - [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/)
 
-### Clean Dates
+## Getting Started
 
-NA
+### Prerequisites
+
+#### Required Packages
+
+* DT 0.5
+
+* kableExtra 1.0.1
+
+* rnaturalearth 0.1.0
+
+* tidyverse 1.2.1
+
+* viridis 0.5.1
+
+* workflowr 0.2.0
+
+## Built With
+
+* [R 3.5.2](https://www.r-project.org/) - The R Project for Statistical Computing
+
+## Contributing
+
+Please read [Contributing](https://github.com/timtrice/ncdc_storm_events/blob/master/.github/CONTRIBUTING.md) for details on code of conduct.
+
+## Authors
+
+* [Tim Trice](https://github.com/timtrice)
+
+## License
+
+[GNU GENERAL PUBLIC LICENSE](https://github.com/timtrice/ncdc_storm_events/blob/master/LICENSE)
