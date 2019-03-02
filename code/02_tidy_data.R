@@ -197,6 +197,61 @@ df$details <-
     DAMAGE_CROPS_KEY
   ))
 
+# ---- details-to-title-case ----
+#' Make `STATE`, `CZ_NAME`, and `EVENT_TYPE` title-case
+df$details <-
+  df$details %>%
+  mutate_at(
+    .vars = c("STATE", "CZ_NAME", "EVENT_TYPE"),
+    .funs = str_to_title
+  )
+
+# ---- event-types ----
+#' Per NWS Directive 10-1605 (March 23, 2016), there are --48-- valid
+#' `EVENT_TYPE`s. Clean `details` to match these valid `EVENT_TYPE`s, split
+#' clean data into its own dataset, leaving original values.
+#' * Note; the website says there are 48 valid values but the directive lists
+#' 55 valid values.
+event_types <-
+  df$details %>%
+  select(EPISODE_ID, EVENT_ID, EVENT_TYPE) %>%
+  mutate(
+    EVENT_TYPE = case_when(
+      EVENT_TYPE == "Hail Flooding" ~ "Hail, Flooding",
+      EVENT_TYPE == "Hail/Icy Roads" ~ "Hail",
+      EVENT_TYPE == "Heavy Wind" ~ "High Wind",
+      EVENT_TYPE == "High Snow" ~ "Heavy Snow",
+      EVENT_TYPE == "Hurricane" ~ "Hurricane (Typhoon)",
+      EVENT_TYPE == "Landslide" ~ NA_character_,
+      EVENT_TYPE == "Northern Lights" ~ NA_character_,
+      EVENT_TYPE == "Other" ~ NA_character_,
+      EVENT_TYPE == "Sneakerwave" ~ "Sneaker Wave",
+      EVENT_TYPE == "Thunderstorm Wind/ Tree" ~ "Thunderstorm Wind",
+      EVENT_TYPE == "Thunderstorm Wind/ Trees" ~ "Thunderstorm Wind",
+      EVENT_TYPE == "Thunderstorm Winds Funnel Clou" ~ "Thunderstorm Wind, Funnel Cloud",
+      EVENT_TYPE == "Thunderstorm Winds Heavy Rain" ~ "Thunderstorm Wind, Heavy Rain",
+      EVENT_TYPE == "Thunderstorm Winds Lightning" ~ "Thunderstorm Wind, Lightning",
+      EVENT_TYPE == "Thunderstorm Winds/ Flood" ~ "Thunderstorm Wind, Flood",
+      EVENT_TYPE == "Thunderstorm Winds/Flash Flood" ~ "Thunderstorm Wind, Flash Flood",
+      EVENT_TYPE == "Thunderstorm Winds/Flooding" ~ "Thunderstorm Wind, Flood",
+      EVENT_TYPE == "Thunderstorm Winds/Heavy Rain" ~ "Thunderstorm Wind, Heavy Rain",
+      EVENT_TYPE == "Tornado/Waterspout" ~ "Tornado, Waterspout",
+      EVENT_TYPE == "Tornadoes, Tstm Wind, Hail" ~ "Tornado, Thunderstorm Wind, Hail",
+      EVENT_TYPE == "Volcanic Ashfall" ~ "Volcanic Ash",
+      TRUE ~ EVENT_TYPE
+    )
+  ) %>%
+  #' Expect warnings of "Expected 3 pieces"; not all values have three entries.
+  separate(EVENT_TYPE, into = paste0("EVENT_TYPE.", seq(1, 3)), sep = ", ") %>%
+  gather(key = "DROP", value = "EVENT_TYPE", starts_with("EVENT_TYPE.")) %>%
+  select(-DROP) %>%
+  drop_na(EVENT_TYPE)
+
+if (length(sort(unique(event_types$EVENT_TYPE))) != 55)
+  stop("Too many event types!")
+
+write_csv(event_types, path = here::here("./output/event_types.csv"))
+
 # ---- details-episode-narratives ----
 #' This and the next section aren't necessarily "tidying" as they fit the tidy
 #' principals. But, these variables are repetitive across observations and many
