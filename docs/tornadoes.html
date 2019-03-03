@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Tim Trice" />
+
+<meta name="date" content="2019-03-03" />
+
+<title>Tornadoes</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">NCDC Storm Events</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Exploratory
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="events.html">Events</a>
+    </li>
+    <li>
+      <a href="damages.html">Damages</a>
+    </li>
+    <li>
+      <a href="fatalities.html">Injuries and Fatalities</a>
+    </li>
+    <li>
+      <a href="tornadoes.html">Tornadoes</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/timtrice/ncdc_storm_events">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Tornadoes</h1>
+<h4 class="author"><em>Tim Trice</em></h4>
+<h4 class="date"><em>2019-03-03</em></h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-03-03
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>ncdc_storm_events/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="report" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20181114code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20181114)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20181114code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20181114)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtimtricencdcstormeventstreecd2cf1e2ea4b2da25e8216246606fba00d0244bctargetblankcd2cf1ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/timtrice/ncdc_storm_events/tree/cd2cf1e2ea4b2da25e8216246606fba00d0244bc" target="_blank">cd2cf1e</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomtimtricencdcstormeventstreecd2cf1e2ea4b2da25e8216246606fba00d0244bctargetblankcd2cf1ea" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rproj.user/
+
+Untracked files:
+    Untracked:  analysis/figure/
+    Untracked:  docs/
+
+Unstaged changes:
+    Modified:   .gitignore
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/timtrice/ncdc_storm_events/blob/94e33c4cebd8b284b023b973e64bd10ce17c0a52/analysis/tornadoes.Rmd" target="_blank">94e33c4</a>
+</td>
+<td>
+Tim Trice
+</td>
+<td>
+2019-03-03
+</td>
+<td>
+Add Tornadoes
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<pre class="r"><code>library(kableExtra)
+library(tidyverse)</code></pre>
+<pre class="r"><code>details &lt;- 
+  read_csv(
+    file = here::here(&quot;./output/details.csv&quot;), 
+    col_types = cols(
+      .default = col_character(),
+      EPISODE_ID = col_integer(), 
+      EVENT_ID = col_integer(),
+      STATE_FIPS = col_integer(),
+      CZ_FIPS = col_integer(),
+      BEGIN_DATE_TIME = col_datetime(format = &quot;&quot;),
+      END_DATE_TIME = col_datetime(format = &quot;&quot;),
+      INJURIES_DIRECT = col_integer(),
+      INJURIES_INDIRECT = col_integer(),
+      DEATHS_DIRECT = col_integer(),
+      DEATHS_INDIRECT = col_integer(),
+      DAMAGE_PROPERTY = col_number(),
+      DAMAGE_CROPS = col_number(),
+      MAGNITUDE = col_double(),
+      TOR_LENGTH = col_double(),
+      TOR_WIDTH = col_double(),
+      BEGIN_RANGE = col_integer(),
+      END_RANGE = col_integer(),
+      BEGIN_LAT = col_double(),
+      BEGIN_LON = col_double(),
+      END_LAT = col_double(),
+      END_LON = col_double()
+    )
+  )
+
+bad_lon &lt;- 
+  filter(details, !between(BEGIN_LON, -180, 180) | !between(END_LON, -180, 180))</code></pre>
+<div id="fujita-scales" class="section level4">
+<h4>Fujita Scales</h4>
+<pre class="r"><code>tornado_scales &lt;- 
+  tibble(
+    EF_scale = c(&quot;EF0&quot;, &quot;EF1&quot;, &quot;EF2&quot;, &quot;EF3&quot;, &quot;EF4&quot;, &quot;EF5&quot;), 
+    EF_wind = c(&quot;65-85&quot;, &quot;86-110&quot;, &quot;111-135&quot;, &quot;136-165&quot;, &quot;166-200&quot;, &quot;&gt;200&quot;), 
+    F_scale = c(&quot;F0&quot;, &quot;F1&quot;, &quot;F2&quot;, &quot;F3&quot;, &quot;F4&quot;, &quot;F5&quot;), 
+    F_wind = c(&quot;40-72&quot;, &quot;73-112&quot;, &quot;113-157&quot;, &quot;158-206&quot;, &quot;207-260&quot;, &quot;261-318&quot;)
+  )
+
+tornado_scales %&gt;% 
+  kable() %&gt;% 
+  kable_styling(c(&quot;striped&quot;, &quot;bordered&quot;)) %&gt;% 
+  add_header_above(c(&quot;Enhanced Fujita Wind Scale&quot; = 2L, &quot;Fujita Scale&quot; = 2L))</code></pre>
+<table class="table table-striped table-bordered" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Enhanced Fujita Wind Scale
+</div>
+</th>
+<th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Fujita Scale
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+EF_scale
+</th>
+<th style="text-align:left;">
+EF_wind
+</th>
+<th style="text-align:left;">
+F_scale
+</th>
+<th style="text-align:left;">
+F_wind
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+EF0
+</td>
+<td style="text-align:left;">
+65-85
+</td>
+<td style="text-align:left;">
+F0
+</td>
+<td style="text-align:left;">
+40-72
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EF1
+</td>
+<td style="text-align:left;">
+86-110
+</td>
+<td style="text-align:left;">
+F1
+</td>
+<td style="text-align:left;">
+73-112
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EF2
+</td>
+<td style="text-align:left;">
+111-135
+</td>
+<td style="text-align:left;">
+F2
+</td>
+<td style="text-align:left;">
+113-157
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EF3
+</td>
+<td style="text-align:left;">
+136-165
+</td>
+<td style="text-align:left;">
+F3
+</td>
+<td style="text-align:left;">
+158-206
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EF4
+</td>
+<td style="text-align:left;">
+166-200
+</td>
+<td style="text-align:left;">
+F4
+</td>
+<td style="text-align:left;">
+207-260
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EF5
+</td>
+<td style="text-align:left;">
+&gt;200
+</td>
+<td style="text-align:left;">
+F5
+</td>
+<td style="text-align:left;">
+261-318
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>enhanced_fujita &lt;- 
+  tibble(
+    Wind = seq(65, 320, by = 1), 
+    Scale = case_when(
+      between(Wind, 65, 85)   ~ &quot;EF0&quot;, 
+      between(Wind, 86, 110)  ~ &quot;EF1&quot;, 
+      between(Wind, 111, 135) ~ &quot;EF2&quot;, 
+      between(Wind, 136, 165) ~ &quot;EF3&quot;, 
+      between(Wind, 166, 200) ~ &quot;EF4&quot;, 
+      between(Wind, 200, 320) ~ &quot;EF5&quot;, 
+    )
+  )
+
+fujita &lt;- 
+  tibble(
+    Wind = seq(40, 318, by = 1), 
+    Scale = case_when(
+      between(Wind, 40, 72)   ~ &quot;F0&quot;, 
+      between(Wind, 73, 112)  ~ &quot;F1&quot;, 
+      between(Wind, 113, 157) ~ &quot;F2&quot;, 
+      between(Wind, 158, 206) ~ &quot;F3&quot;, 
+      between(Wind, 207, 260) ~ &quot;F4&quot;, 
+      between(Wind, 261, 318) ~ &quot;F5&quot;, 
+    )
+  )</code></pre>
+<pre class="r"><code>enhanced_fujita %&gt;% 
+  ggplot() + 
+  aes(x = Wind, y = Scale, color = Scale) + 
+  geom_line(size = 10) + 
+  scale_x_continuous(
+    limits = c(0, 320), 
+    breaks = seq(0, 320, by = 20), 
+    minor_breaks = seq(0, 320, by = 10), 
+    expand = c(0, 0)
+  ) + 
+  theme(legend.position = &quot;bottom&quot;) + 
+  guides(color = guide_legend(title = &quot;Enhanced Fujita Scale&quot;, nrow = 1L))</code></pre>
+<p><img src="figure/tornadoes.Rmd/plot-enhanced-fujita-1.png" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fujita %&gt;% 
+  ggplot() + 
+  aes(x = Wind, y = Scale, color = Scale) + 
+  geom_line(size = 10) + 
+  scale_x_continuous(
+    limits = c(0, 320), 
+    breaks = seq(0, 320, by = 20), 
+    minor_breaks = seq(0, 320, by = 10), 
+    expand = c(0, 0)
+  ) + 
+  theme(legend.position = &quot;bottom&quot;) + 
+  guides(color = guide_legend(title = &quot;Fujita Scale&quot;, nrow = 1L))</code></pre>
+<p><img src="figure/tornadoes.Rmd/plot-fujita-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="invalid-tor_f_scale-values" class="section level4">
+<h4>Invalid <code>TOR_F_SCALE</code> Values</h4>
+<pre class="r"><code>details %&gt;%
+  filter(EVENT_TYPE == &quot;Tornado&quot;) %&gt;% 
+  #&#39; Remove bad latitude/longitude values
+  group_by(TOR_F_SCALE) %&gt;% 
+  summarise(n = n())</code></pre>
+<pre><code># A tibble: 14 x 2
+   TOR_F_SCALE     n
+   &lt;chr&gt;       &lt;int&gt;
+ 1 &lt;NA&gt;         1970
+ 2 EF0          8428
+ 3 EF1          5317
+ 4 EF2          1546
+ 5 EF3           444
+ 6 EF4           103
+ 7 EF5            14
+ 8 EFU           108
+ 9 F0          20769
+10 F1          16922
+11 F2           9022
+12 F3           2897
+13 F4            999
+14 F5            124</code></pre>
+<pre class="r"><code>details %&gt;% 
+  filter(
+    EVENT_TYPE == &quot;Tornado&quot;, 
+    is.na(TOR_F_SCALE) | TOR_F_SCALE == &quot;EFU&quot;
+  ) %&gt;% 
+  select(EPISODE_ID, EVENT_ID, EVENT_TYPE, TOR_F_SCALE, MAGNITUDE, MAGNITUDE_TYPE) %&gt;% 
+  group_by(TOR_F_SCALE, MAGNITUDE, MAGNITUDE_TYPE) %&gt;% 
+  summarise(n = n()) %&gt;% 
+  arrange(TOR_F_SCALE, MAGNITUDE, MAGNITUDE_TYPE, n) %&gt;% 
+  kable() %&gt;% 
+  kable_styling(&quot;striped&quot;)</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+TOR_F_SCALE
+</th>
+<th style="text-align:right;">
+MAGNITUDE
+</th>
+<th style="text-align:left;">
+MAGNITUDE_TYPE
+</th>
+<th style="text-align:right;">
+n
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+EFU
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+108
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+1966
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+</tbody>
+</table>
+<p>Where <code>TOR_F_SCALE</code> is NA or equals “EFU”, there is no valuable data to correct this. The variable <code>MAGNITUDE</code> is used to mark the measured extent of wind speeds (or hail, in some cases) and <code>MAGNITUDE_TYPE</code> identifies how that observation was obtained. Both of these values are NA for “EFU” observations, and <code>MAGNITUDE</code> does not reflect valid wind speed values for a tornado where <code>TOR_F_SCALE</code> is NA.</p>
+<p>With this, can make <code>TOR_F_SCALE</code> a <code>NA_character_</code> value where <code>TOR_F_SCALE</code> is “EFU”.</p>
+<pre class="r"><code>details$TOR_F_SCALE[details$TOR_F_SCALE == &quot;EFU&quot;] &lt;- NA_character_</code></pre>
+<pre class="r"><code>details %&gt;%
+  filter(
+    EVENT_TYPE == &quot;Tornado&quot;, 
+    !is.na(TOR_F_SCALE)
+  ) %&gt;% 
+  #&#39; Remove observations with bad latitude/longitude values
+  setdiff(bad_lon) %&gt;% 
+  select(EVENT_TYPE, TOR_F_SCALE, BEGIN_LAT, BEGIN_LON) %&gt;% 
+  extract(
+    col = TOR_F_SCALE, 
+    into = &quot;SCALE&quot;, 
+    regex = &quot;^E*F([[:digit:]])$&quot;, 
+    convert = TRUE, 
+    remove = FALSE
+  ) %&gt;% 
+  mutate(SCALE = fct_reorder(.f = as.character(SCALE), .x = SCALE)) %&gt;% 
+  ggplot() + 
+  aes(
+    x = BEGIN_LON, 
+    y = BEGIN_LAT, 
+    color = SCALE
+  ) +
+  geom_polygon(
+    data = rnaturalearth::countries110, 
+    aes(x = long, y = lat, group = group), 
+    fill = &quot;white&quot;, 
+    color = &quot;black&quot;, 
+    size = 0.1
+  ) + 
+  geom_point() + 
+  coord_cartesian() + 
+  guides(color = guide_legend(nrow = 1L)) +
+  viridis::scale_color_viridis(discrete = TRUE) +
+  # scale_color_brewer(palette = &quot;Set1&quot;) +
+  theme_void() + 
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<pre><code>Warning: Removed 1013 rows containing missing values (geom_point).</code></pre>
+<p><img src="figure/tornadoes.Rmd/plot-tornadoes-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>Where <code>TOR_F_SCALE</code> is “F*“, do we have valid <code>MAGNITUDE</code> values?</p>
+<pre class="r"><code>details %&gt;% 
+  filter(grepl(&quot;^F[[:digit:]]$&quot;, TOR_F_SCALE)) %&gt;% 
+  select(TOR_F_SCALE, MAGNITUDE) %&gt;% 
+  group_by(TOR_F_SCALE) %&gt;% 
+  summarise(
+    Min = min(MAGNITUDE), 
+    Max = max(MAGNITUDE)
+  )</code></pre>
+<pre><code># A tibble: 6 x 3
+  TOR_F_SCALE   Min   Max
+  &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;
+1 F0             NA    NA
+2 F1             NA    NA
+3 F2             NA    NA
+4 F3             NA    NA
+5 F4             NA    NA
+6 F5             NA    NA</code></pre>
+<p>…and “EF*“?</p>
+<pre class="r"><code>details %&gt;% 
+  filter(grepl(&quot;^EF[[:digit:]]$&quot;, TOR_F_SCALE)) %&gt;% 
+  select(TOR_F_SCALE, MAGNITUDE) %&gt;% 
+  group_by(TOR_F_SCALE) %&gt;% 
+  summarise(
+    Min = min(MAGNITUDE), 
+    Max = max(MAGNITUDE)
+  )</code></pre>
+<pre><code># A tibble: 6 x 3
+  TOR_F_SCALE   Min   Max
+  &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;
+1 EF0            NA    NA
+2 EF1            NA    NA
+3 EF2            NA    NA
+4 EF3            NA    NA
+5 EF4            NA    NA
+6 EF5            NA    NA</code></pre>
+<p>So, at least one record for each scale has a NA value.</p>
+</div>
+<div id="severe-tornadoes" class="section level4">
+<h4>Severe Tornadoes</h4>
+<p>Under the Enhanced Fujita Scale, tornadoes rated EF4 or higher (winds &gt; 166mph) produce devastating damage. Corresponding to the Fujita Scale, this would be at least a F3.</p>
+<p>Plot tornadic events produced by at least a F3 or EF4 tornado.</p>
+<pre class="r"><code>details %&gt;% 
+  filter(TOR_F_SCALE %in% c(&quot;F3&quot;, &quot;F4&quot;, &quot;F5&quot;, &quot;EF4&quot;, &quot;EF5&quot;)) %&gt;% 
+  setdiff(bad_lon) %&gt;% 
+  select(EVENT_TYPE, TOR_F_SCALE, BEGIN_LAT, BEGIN_LON) %&gt;% 
+  extract(
+    col = TOR_F_SCALE, 
+    into = &quot;SCALE&quot;, 
+    regex = &quot;^E*F([[:digit:]])$&quot;, 
+    convert = TRUE, 
+    remove = FALSE
+  ) %&gt;% 
+  mutate(SCALE = fct_reorder(.f = as.character(SCALE), .x = SCALE)) %&gt;% 
+  ggplot() + 
+  aes(
+    x = BEGIN_LON, 
+    y = BEGIN_LAT, 
+    color = SCALE
+  ) +
+  borders(&quot;state&quot;) +
+  geom_point() +
+  coord_map() +
+  theme_void() + 
+  labs(
+    title = &quot;Tornadic events of at least EF4 or F3&quot;, 
+    subtitle = &quot;No events exist outside of the continental United&quot;
+  )</code></pre>
+<pre><code>Warning: Removed 42 rows containing missing values (geom_point).</code></pre>
+<p><img src="figure/tornadoes.Rmd/unnamed-chunk-7-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="tornado-width" class="section level4">
+<h4>Tornado Width</h4>
+<pre class="r"><code>details %&gt;% 
+  filter(!is.na(TOR_WIDTH), !is.na(TOR_F_SCALE)) %&gt;% 
+  select(TOR_F_SCALE, TOR_WIDTH) %&gt;% 
+  ggplot() + 
+  aes(x = TOR_F_SCALE, y = TOR_WIDTH, fill = TOR_F_SCALE) + 
+  geom_boxplot() + 
+  coord_flip() + 
+  scale_y_continuous(
+    labels = scales::comma
+  ) + 
+  theme(legend.position = &quot;none&quot;) + 
+  labs(
+    title = &quot;Tornado Width by Scale&quot;, 
+    x = &quot;(Enhanced) Fujita Scale&quot;,
+    y = &quot;Tornado Width (feet)&quot;
+  )</code></pre>
+<p><img src="figure/tornadoes.Rmd/unnamed-chunk-8-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="tornado-length-distance-travelled" class="section level4">
+<h4>Tornado Length (Distance Travelled)</h4>
+<pre class="r"><code>details %&gt;% 
+  filter(!is.na(TOR_LENGTH), !is.na(TOR_F_SCALE)) %&gt;% 
+  select(TOR_F_SCALE, TOR_LENGTH) %&gt;% 
+  ggplot() + 
+  aes(x = TOR_F_SCALE, y = TOR_LENGTH, fill = TOR_F_SCALE) + 
+  geom_boxplot() + 
+  coord_flip() + 
+  theme(legend.position = &quot;none&quot;) + 
+  labs(
+    title = &quot;Tornado Length by Scale&quot;, 
+    x = &quot;(Enhanced) Fujita Scale&quot;,
+    y = &quot;Tornado Length (miles)&quot;
+  )</code></pre>
+<p><img src="figure/tornadoes.Rmd/unnamed-chunk-9-1.png" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>details %&gt;% 
+  filter(
+    !is.na(TOR_LENGTH), 
+    !is.na(TOR_F_SCALE), 
+    TOR_LENGTH &lt;= 100
+  ) %&gt;% 
+  select(TOR_F_SCALE, TOR_LENGTH) %&gt;% 
+  ggplot() + 
+  aes(x = TOR_F_SCALE, y = TOR_LENGTH, fill = TOR_F_SCALE) + 
+  geom_boxplot() + 
+  coord_flip() + 
+  theme(legend.position = &quot;none&quot;) + 
+  labs(
+    title = &quot;Tornado Length by Scale&quot;, 
+    subtitle = &quot;Tornadoes with a length &lt;= 100 miles&quot;, 
+    x = &quot;(Enhanced) Fujita Scale&quot;,
+    y = &quot;Tornado Length (miles)&quot;
+  )</code></pre>
+<p><img src="figure/tornadoes.Rmd/unnamed-chunk-10-1.png" width="960" style="display: block; margin: auto;" /></p>
+<br> <br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>devtools::session_info()</code></pre>
+<pre><code>─ Session info ──────────────────────────────────────────────────────────
+ setting  value                       
+ version  R version 3.5.2 (2018-12-20)
+ os       Ubuntu 18.04.2 LTS          
+ system   x86_64, linux-gnu           
+ ui       X11                         
+ language (EN)                        
+ collate  en_US.UTF-8                 
+ ctype    en_US.UTF-8                 
+ tz       America/Chicago             
+ date     2019-03-03                  
+
+─ Packages ──────────────────────────────────────────────────────────────
+ package       * version date       lib source        
+ assertthat      0.2.0   2017-04-11 [1] CRAN (R 3.5.2)
+ backports       1.1.3   2018-12-14 [1] CRAN (R 3.5.2)
+ broom           0.5.1   2018-12-05 [1] CRAN (R 3.5.2)
+ callr           3.1.1   2018-12-21 [1] CRAN (R 3.5.2)
+ cellranger      1.1.0   2016-07-27 [1] CRAN (R 3.5.2)
+ class           7.3-15  2019-01-01 [1] CRAN (R 3.5.2)
+ classInt        0.3-1   2018-12-18 [1] CRAN (R 3.5.2)
+ cli             1.0.1   2018-09-25 [1] CRAN (R 3.5.2)
+ colorspace      1.4-0   2019-01-13 [1] CRAN (R 3.5.2)
+ crayon          1.3.4   2017-09-16 [1] CRAN (R 3.5.2)
+ DBI             1.0.0   2018-05-02 [1] CRAN (R 3.5.2)
+ desc            1.2.0   2018-05-01 [1] CRAN (R 3.5.2)
+ devtools        2.0.1   2018-10-26 [1] CRAN (R 3.5.2)
+ digest          0.6.18  2018-10-10 [1] CRAN (R 3.5.2)
+ dplyr         * 0.8.0.1 2019-02-15 [1] CRAN (R 3.5.2)
+ e1071           1.7-0.1 2019-01-21 [1] CRAN (R 3.5.2)
+ evaluate        0.12    2018-10-09 [1] CRAN (R 3.5.2)
+ fansi           0.4.0   2018-10-05 [1] CRAN (R 3.5.2)
+ forcats       * 0.3.0   2018-02-19 [1] CRAN (R 3.5.2)
+ fs              1.2.6   2018-08-23 [1] CRAN (R 3.5.2)
+ generics        0.0.2   2018-11-29 [1] CRAN (R 3.5.2)
+ ggplot2       * 3.1.0   2018-10-25 [1] CRAN (R 3.5.2)
+ git2r           0.24.0  2019-01-07 [1] CRAN (R 3.5.2)
+ glue            1.3.0   2018-07-17 [1] CRAN (R 3.5.2)
+ gridExtra       2.3     2017-09-09 [1] CRAN (R 3.5.2)
+ gtable          0.2.0   2016-02-26 [1] CRAN (R 3.5.2)
+ haven           2.0.0   2018-11-22 [1] CRAN (R 3.5.2)
+ here            0.1     2017-05-28 [1] CRAN (R 3.5.2)
+ highr           0.7     2018-06-09 [1] CRAN (R 3.5.2)
+ hms             0.4.2   2018-03-10 [1] CRAN (R 3.5.2)
+ htmltools       0.3.6   2017-04-28 [1] CRAN (R 3.5.2)
+ httr            1.4.0   2018-12-11 [1] CRAN (R 3.5.2)
+ jsonlite        1.6     2018-12-07 [1] CRAN (R 3.5.2)
+ kableExtra    * 1.0.1   2019-01-22 [1] CRAN (R 3.5.2)
+ knitr           1.21    2018-12-10 [1] CRAN (R 3.5.2)
+ labeling        0.3     2014-08-23 [1] CRAN (R 3.5.2)
+ lattice         0.20-38 2018-11-04 [1] CRAN (R 3.5.2)
+ lazyeval        0.2.1   2017-10-29 [1] CRAN (R 3.5.2)
+ lubridate       1.7.4   2018-04-11 [1] CRAN (R 3.5.2)
+ magrittr        1.5     2014-11-22 [1] CRAN (R 3.5.2)
+ mapproj         1.2.6   2018-03-29 [1] CRAN (R 3.5.2)
+ maps          * 3.3.0   2018-04-03 [1] CRAN (R 3.5.2)
+ memoise         1.1.0   2017-04-21 [1] CRAN (R 3.5.2)
+ modelr          0.1.2   2018-05-11 [1] CRAN (R 3.5.2)
+ munsell         0.5.0   2018-06-12 [1] CRAN (R 3.5.2)
+ nlme            3.1-137 2018-04-07 [1] CRAN (R 3.5.2)
+ pillar          1.3.1   2018-12-15 [1] CRAN (R 3.5.2)
+ pkgbuild        1.0.2   2018-10-16 [1] CRAN (R 3.5.2)
+ pkgconfig       2.0.2   2018-08-16 [1] CRAN (R 3.5.2)
+ pkgload         1.0.2   2018-10-29 [1] CRAN (R 3.5.2)
+ plyr            1.8.4   2016-06-08 [1] CRAN (R 3.5.2)
+ prettyunits     1.0.2   2015-07-13 [1] CRAN (R 3.5.2)
+ processx        3.2.1   2018-12-05 [1] CRAN (R 3.5.2)
+ ps              1.3.0   2018-12-21 [1] CRAN (R 3.5.2)
+ purrr         * 0.2.5   2018-05-29 [1] CRAN (R 3.5.2)
+ R6              2.3.0   2018-10-04 [1] CRAN (R 3.5.2)
+ Rcpp            1.0.0   2018-11-07 [1] CRAN (R 3.5.2)
+ readr         * 1.3.1   2018-12-21 [1] CRAN (R 3.5.2)
+ readxl          1.2.0   2018-12-19 [1] CRAN (R 3.5.2)
+ remotes         2.0.2   2018-10-30 [1] CRAN (R 3.5.2)
+ rlang           0.3.1   2019-01-08 [1] CRAN (R 3.5.2)
+ rmarkdown       1.11    2018-12-08 [1] CRAN (R 3.5.2)
+ rnaturalearth   0.1.0   2017-03-21 [1] CRAN (R 3.5.2)
+ rprojroot       1.3-2   2018-01-03 [1] CRAN (R 3.5.2)
+ rstudioapi      0.9.0   2019-01-09 [1] CRAN (R 3.5.2)
+ rvest           0.3.2   2016-06-17 [1] CRAN (R 3.5.2)
+ scales          1.0.0   2018-08-09 [1] CRAN (R 3.5.2)
+ sessioninfo     1.1.1   2018-11-05 [1] CRAN (R 3.5.2)
+ sf              0.7-3   2019-02-21 [1] CRAN (R 3.5.2)
+ sp              1.3-1   2018-06-05 [1] CRAN (R 3.5.2)
+ stringi         1.2.4   2018-07-20 [1] CRAN (R 3.5.2)
+ stringr       * 1.3.1   2018-05-10 [1] CRAN (R 3.5.2)
+ tibble        * 2.0.1   2019-01-12 [1] CRAN (R 3.5.2)
+ tidyr         * 0.8.2   2018-10-28 [1] CRAN (R 3.5.2)
+ tidyselect      0.2.5   2018-10-11 [1] CRAN (R 3.5.2)
+ tidyverse     * 1.2.1   2017-11-14 [1] CRAN (R 3.5.2)
+ units           0.6-2   2018-12-05 [1] CRAN (R 3.5.2)
+ usethis         1.4.0   2018-08-14 [1] CRAN (R 3.5.2)
+ utf8            1.1.4   2018-05-24 [1] CRAN (R 3.5.2)
+ viridis         0.5.1   2018-03-29 [1] CRAN (R 3.5.2)
+ viridisLite     0.3.0   2018-02-01 [1] CRAN (R 3.5.2)
+ webshot         0.5.1   2018-09-28 [1] CRAN (R 3.5.2)
+ whisker         0.3-2   2013-04-28 [1] CRAN (R 3.5.2)
+ withr           2.1.2   2018-03-15 [1] CRAN (R 3.5.2)
+ workflowr       1.2.0   2019-02-14 [1] CRAN (R 3.5.2)
+ xfun            0.4     2018-10-23 [1] CRAN (R 3.5.2)
+ xml2            1.2.0   2018-01-24 [1] CRAN (R 3.5.2)
+ yaml            2.2.0   2018-07-25 [1] CRAN (R 3.5.2)
+
+[1] /usr/local/lib/R/site-library
+[2] /usr/lib/R/site-library
+[3] /usr/lib/R/library</code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

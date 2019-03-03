@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Tim Trice" />
+
+<meta name="date" content="2019-03-03" />
+
+<title>Events by State</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">NCDC Storm Events</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Exploratory
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="events.html">Events</a>
+    </li>
+    <li>
+      <a href="damages.html">Damages</a>
+    </li>
+    <li>
+      <a href="fatalities.html">Injuries and Fatalities</a>
+    </li>
+    <li>
+      <a href="tornadoes.html">Tornadoes</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/timtrice/ncdc_storm_events">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Events by State</h1>
+<h4 class="author"><em>Tim Trice</em></h4>
+<h4 class="date"><em>2019-03-03</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#events-by-state">Events by state</a></li>
+<li><a href="#types-of-events">Types of events</a></li>
+<li><a href="#events-by-year">Events by year</a></li>
+<li><a href="#events-by-type-month">Events by type, month</a></li>
+</ul>
+</div>
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-03-03
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>ncdc_storm_events/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="report" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20181114code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20181114)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20181114code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20181114)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomtimtricencdcstormeventstreecd2cf1e2ea4b2da25e8216246606fba00d0244bctargetblankcd2cf1ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/timtrice/ncdc_storm_events/tree/cd2cf1e2ea4b2da25e8216246606fba00d0244bc" target="_blank">cd2cf1e</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomtimtricencdcstormeventstreecd2cf1e2ea4b2da25e8216246606fba00d0244bctargetblankcd2cf1ea" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rproj.user/
+
+Untracked files:
+    Untracked:  docs/
+
+Unstaged changes:
+    Modified:   .gitignore
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/timtrice/ncdc_storm_events/blob/13466ef3d907167f40da3d7627df75d8ed96f040/analysis/events.Rmd" target="_blank">13466ef</a>
+</td>
+<td>
+Tim Trice
+</td>
+<td>
+2019-03-03
+</td>
+<td>
+Add author, date to yaml headers
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/timtrice/ncdc_storm_events/blob/a32b0c42632a272184b1ebc92b20a02b46a2bd8c/analysis/events.Rmd" target="_blank">a32b0c4</a>
+</td>
+<td>
+Tim Trice
+</td>
+<td>
+2019-03-03
+</td>
+<td>
+Add Events
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<pre class="r"><code>library(glue)
+library(lubridate)
+library(tidyverse)</code></pre>
+<pre class="r"><code>details &lt;- 
+  read_csv(
+    file = here::here(&quot;./output/details.csv&quot;), 
+    col_types = cols(
+      .default = col_character(),
+      EPISODE_ID = col_integer(), 
+      EVENT_ID = col_integer(),
+      STATE_FIPS = col_integer(),
+      CZ_FIPS = col_integer(),
+      BEGIN_DATE_TIME = col_datetime(format = &quot;&quot;),
+      END_DATE_TIME = col_datetime(format = &quot;&quot;),
+      INJURIES_DIRECT = col_integer(),
+      INJURIES_INDIRECT = col_integer(),
+      DEATHS_DIRECT = col_integer(),
+      DEATHS_INDIRECT = col_integer(),
+      DAMAGE_PROPERTY = col_number(),
+      DAMAGE_CROPS = col_number(),
+      MAGNITUDE = col_double(),
+      TOR_LENGTH = col_double(),
+      TOR_WIDTH = col_double(),
+      BEGIN_RANGE = col_integer(),
+      END_RANGE = col_integer(),
+      BEGIN_LAT = col_double(),
+      BEGIN_LON = col_double(),
+      END_LAT = col_double(),
+      END_LON = col_double()
+    )
+  )
+
+event_types &lt;- 
+  read_csv(
+    file = here::here(&quot;./output/event_types.csv&quot;), 
+    col_types = cols(
+      EPISODE_ID = col_number(), 
+      EVENT_ID = col_number(), 
+      EVENT_TYPE = col_character()
+    )
+  )</code></pre>
+<div id="events-by-state" class="section level3">
+<h3>Events by state</h3>
+<pre class="r"><code>details %&gt;% 
+  group_by(STATE) %&gt;% 
+  summarise(Events = n()) %&gt;% 
+  mutate(STATE = fct_reorder(STATE, Events)) %&gt;% 
+  ungroup() %&gt;% 
+  ggplot() + 
+  aes(x = STATE, y =  Events) + 
+  geom_col() + 
+  scale_y_continuous(labels = scales::comma) + 
+  coord_flip() + 
+  labs(
+    title = &quot;Total Events by State&quot;, 
+    subtitle = glue(
+      &quot;{min(year(details$BEGIN_DATE_TIME))} - {max(year(details$END_DATE_TIME))}&quot;
+    ), 
+    x = &quot;State&quot;
+  )</code></pre>
+<p><img src="figure/events.Rmd/state-events-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="types-of-events" class="section level3">
+<h3>Types of events</h3>
+<pre class="r"><code>event_types %&gt;% 
+  group_by(EVENT_TYPE) %&gt;% 
+  summarise(Total = n()) %&gt;% 
+  mutate(EVENT_TYPE = fct_reorder(EVENT_TYPE, Total)) %&gt;% 
+  ungroup() %&gt;% 
+  ggplot() + 
+  aes(x = EVENT_TYPE, y = Total) + 
+  geom_col() + 
+  scale_y_continuous(labels = scales::comma) + 
+  coord_flip() + 
+  labs(
+    title = &quot;Event Types&quot;, 
+    subtitle = glue(
+      &quot;{min(year(details$BEGIN_DATE_TIME))} - {max(year(details$END_DATE_TIME))}&quot;
+    ), 
+    x = &quot;Event Types&quot;
+  )</code></pre>
+<p><img src="figure/events.Rmd/event-types-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="events-by-year" class="section level3">
+<h3>Events by year</h3>
+<pre class="r"><code>details %&gt;% 
+  group_by(Year = year(BEGIN_DATE_TIME)) %&gt;% 
+  summarise(Events = n()) %&gt;% 
+  ggplot() + 
+  aes(x = Year, y = Events) + 
+  geom_col() + 
+  scale_x_continuous(
+    breaks = seq(1950, 2020, by = 10), 
+    minor_breaks = seq(1950, 2020, by = 5)
+  ) +
+  scale_y_continuous(labels = scales::comma) + 
+  coord_flip() + 
+  labs(
+    title = &quot;Events by Year&quot;
+  )</code></pre>
+<p><img src="figure/events.Rmd/events-by-year-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="events-by-type-month" class="section level3">
+<h3>Events by type, month</h3>
+<pre class="r"><code>set.seed(10L)
+details %&gt;% 
+  sample_n(size = 1000L) %&gt;% 
+  select(EVENT_ID, BEGIN_DATE_TIME) %&gt;% 
+  left_join(event_types, by = &quot;EVENT_ID&quot;) %&gt;% 
+  mutate(MONTH = month(BEGIN_DATE_TIME)) %&gt;% 
+  group_by(EVENT_TYPE, MONTH) %&gt;% 
+  summarise(EVENTS = n()) %&gt;% 
+  ungroup() %&gt;% 
+  #&#39; Order facet plot by max `EVENTS` per `EVENT_TYPE`
+  mutate(EVENT_TYPE = fct_reorder(
+    .f = EVENT_TYPE, 
+    .x = EVENTS, 
+    .fun = max, 
+    .desc = TRUE)
+  ) %&gt;% 
+  #&#39; Many `EVENTS` do not occur in some months. `dplyr` and `ggplot` will not 
+  #&#39; show these values as 0 but rather just connect a line between observations 
+  #&#39; which leads to a misleading chart. Need to add a default 0 value for every 
+  #&#39; missing `MONTH` in the dataset.
+  #&#39; See: https://kieranhealy.org/blog/archives/2018/11/19/zero-counts-in-dplyr/
+  complete(EVENT_TYPE, nesting(MONTH), fill = list(EVENTS = 0)) %&gt;% 
+  ggplot() + 
+  aes(x = MONTH, y = EVENTS) + 
+  geom_line() + 
+  geom_point() + 
+  facet_wrap(~EVENT_TYPE, ncol = 4L, scales = &quot;free_y&quot;) + 
+  scale_x_continuous(
+    labels = month.abb, 
+    breaks = seq(1, 12, by = 1), 
+    minor_breaks = NULL
+  ) +
+  scale_y_continuous(
+    #&#39; Do not show doubles along y-axis
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))), 
+    #&#39; Add a little cushion to top but none at bottom
+    expand = expand_scale(mult = c(0, multi = 0.5))
+  ) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) + 
+  labs(
+    title = &quot;Events by Month, Event Type&quot;, 
+    subtitle = &quot;In order of most active events&quot;
+  )</code></pre>
+<p><img src="figure/events.Rmd/events-by-month-1.png" width="960" style="display: block; margin: auto;" /></p>
+<br> <br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>devtools::session_info()</code></pre>
+<pre><code>─ Session info ──────────────────────────────────────────────────────────
+ setting  value                       
+ version  R version 3.5.2 (2018-12-20)
+ os       Ubuntu 18.04.2 LTS          
+ system   x86_64, linux-gnu           
+ ui       X11                         
+ language (EN)                        
+ collate  en_US.UTF-8                 
+ ctype    en_US.UTF-8                 
+ tz       America/Chicago             
+ date     2019-03-03                  
+
+─ Packages ──────────────────────────────────────────────────────────────
+ package     * version date       lib source        
+ assertthat    0.2.0   2017-04-11 [1] CRAN (R 3.5.2)
+ backports     1.1.3   2018-12-14 [1] CRAN (R 3.5.2)
+ broom         0.5.1   2018-12-05 [1] CRAN (R 3.5.2)
+ callr         3.1.1   2018-12-21 [1] CRAN (R 3.5.2)
+ cellranger    1.1.0   2016-07-27 [1] CRAN (R 3.5.2)
+ cli           1.0.1   2018-09-25 [1] CRAN (R 3.5.2)
+ colorspace    1.4-0   2019-01-13 [1] CRAN (R 3.5.2)
+ crayon        1.3.4   2017-09-16 [1] CRAN (R 3.5.2)
+ desc          1.2.0   2018-05-01 [1] CRAN (R 3.5.2)
+ devtools      2.0.1   2018-10-26 [1] CRAN (R 3.5.2)
+ digest        0.6.18  2018-10-10 [1] CRAN (R 3.5.2)
+ dplyr       * 0.8.0.1 2019-02-15 [1] CRAN (R 3.5.2)
+ evaluate      0.12    2018-10-09 [1] CRAN (R 3.5.2)
+ forcats     * 0.3.0   2018-02-19 [1] CRAN (R 3.5.2)
+ fs            1.2.6   2018-08-23 [1] CRAN (R 3.5.2)
+ generics      0.0.2   2018-11-29 [1] CRAN (R 3.5.2)
+ ggplot2     * 3.1.0   2018-10-25 [1] CRAN (R 3.5.2)
+ git2r         0.24.0  2019-01-07 [1] CRAN (R 3.5.2)
+ glue        * 1.3.0   2018-07-17 [1] CRAN (R 3.5.2)
+ gtable        0.2.0   2016-02-26 [1] CRAN (R 3.5.2)
+ haven         2.0.0   2018-11-22 [1] CRAN (R 3.5.2)
+ here          0.1     2017-05-28 [1] CRAN (R 3.5.2)
+ hms           0.4.2   2018-03-10 [1] CRAN (R 3.5.2)
+ htmltools     0.3.6   2017-04-28 [1] CRAN (R 3.5.2)
+ httr          1.4.0   2018-12-11 [1] CRAN (R 3.5.2)
+ jsonlite      1.6     2018-12-07 [1] CRAN (R 3.5.2)
+ knitr         1.21    2018-12-10 [1] CRAN (R 3.5.2)
+ labeling      0.3     2014-08-23 [1] CRAN (R 3.5.2)
+ lattice       0.20-38 2018-11-04 [1] CRAN (R 3.5.2)
+ lazyeval      0.2.1   2017-10-29 [1] CRAN (R 3.5.2)
+ lubridate   * 1.7.4   2018-04-11 [1] CRAN (R 3.5.2)
+ magrittr      1.5     2014-11-22 [1] CRAN (R 3.5.2)
+ memoise       1.1.0   2017-04-21 [1] CRAN (R 3.5.2)
+ modelr        0.1.2   2018-05-11 [1] CRAN (R 3.5.2)
+ munsell       0.5.0   2018-06-12 [1] CRAN (R 3.5.2)
+ nlme          3.1-137 2018-04-07 [1] CRAN (R 3.5.2)
+ pillar        1.3.1   2018-12-15 [1] CRAN (R 3.5.2)
+ pkgbuild      1.0.2   2018-10-16 [1] CRAN (R 3.5.2)
+ pkgconfig     2.0.2   2018-08-16 [1] CRAN (R 3.5.2)
+ pkgload       1.0.2   2018-10-29 [1] CRAN (R 3.5.2)
+ plyr          1.8.4   2016-06-08 [1] CRAN (R 3.5.2)
+ prettyunits   1.0.2   2015-07-13 [1] CRAN (R 3.5.2)
+ processx      3.2.1   2018-12-05 [1] CRAN (R 3.5.2)
+ ps            1.3.0   2018-12-21 [1] CRAN (R 3.5.2)
+ purrr       * 0.2.5   2018-05-29 [1] CRAN (R 3.5.2)
+ R6            2.3.0   2018-10-04 [1] CRAN (R 3.5.2)
+ Rcpp          1.0.0   2018-11-07 [1] CRAN (R 3.5.2)
+ readr       * 1.3.1   2018-12-21 [1] CRAN (R 3.5.2)
+ readxl        1.2.0   2018-12-19 [1] CRAN (R 3.5.2)
+ remotes       2.0.2   2018-10-30 [1] CRAN (R 3.5.2)
+ rlang         0.3.1   2019-01-08 [1] CRAN (R 3.5.2)
+ rmarkdown     1.11    2018-12-08 [1] CRAN (R 3.5.2)
+ rprojroot     1.3-2   2018-01-03 [1] CRAN (R 3.5.2)
+ rstudioapi    0.9.0   2019-01-09 [1] CRAN (R 3.5.2)
+ rvest         0.3.2   2016-06-17 [1] CRAN (R 3.5.2)
+ scales        1.0.0   2018-08-09 [1] CRAN (R 3.5.2)
+ sessioninfo   1.1.1   2018-11-05 [1] CRAN (R 3.5.2)
+ stringi       1.2.4   2018-07-20 [1] CRAN (R 3.5.2)
+ stringr     * 1.3.1   2018-05-10 [1] CRAN (R 3.5.2)
+ tibble      * 2.0.1   2019-01-12 [1] CRAN (R 3.5.2)
+ tidyr       * 0.8.2   2018-10-28 [1] CRAN (R 3.5.2)
+ tidyselect    0.2.5   2018-10-11 [1] CRAN (R 3.5.2)
+ tidyverse   * 1.2.1   2017-11-14 [1] CRAN (R 3.5.2)
+ usethis       1.4.0   2018-08-14 [1] CRAN (R 3.5.2)
+ whisker       0.3-2   2013-04-28 [1] CRAN (R 3.5.2)
+ withr         2.1.2   2018-03-15 [1] CRAN (R 3.5.2)
+ workflowr     1.2.0   2019-02-14 [1] CRAN (R 3.5.2)
+ xfun          0.4     2018-10-23 [1] CRAN (R 3.5.2)
+ xml2          1.2.0   2018-01-24 [1] CRAN (R 3.5.2)
+ yaml          2.2.0   2018-07-25 [1] CRAN (R 3.5.2)
+
+[1] /usr/local/lib/R/site-library
+[2] /usr/lib/R/site-library
+[3] /usr/lib/R/library</code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
