@@ -10,6 +10,8 @@ navbar:
           href: events.html
         - text: "Damages"
           href: damages.html
+        - text: "Tornadoes"
+          href: tornadoes.html
   right:
     - icon: fa-github
       href: https://github.com/timtrice/ncdc_storm_events

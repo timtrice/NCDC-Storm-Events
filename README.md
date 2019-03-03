@@ -72,6 +72,10 @@ When updating data, this repo will use BGP Repo-Cleaner to remove the history of
 
 * kableExtra 1.0.1
 
+* maps 3.3.0
+
+* mapproj 1.2.6
+
 * rnaturalearth 0.1.0
 
 * tidyverse 1.2.1
