@@ -1,0 +1,134 @@
+---
+title: "Storm Damages"
+author: "Tim Trice"
+date: "2019-03-03"
+output: workflowr::wflow_html
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  message = FALSE, 
+  warning = TRUE, 
+  error = TRUE, 
+  fig.width = 10, 
+  fig.asp = 1, 
+  fig.dpi = 180
+)
+```
+
+```{r libraries}
+library(DT)
+library(glue)
+library(lubridate)
+library(tidyverse)
+```
+
+```{r data}
+details <- 
+  read_csv(
+    file = here::here("./output/details.csv"), 
+    col_types = cols(
+      .default = col_character(),
+      EPISODE_ID = col_integer(), 
+      EVENT_ID = col_integer(),
+      STATE_FIPS = col_integer(),
+      CZ_FIPS = col_integer(),
+      BEGIN_DATE_TIME = col_datetime(format = ""),
+      END_DATE_TIME = col_datetime(format = ""),
+      INJURIES_DIRECT = col_integer(),
+      INJURIES_INDIRECT = col_integer(),
+      DEATHS_DIRECT = col_integer(),
+      DEATHS_INDIRECT = col_integer(),
+      DAMAGE_PROPERTY = col_number(),
+      DAMAGE_CROPS = col_number(),
+      MAGNITUDE = col_double(),
+      TOR_LENGTH = col_double(),
+      TOR_WIDTH = col_double(),
+      BEGIN_RANGE = col_integer(),
+      END_RANGE = col_integer(),
+      BEGIN_LAT = col_double(),
+      BEGIN_LON = col_double(),
+      END_LAT = col_double(),
+      END_LON = col_double()
+    )
+  )
+
+episode_narratives <- 
+  read_csv(
+    file = here::here("./output/episode_narratives.csv"), 
+    col_types = cols()
+  )
+
+event_narratives <- 
+  read_csv(
+    file = here::here("./output/event_narratives.csv"), 
+    col_types = cols(
+      EPISODE_ID = col_integer(),
+      EVENT_ID = col_integer(),
+      EVENT_NARRATIVE = col_character()
+    )
+  )
+```
+
+### Most expensive events (property)
+
+```{r most-expensive-events-property}
+details %>% 
+  #' Apply filter to make query quicker
+  filter(DAMAGE_PROPERTY > 1e6) %>% 
+  mutate(YEAR = year(BEGIN_DATE_TIME)) %>% 
+  select(EVENT_ID, STATE, YEAR, EVENT_TYPE, DAMAGE_PROPERTY) %>% 
+  top_n(10) %>% 
+  arrange(desc(DAMAGE_PROPERTY)) %>% 
+  mutate_at(.vars = "DAMAGE_PROPERTY", .funs = scales::dollar) %>% 
+  left_join(select(event_narratives, -EPISODE_ID), by = "EVENT_ID") %>% 
+  datatable(rownames = FALSE, caption = "Top 10 Events by DAMAGE_PROPERTY")
+```
+
+### Most expensive episodes (property)
+
+```{r most-expensive-episodes-property}
+details %>% 
+  select(EPISODE_ID, DAMAGE_PROPERTY) %>% 
+  filter(!is.na(EPISODE_ID)) %>% 
+  group_by(EPISODE_ID) %>% 
+  summarise(n = sum(DAMAGE_PROPERTY, na.rm = TRUE)) %>% 
+  top_n(10L) %>% 
+  arrange(desc(n)) %>%
+  mutate_at(.vars = "n", .funs = scales::dollar) %>% 
+  rename(DAMAGE_PROPERTY = n) %>% 
+  left_join(episode_narratives, by = "EPISODE_ID") %>% 
+  datatable(rownames = FALSE, caption = "Top 10 Episodes by DAMAGE_PROPERTY")
+```
+
+### Most expensive events (crops)
+
+```{r most-expensive-events-crops}
+details %>% 
+  #' Apply filter to make query quicker
+  filter(DAMAGE_CROPS > 1e6) %>% 
+  mutate(YEAR = year(BEGIN_DATE_TIME)) %>% 
+  select(EVENT_ID, STATE, YEAR, EVENT_TYPE, DAMAGE_CROPS) %>% 
+  top_n(10) %>% 
+  arrange(desc(DAMAGE_CROPS)) %>%
+  mutate_at(.vars = "DAMAGE_CROPS", .funs = scales::dollar) %>% 
+  left_join(select(event_narratives, -EPISODE_ID), by = "EVENT_ID") %>% 
+  datatable(rownames = FALSE, caption = "Top 10 Events by DAMAGE_CROPS")
+```
+
+### Most expensive episodes (crops)
+
+```{r most-expensive-episodes-crops}
+details %>% 
+  select(EPISODE_ID, DAMAGE_CROPS) %>% 
+  filter(!is.na(EPISODE_ID)) %>% 
+  group_by(EPISODE_ID) %>% 
+  summarise(n = sum(DAMAGE_CROPS, na.rm = TRUE)) %>% 
+  top_n(10L) %>% 
+  arrange(desc(n)) %>%
+  mutate_at(.vars = "n", .funs = scales::dollar) %>% 
+  rename(DAMAGE_CROPS = n) %>% 
+  left_join(episode_narratives, by = "EPISODE_ID") %>% 
+  datatable(rownames = FALSE, caption = "Top 10 Episodes by DAMAGE_CROPS")
+```

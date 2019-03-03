@@ -8,6 +8,8 @@ navbar:
       menu:
         - text: "Events"
           href: events.html
+        - text: "Damages"
+          href: damages.html
   right:
     - icon: fa-github
       href: https://github.com/timtrice/ncdc_storm_events
