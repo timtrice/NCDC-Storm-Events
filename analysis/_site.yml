@@ -2,6 +2,12 @@ name: "NCDC Storm Events"
 output_dir: "../docs"
 navbar:
   title: "NCDC Storm Events"
+  left:
+    - text: "Exploratory"
+      icon: fa-gear
+      menu:
+        - text: "Events"
+          href: events.html
   right:
     - icon: fa-github
       href: https://github.com/timtrice/ncdc_storm_events
