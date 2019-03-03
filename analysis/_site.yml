@@ -10,6 +10,8 @@ navbar:
           href: events.html
         - text: "Damages"
           href: damages.html
+        - text: "Injuries and Fatalities"
+          href: fatalities.html
         - text: "Tornadoes"
           href: tornadoes.html
   right:
