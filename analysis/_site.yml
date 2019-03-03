@@ -2,16 +2,9 @@ name: "NCDC Storm Events"
 output_dir: "../docs"
 navbar:
   title: "NCDC Storm Events"
-  left:
-    - text: "Home"
-      href: index.html
-    - text: "About"
-      href: about.html
-    - text: "License"
-      href: license.html
   right:
     - icon: fa-github
-      href: https://github.com/timtrice/datasets/ncdc_storm_events
+      href: https://github.com/timtrice/ncdc_storm_events
 output:
   workflowr::wflow_html:
     toc: true
