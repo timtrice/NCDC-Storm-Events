@@ -19,6 +19,8 @@ navbar:
       menu:
         - text: "Functions"
           href: functions.html
+        - text: "Data"
+          href: data.html
     - text: "About"
       href: about.html
   right:

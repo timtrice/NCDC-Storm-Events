@@ -1,0 +1,300 @@
+---
+title: "Functions"
+author: "Tim Trice"
+output: workflowr::wflow_html
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  include = TRUE, 
+  eval = TRUE, 
+  message = TRUE, 
+  warning = TRUE, 
+  error = FALSE
+)
+```
+
+```{r libraries}
+library(readr)
+```
+
+## details
+
+```{r details, echo = FALSE}
+details <- 
+  read_csv(
+    file = here::here("./output/details.csv"), 
+    col_types = cols(
+      .default = col_character(),
+      EPISODE_ID = col_integer(), 
+      EVENT_ID = col_integer(),
+      STATE_FIPS = col_integer(),
+      CZ_FIPS = col_integer(),
+      BEGIN_DATE_TIME = col_datetime(format = ""),
+      END_DATE_TIME = col_datetime(format = ""),
+      INJURIES_DIRECT = col_integer(),
+      INJURIES_INDIRECT = col_integer(),
+      DEATHS_DIRECT = col_integer(),
+      DEATHS_INDIRECT = col_integer(),
+      DAMAGE_PROPERTY = col_number(),
+      DAMAGE_CROPS = col_number(),
+      MAGNITUDE = col_double(),
+      TOR_LENGTH = col_double(),
+      TOR_WIDTH = col_double(),
+      BEGIN_RANGE = col_integer(),
+      END_RANGE = col_integer(),
+      BEGIN_LAT = col_double(),
+      BEGIN_LON = col_double(),
+      END_LAT = col_double(),
+      END_LON = col_double()
+    )
+  )
+```
+
+### Description
+
+### Usage
+
+```r
+details
+```
+
+### Format
+
+```{r, echo = FALSE}
+tibble::glimpse(details)
+```
+
+### Source
+
+### Examples
+
+```{r ref.label = "details", eval = FALSE}
+```
+
+## episode_narratives
+
+```{r episode_narratives, echo = FALSE}
+episode_narratives <- 
+  read_csv(
+    file = here::here("./output/episode_narratives.csv"), 
+    col_types = cols()
+  )
+```
+
+### Description
+
+### Usage
+
+```r
+episode_narratives
+```
+
+### Format
+
+```{r, echo = FALSE}
+tibble::glimpse(episode_narratives)
+```
+
+### Source
+
+### Examples
+
+```{r ref.label = "episode_narratives"}
+```
+
+## event_narratives
+
+```{r event_narratives, echo = FALSE}
+event_narratives <- 
+  read_csv(
+    file = here::here("./output/event_narratives.csv"), 
+    col_types = cols(
+      EPISODE_ID = col_integer(),
+      EVENT_ID = col_integer(),
+      EVENT_NARRATIVE = col_character()
+    )
+  )
+
+```
+
+### Description
+
+### Usage
+
+```r
+event_narratives
+```
+
+### Format
+
+```{r, echo = FALSE}
+tibble::glimpse(event_narratives)
+```
+
+### Source
+
+### Examples
+
+```{r ref.label = "event_narratives"}
+```
+
+## event_types
+
+```{r event_types, echo = FALSE}
+event_types <- 
+  read_csv(
+    file = here::here("./output/event_types.csv"), 
+    col_types = cols(
+      EPISODE_ID = col_number(), 
+      EVENT_ID = col_number(), 
+      EVENT_TYPE = col_character()
+    )
+  )
+```
+
+### Description
+
+### Usage
+
+```r
+event_types
+```
+
+### Format
+
+```{r, echo = FALSE}
+tibble::glimpse(event_types)
+```
+
+### Source
+
+### Examples
+
+```{r ref.label = "event_types"}
+```
+
+## fatalities
+
+```{r fatalities, echo = FALSE}
+fatalities <- 
+  read_csv(
+    file = here::here("./output/fatalities.csv"), 
+    col_types = cols()
+  )
+```
+
+### Description
+
+### Usage
+
+```r
+fatalities
+```
+
+### Format
+
+```{r, echo = FALSE}
+tibble::glimpse(fatalities)
+```
+
+### Source
+
+### Examples
+
+```{r ref.label = "fatalities"}
+```
+
+## fips
+
+```{r fips, echo = FALSE}
+fips <- 
+  read_csv(
+    file = here::here("./output/fips.csv"), 
+    col_types = cols()
+  )
+```
+
+### Description
+
+### Usage
+
+```r
+fips
+```
+
+### Format
+
+```{r, echo = FALSE}
+tibble::glimpse(fips)
+```
+
+### Source
+
+### Examples
+
+```{r ref.label = "fips"}
+```
+
+## locations
+
+```{r locations, echo = FALSE}
+locations <- 
+  read_csv(
+    file = here::here("./output/locations.csv"), 
+    col_types = cols()
+  )
+```
+
+### Description
+
+### Usage
+
+```r
+locations
+```
+
+### Format
+
+```{r, echo = FALSE}
+tibble::glimpse(locations)
+```
+
+### Source
+
+### Examples
+
+```{r ref.label = "locations"}
+```
+
+## zone_county
+
+```{r zone_county, echo = FALSE}
+zone_county <- 
+  read_csv(
+    file = here::here("./output/zone_county.csv"), 
+    col_types = cols()
+  )
+```
+
+### Description
+
+### Usage
+
+```r
+zone_county
+```
+
+### Format
+
+```{r, echo = FALSE}
+tibble::glimpse(zone_county)
+```
+
+### Source
+
+### Examples
+
+```{r ref.label = "zone_county"}
+```
