@@ -24,8 +24,12 @@ navbar:
     - text: "About"
       href: about.html
   right:
+    - icon: fa-home
+      href: index.html
     - icon: fa-github
       href: https://github.com/timtrice/ncdc_storm_events
+    - icon: fa-user-tie
+      href: https://timtrice.net
 output:
   workflowr::wflow_html:
     toc: yes
