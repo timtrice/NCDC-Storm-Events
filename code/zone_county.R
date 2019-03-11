@@ -14,4 +14,4 @@ zone_county <-
     ),
     col_types = cols()
   ) %>%
-  write_csv(here::here("./data/zone_county.csv"))
+  write_csv(here::here("./output/zone_county.csv"))
