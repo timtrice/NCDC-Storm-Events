@@ -28,7 +28,9 @@ navbar:
       href: https://github.com/timtrice/ncdc_storm_events
 output:
   workflowr::wflow_html:
-    toc: true
+    toc: yes
     toc_float: false
-    theme: cosmo
+    toc_depth: 6
+    theme: simplex
     highlight: textmate
+    self_contained: false
