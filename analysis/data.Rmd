@@ -1,5 +1,5 @@
 ---
-title: "Functions"
+title: "Data"
 author: "Tim Trice"
 output: workflowr::wflow_html
 ---
@@ -54,6 +54,8 @@ details <-
 
 ### Description
 
+Details for all storm events in the dataset. Contains location, injury and damage data along with other details depending on the event type. 
+
 ### Usage
 
 ```r
@@ -67,6 +69,8 @@ tibble::glimpse(details)
 ```
 
 ### Source
+
+https://www.ncdc.noaa.gov/stormevents/
 
 ### Examples
 
@@ -85,6 +89,8 @@ episode_narratives <-
 
 ### Description
 
+Text descriptions of all event episodes. In the NCDC Storm Events database, episodes contain multiple events. In the original dataset, these values are often repetitive. The `episode_narratives` dataset removes the redundancy.
+
 ### Usage
 
 ```r
@@ -98,6 +104,8 @@ tibble::glimpse(episode_narratives)
 ```
 
 ### Source
+
+https://www.ncdc.noaa.gov/stormevents/
 
 ### Examples
 
@@ -121,6 +129,8 @@ event_narratives <-
 
 ### Description
 
+Text description of storm events. Many events may belong to one episode. To eliminate redundancy and reduce file size of the original dataset, `event_narratives` were split from the `details` dataset to it's own dataset. 
+
 ### Usage
 
 ```r
@@ -134,6 +144,8 @@ tibble::glimpse(event_narratives)
 ```
 
 ### Source
+
+https://www.ncdc.noaa.gov/stormevents/
 
 ### Examples
 
@@ -156,6 +168,8 @@ event_types <-
 
 ### Description
 
+Type of event. 
+
 ### Usage
 
 ```r
@@ -169,6 +183,8 @@ tibble::glimpse(event_types)
 ```
 
 ### Source
+
+https://www.ncdc.noaa.gov/stormevents/
 
 ### Examples
 
@@ -187,6 +203,8 @@ fatalities <-
 
 ### Description
 
+Fatalities associated with an event. 
+
 ### Usage
 
 ```r
@@ -200,6 +218,8 @@ tibble::glimpse(fatalities)
 ```
 
 ### Source
+
+https://www.ncdc.noaa.gov/stormevents/
 
 ### Examples
 
@@ -218,6 +238,8 @@ fips <-
 
 ### Description
 
+The `fips` (Federal Information Processing Standards) dataset contains codes to that can offer clarity of event locations. 
+
 ### Usage
 
 ```r
@@ -231,6 +253,8 @@ tibble::glimpse(fips)
 ```
 
 ### Source
+
+https://www.census.gov/geo/reference/codes/cou.html
 
 ### Examples
 
@@ -249,6 +273,8 @@ locations <-
 
 ### Description
 
+Location details of a storm event.
+
 ### Usage
 
 ```r
@@ -262,6 +288,8 @@ tibble::glimpse(locations)
 ```
 
 ### Source
+
+https://www.ncdc.noaa.gov/stormevents/
 
 ### Examples
 
@@ -280,6 +308,8 @@ zone_county <-
 
 ### Description
 
+`zone_county` is obtained courtesy of the National Weather Service and, along with `fips` can offer clarity to where an event occurred. Additionally, this dataset contains timezone data used to clean significant discrepancies in the original dataset.
+
 ### Usage
 
 ```r
@@ -293,6 +323,8 @@ tibble::glimpse(zone_county)
 ```
 
 ### Source
+
+https://www.weather.gov/gis/ZoneCounty
 
 ### Examples
 
