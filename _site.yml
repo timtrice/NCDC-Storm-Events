@@ -1,0 +1,16 @@
+name: "ncdc_storm_events"
+title: "NCDC Storm Events"
+description: |
+  An analysis of the NCDC Storm Events dataset
+output_dir: "docs"
+navbar:
+  left:
+    - text: "About"
+      href: about.html
+  right:
+    - icon: fab fa-github
+      href: https://github.com/timtrice/ncdc_storm_events
+    - icon: fab fa-docker
+      href: https://cloud.docker.com/repository/docker/timtrice/ncdc_storm_events/general
+output: distill::distill_article
+exclude: ["children", "data", "deploy.sh", "DESCRIPTION", "Dockerfile", "LICENSE", "output", "R", "README.Rmd", "README.md"]

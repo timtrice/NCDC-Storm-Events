@@ -1,101 +1,100 @@
-# ncdc_storm_events
 
-`ncdc_storm_events` is a project that downloads the [NCDC Storm Events](https://www.ncdc.noaa.gov/stormevents/) database from the National Oceanic and Atmospheric Administration. 
+[![minimal R
+version](https://img.shields.io/badge/R%3E%3D-3.6.0-6666ff.svg)](https://cran.r-project.org/)
+[![Netlify
+Status](https://api.netlify.com/api/v1/badges/a1234333-6735-450f-8cba-6837a331067e/deploy-status)](https://app.netlify.com/sites/objective-wing-9cc4ad/deploys)
+[![Travis Build
+Status](https://travis-ci.org/timtrice/distill.svg?branch=master)](https://travis-ci.org/timtrice/distill)
+[![Docker Cloud Build
+Status](https://img.shields.io/docker/cloud/build/timtrice/distill.svg?style=popout)](https://cloud.docker.com/repository/docker/timtrice/distill)
+[![Launch
+rstudio.cloud](https://img.shields.io/badge/launch-rstudio.cloud-yellowgreen.svg)](https://rstudio.cloud/project/398007)
+[![Launch Rstudio
+Binder](http://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/timtrice/distill/master?urlpath=rstudio)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![gitter
+chat](https://badges.gitter.im/timtrice_distill/community.svg)](https://gitter.im/timtrice_distill/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-The [NCDC Storm Events Database](https://www.ncdc.noaa.gov/stormevents/) is a collection of observations for significant weather events. The "database" contains information on property damage, loss of life, intensity of systems and more. 
+# Distill (0.0.1)
 
-The dataset is updated somewhat regularly, but is not real-time. As of this writing, the dataset covers the time period January, 1950, to Aug, 2018. 
-
-There are three tables within the database:
-
-* `details`
-
-* `fatalities`
-
-* `locations`
-
-The `details` dataset is the heaviest raw dataset, weighing over 1.1G when combined and saved as CSV. `locations` is much smaller; only 75M (CSV) with `fatalities` a featherweight at 1.2K. 
-
-`details` also happens to be the dirtiest. With 51 columns, at least a dozen of these are unnecessary - mostly related to date or time observations (there are 13 variables total, all redundant, for date/time info). 
-
-`fatalities` has the same issue with dates and times as `details`, but not nearly on the same scale.
-
-`locations`, though treated as its own dataset, is very comparable to the location data within `details` and much of this information is redundant. 
-
-The entire database, imo, is a great project for exploring, tidying and cleaning somewhat large datasets. The challenge comes in ensuring data you may remove (what seems to be redundant) should in fact be removed.
-
-## Data Source
-
-The datasets are broken down by table, then further broken down by year of the observations. They are stored in csv.gz format on the [NCDC NOAA FTP server](ftp://ftp.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/). 
-
-Each file is named like, 
-
-```
-StormEvents_{TABLE}-ftp_v1.0_d{YEAR}_c{LAST_MODIFIED}.csv.gz
-```
-
-where TABLE is one of details, locations, or fatalities, YEAR is the year of the observations, and LAST_MODIFIED is the last datetime modification of the archive file. 
-
-## Downloading Data
-
-Files are downloaded with ./code/01_get_data.R. All csv.gz datasets are bound together into one dataframe for each of the three tables. These raw data files are saved in the data directory.
-
-## Tidying Data
-
-All three datasets can be tidied to some extent using ./code/02_tidy_data.R. The `details` dataset is the worse with over a dozen date and/or time variables. These variables are dropped and `BEGIN_DATE_TIME` and `END_DATE_TIME` are reformatted to YYYY-MM-DD HH:MM:SS format as a character string. Timezone information is not saved. Though it is included in the dataset, it is near-completely incorrect. 
-
-Additionally, date and time variables in `fatalities` and `locations` are also modified to remove redundancy or, in the case of `locations` which matches the date/time values in `details`, have been completely removed. 
-
-The damage variables in `details` have also been modified. The raw data uses alphanumeric characters; for example, "2k" or "2K" for \$2,000 and "10B" or "10b" for \$10,000,000,000. These have been cleaned to integer values.
-
-Lastly, the narrative variables (`EPISODE_NARRATIVE` and `EVENT_NARRATIVE`) are split out to their own respective dataset to avoid redundancy and reduce the size of the other datasets. 
-
-Where the raw data is well over 1.2G, the entire dataset, after tidying, sits at 539M. 
-
-All tidied datasets are located in the output directory.
-
-## Removing data file history from git
-
-When updating data, this repo will use BGP Repo-Cleaner to remove the history of data files from the repository. When this is done, the repository will need to be removed from production environments in favor of a fresh clone
-
-- [How to remove/delete a large file from commit history in Git repository?](https://stackoverflow.com/questions/2100907/how-to-remove-delete-a-large-file-from-commit-history-in-git-repository/17890278#17890278)
-
-- [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/)
-
-## Getting Started
+## A Distill Website
 
 ### Prerequisites
 
-#### Required Packages
+| Package     | Version |
+| :---------- | :------ |
+| desc        | \*      |
+| distill     | \*      |
+| dplyr       | \*      |
+| git2r       | \*      |
+| here        | \*      |
+| kableExtra  | \*      |
+| knitr       | \*      |
+| magrittr    | \*      |
+| purrr       | \*      |
+| remotes     | \*      |
+| rlang       | \*      |
+| rmarkdown   | \*      |
+| sessioninfo | \*      |
+| stringr     | \*      |
+| styler      | \*      |
+| tools       | \*      |
+| usethis     | \*      |
+| utils       | \*      |
+| workflowr   | \*      |
 
-* DT 0.5
+Version not specified
 
-* kableExtra 1.0.1
+#### Docker
 
-* maps 3.3.0
+A Docker image of this project is available for
+    use.
 
-* mapproj 1.2.6
+  - [timtrice/distill](https://cloud.docker.com/repository/docker/timtrice/distill)
 
-* rnaturalearth 0.1.0
+##### Run
 
-* tidyverse 1.2.1
+    docker run \
+      -dti \
+      -e DISABLE_AUTH=true \
+      -p 8787:8787 \
+      --name distill \
+      timtrice/distill:release
 
-* viridis 0.5.1
+##### Shell
 
-* workflowr 0.2.0
+    docker exec -ti distill /bin/bash
 
-## Built With
+### Built With
 
-* [R 3.5.2](https://www.r-project.org/) - The R Project for Statistical Computing
+  - [R 3.6.0](https://www.r-project.org/) - The R Project for
+    Statistical Computing
 
-## Contributing
+### Contributing
 
-Please read [Contributing](https://github.com/timtrice/ncdc_storm_events/blob/master/.github/CONTRIBUTING.md) for details on code of conduct.
+Please read [CONTRIBUTING.md](/blob/master/.github/CONTRIBUTING.md) for
+details on our code of conduct, and the process for submitting pull
+requests to us.
 
-## Authors
+### Code of Conduct
 
-* [Tim Trice](https://github.com/timtrice)
+Please note that the ‘Distill’ project is released with a [Contributor
+Code of Conduct](/blob/master/.github/CODE_OF_CONDUCT.md). By
+contributing to this project, you agree to abide by its terms.
 
-## License
+### Versioning
 
-[GNU GENERAL PUBLIC LICENSE](https://github.com/timtrice/ncdc_storm_events/blob/master/LICENSE)
+We use [SemVer](http://semver.org/) for versioning. For the versions
+available, see the [tags on this repository](/tags).
+
+### Authors
+
+  - Trice, Tim (Role(s): aut, cre)
+
+### License
+
+This project is licensed under the MIT License - see the
+[LICENSE.md](/blob/master/LICENSE.md) file for details
+
+### Acknowledgements
