@@ -10,6 +10,7 @@ library(glue)
 library(lubridate)
 library(purrr)
 library(rlang)
+library(tidyr)
 library(usethis)
 library(vroom)
 
@@ -56,13 +57,8 @@ details <- vroom::vroom(
 #' 1034M to a much more comfortable 297M; the next two CSV files weighing 176M.
 #' I like savings.
 
-episode_narratives <- select(details, EPISODE_ID, EPISODE_NARRATIVE)
-
-setDT(episode_narratives)
-
-
-
-details %>%
+episode_narratives <-
+  details %>%
   select(EPISODE_ID, EPISODE_NARRATIVE) %>%
   distinct() %>%
   na.omit() %>%
@@ -71,15 +67,18 @@ details %>%
 details$EPISODE_NARRATIVE <- NULL
 
 use_data(episode_narratives, overwrite = TRUE)
-stop()
+
 # ---- details-event-narratives ----
-event_narratives <- select(details, EPISODE_ID, EVENT_ID, EVENT_NARRATIVE)
-event_narratives <- distinct(event_narratives)
-distinct() %>%
+event_narratives <-
+  details %>%
+  select(EPISODE_ID, EVENT_ID, EVENT_NARRATIVE) %>%
+  distinct() %>%
   na.omit() %>%
   arrange(EPISODE_ID, EVENT_ID)
 
 details$EVENT_NARRATIVE <- NULL
+
+use_data(event_narratives, overwrite = TRUE)
 
 # ---- details-dates ----
 #' In the `details` dataset, there are numerous columns with some type of
@@ -117,7 +116,7 @@ details <-
       YEAR, MONTH_NAME, CZ_TIMEZONE
     )
   )
-stop()
+
 details <-
   details %>%
   mutate_at(
