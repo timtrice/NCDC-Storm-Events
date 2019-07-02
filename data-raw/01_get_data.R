@@ -10,6 +10,8 @@ library(glue)
 library(lubridate)
 library(purrr)
 library(rlang)
+library(tidyr)
+library(usethis)
 library(vroom)
 
 # ---- sources ----
@@ -48,6 +50,36 @@ details <- vroom::vroom(
   col_types = cols(.default = col_character())
 )
 
+# ---- details-episode-narratives ----
+#' This and the next section aren't necessarily "tidying" as they fit the tidy
+#' principals. But, these variables are repetitive across observations and many
+#' do not even exist. I can reduce the filesize of `details` from a very heavy
+#' 1034M to a much more comfortable 297M; the next two CSV files weighing 176M.
+#' I like savings.
+
+episode_narratives <-
+  details %>%
+  select(EPISODE_ID, EPISODE_NARRATIVE) %>%
+  distinct() %>%
+  na.omit() %>%
+  arrange(EPISODE_ID)
+
+details$EPISODE_NARRATIVE <- NULL
+
+use_data(episode_narratives, overwrite = TRUE)
+
+# ---- details-event-narratives ----
+event_narratives <-
+  details %>%
+  select(EPISODE_ID, EVENT_ID, EVENT_NARRATIVE) %>%
+  distinct() %>%
+  na.omit() %>%
+  arrange(EPISODE_ID, EVENT_ID)
+
+details$EVENT_NARRATIVE <- NULL
+
+use_data(event_narratives, overwrite = TRUE)
+
 # ---- details-dates ----
 #' In the `details` dataset, there are numerous columns with some type of
 #' date or time information; it is redundant and untidy. These columns are
@@ -85,8 +117,6 @@ details <-
     )
   )
 
-# details <- as.data.table(details)
-stop()
 details <-
   details %>%
   mutate_at(
@@ -143,33 +173,6 @@ details <-
     DAMAGE_PROPERTY_VALUE, DAMAGE_PROPERTY_KEY, DAMAGE_CROPS_VALUE,
     DAMAGE_CROPS_KEY
   ))
-
-# ---- details-episode-narratives ----
-#' This and the next section aren't necessarily "tidying" as they fit the tidy
-#' principals. But, these variables are repetitive across observations and many
-#' do not even exist. I can reduce the filesize of `details` from a very heavy
-#' 1034M to a much more comfortable 297M; the next two CSV files weighing 176M.
-#' I like savings.
-episode_narratives <-
-  details %>%
-  select(EPISODE_ID, EPISODE_NARRATIVE) %>%
-  na.omit() %>%
-  distinct() %>%
-  arrange(EPISODE_ID) %>%
-  write_csv(path = here::here("./output/episode_narratives.csv"))
-
-details$EPISODE_NARRATIVE <- NULL
-
-# ---- details-event-narratives ----
-event_narratives <-
-  details %>%
-  select(EPISODE_ID, EVENT_ID, EVENT_NARRATIVE) %>%
-  na.omit() %>%
-  distinct() %>%
-  arrange(EPISODE_ID, EVENT_ID) %>%
-  write_csv(path = here::here("./output/event_narratives.csv"))
-
-details$EVENT_NARRATIVE <- NULL
 
 # ---- details-save ----
 usethis::use_data(details, overwrite = TRUE)
