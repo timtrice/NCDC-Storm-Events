@@ -1,0 +1,24 @@
+Type: Compendium
+Package: ncdc_storm_events
+Title: NCDC Storm Events
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Tim",
+           family = "Trice",
+           role = c("aut", "cre"),
+           email = "tim.trice@gmail.com")
+Description: An analysis of the NCDC Storm Events dataset.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    curl,
+    dplyr,
+    glue,
+    here,
+    lubridate,
+    purrr,
+    readr,
+    remotes
+URL: https://github.com/timtrice/ncdc_storm_events
+BugReports: https://github.com/timtrice/ncdc_storm_events/issues

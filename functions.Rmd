@@ -1,0 +1,54 @@
+---
+title: "Functions"
+author: "Tim Trice"
+output: workflowr::wflow_html
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  include = TRUE, 
+  eval = TRUE, 
+  message = TRUE, 
+  warning = TRUE, 
+  error = FALSE
+)
+```
+
+```{r, echo = FALSE}
+knitr::read_chunk(here::here("./code/functions.R"))
+```
+
+## var_conversion
+
+```{r ref.label = "var_conversion"}
+```
+
+### Description
+
+Test variables in dataframe and convert, without error, to integer, double, or leave as character.
+
+### Usage
+
+```r
+var_conversion(x)
+```
+
+### Arguments
+
+* `x` A dataframe column or vector to test and convert. 
+
+### Details
+
+Tests the contents of `x` and converts to the appropriate class.
+
+### Value
+
+An object of the appropriate class
+
+### Examples
+
+```r
+#' Convert all variables of a dataframe to it's correct class
+df <- map(df, .f = mutate_all, .funs = var_conversion)
+```

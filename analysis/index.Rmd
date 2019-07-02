@@ -1,5 +1,0 @@
----
-title: "NCDC Storm Events"
-output: workflowr::wflow_html
----
-
