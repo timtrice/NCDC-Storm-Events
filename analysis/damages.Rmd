@@ -2,9 +2,7 @@
 title: "Storm Damages"
 author: "Tim Trice"
 date: "`r Sys.Date()`"
-output:
-  workflowr::wflow_html:
-    code_folding: hide
+output: workflowr::wflow_html
 editor_options:
   chunk_output_type: inline
 ---
