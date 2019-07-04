@@ -1,8 +1,8 @@
 ---
 title: "Storm Damages"
 author: "Tim Trice"
-date: "2019-03-03"
-output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
 ---
 
 ```{r setup, include = FALSE}
@@ -18,117 +18,194 @@ knitr::opts_chunk$set(
 ```
 
 ```{r libraries}
-library(DT)
-library(glue)
-library(lubridate)
-library(readr)
+library(DBI)
+library(dplyr)
+library(forcats)
+library(ggplot2)
+library(kableExtra)
+library(knitr)
+library(RSQLite)
 ```
 
-```{r data}
-details <- 
-  read_csv(
-    file = here::here("./output/details.csv"), 
-    col_types = cols(
-      .default = col_character(),
-      EPISODE_ID = col_integer(), 
-      EVENT_ID = col_integer(),
-      STATE_FIPS = col_integer(),
-      CZ_FIPS = col_integer(),
-      BEGIN_DATE_TIME = col_datetime(format = ""),
-      END_DATE_TIME = col_datetime(format = ""),
-      INJURIES_DIRECT = col_integer(),
-      INJURIES_INDIRECT = col_integer(),
-      DEATHS_DIRECT = col_integer(),
-      DEATHS_INDIRECT = col_integer(),
-      DAMAGE_PROPERTY = col_number(),
-      DAMAGE_CROPS = col_number(),
-      MAGNITUDE = col_double(),
-      TOR_LENGTH = col_double(),
-      TOR_WIDTH = col_double(),
-      BEGIN_RANGE = col_integer(),
-      END_RANGE = col_integer(),
-      BEGIN_LAT = col_double(),
-      BEGIN_LON = col_double(),
-      END_LAT = col_double(),
-      END_LON = col_double()
+```{r con}
+con <- dbConnect(SQLite(), here::here("./data/ncdc.db"))
+```
+
+### `details` Structure
+
+```{sql, connection = con, max.print = NA}
+PRAGMA TABLE_INFO(details)
+```
+
+### Max `DAMAGE_PROPERTY` per `EVENT_TYPE`
+
+```{sql, connection = con, output.var = "max_damage_property"}
+SELECT
+  EVENT_TYPE, 
+  MAX(DAMAGE_PROPERTY) AS MAX_DAMAGE
+FROM 
+  details
+WHERE 
+  EVENT_TYPE IS NOT NULL
+GROUP BY 
+  EVENT_TYPE
+ORDER BY 
+  MAX_DAMAGE DESC
+LIMIT 20;
+```
+
+```{r, layout = "l-body-outset", fig.width = 10, fig.asp = 1, dpi = 150}
+max_damage_property %>% 
+  mutate(EVENT_TYPE = fct_reorder(EVENT_TYPE, MAX_DAMAGE)) %>% 
+  ggplot() +
+  aes(x = EVENT_TYPE, y = MAX_DAMAGE) +
+  geom_point(
+    aes(
+      fill = EVENT_TYPE
+    ), 
+    size = 3, 
+    shape = 21
+  ) +
+  geom_segment(
+    aes(
+      x = EVENT_TYPE, 
+      y = 0, 
+      xend = EVENT_TYPE, 
+      yend = MAX_DAMAGE
+    ), 
+    linetype = "dashed", 
+    size = 0.1
+  ) + 
+  scale_y_continuous(
+    labels = scales::dollar, 
+    expand = c(0, 0), 
+    breaks = seq(from = 0, to = 20e9, by = 5e9), 
+    minor_breaks = seq(from = 0, to = 20e9, by = 2.5e9)
+  ) + 
+  expand_limits(x = 0, y = c(0, 1.85e10)) + 
+  coord_flip() + 
+  theme_minimal() + 
+  theme(
+    panel.grid.major.y = element_blank(), 
+    panel.grid.minor.y = element_blank(), 
+    legend.position = "none"
+  ) + 
+  labs(
+    title = "Top 20 Damage Costs by EVENT_TYPE", 
+    x = "Damage (USD)", 
+    y = "Event Type", 
+    caption = "@timtrice"
+  )
+```
+
+### Costliest `EVENT_TYPE` by `STATE`
+
+```{sql, connection = con, output.var = "costliest_event_by_state"}
+SELECT
+  details.EPISODE_ID, 
+  details.EVENT_ID, 
+  details.STATE, 
+  details.EVENT_TYPE, 
+  MAX(details.DAMAGE_PROPERTY) AS MAX_DAMAGE, 
+  details.BEGIN_LAT AS LAT, 
+  details.BEGIN_LON AS LON, 
+  episode_narratives.EPISODE_NARRATIVE
+FROM
+  details
+LEFT JOIN 
+  episode_narratives
+ON details.EPISODE_ID = episode_narratives.EPISODE_ID
+WHERE
+  EVENT_TYPE IS NOT NULL AND
+  STATE IS NOT NULL AND 
+  LAT IS NOT NULL AND 
+  LON IS NOT NULL
+GROUP BY
+  STATE;
+```
+
+```{r}
+states <- map_data("state")
+
+costliest_event_by_state <- 
+  costliest_event_by_state %>% 
+  filter(
+    tolower(STATE) %in% states$region
+  )
+
+costliest_event_by_state$LON[costliest_event_by_state$STATE == "VIRGINIA"] <- -79.51
+```
+
+```{r, layout = "l-body-outset", fig.width = 10, fig.asp = 1, dpi = 150, fig.cap = "The quick brown fox jumped over the lazy red dog"}
+ggplot() + 
+  geom_polygon(
+    data = states, 
+    aes(
+      x = long, 
+      y = lat, 
+      group = group
+    ), 
+    fill = "white", 
+    color = "gray60"
+  ) + 
+  geom_point(
+    data = costliest_event_by_state, 
+    aes(
+      x = LON, 
+      y = LAT, 
+      color = EVENT_TYPE, 
+      size = MAX_DAMAGE
     )
-  )
-
-episode_narratives <- 
-  read_csv(
-    file = here::here("./output/episode_narratives.csv"), 
-    col_types = cols()
-  )
-
-event_narratives <- 
-  read_csv(
-    file = here::here("./output/event_narratives.csv"), 
-    col_types = cols(
-      EPISODE_ID = col_integer(),
-      EVENT_ID = col_integer(),
-      EVENT_NARRATIVE = col_character()
+  ) + 
+  scale_size_continuous(
+    labels = scales::dollar, 
+    range = c(3, 10)
+  ) + 
+  coord_map(
+    projection = "albers", 
+    lat0 = 39, 
+    lat1 = 45
+  ) + 
+  theme(
+    legend.position = "bottom", 
+    # legend.direction = "vertical", 
+    legend.box = "vertical", 
+    panel.background = element_rect(fill = "white"), 
+    axis.text = element_blank(), 
+    axis.ticks = element_blank()
+  ) + 
+  guides(
+    color = guide_legend(
+      title = "Event Type", 
+      title.position = "top", 
+      title.hjust = 0.5, 
+      # keywidth = unit(3, "cm"), 
+      # keyheight = unit(3, "cm"), 
+      override.aes = list(size = 3), 
+      nrow = 1
+    ), 
+    size = guide_legend(
+      title = "Damage (USD)", 
+      title.position = "top", 
+      title.hjust = 0.5
     )
+  ) + 
+  labs(
+    title = "Costliest Event Type by US State", 
+    x = "", 
+    y = "", 
+    caption = "@timtrice"
   )
 ```
 
-### Most expensive events (property)
-
-```{r most-expensive-events-property}
-details %>% 
-  #' Apply filter to make query quicker
-  filter(DAMAGE_PROPERTY > 1e6) %>% 
-  mutate(YEAR = year(BEGIN_DATE_TIME)) %>% 
-  select(EVENT_ID, STATE, YEAR, EVENT_TYPE, DAMAGE_PROPERTY) %>% 
-  top_n(10) %>% 
-  arrange(desc(DAMAGE_PROPERTY)) %>% 
-  mutate_at(.vars = "DAMAGE_PROPERTY", .funs = scales::dollar) %>% 
-  left_join(select(event_narratives, -EPISODE_ID), by = "EVENT_ID") %>% 
-  datatable(rownames = FALSE, caption = "Top 10 Events by DAMAGE_PROPERTY")
+```{r, layout = "l-body-outset"}
+costliest_event_by_state %>% 
+  arrange(desc(MAX_DAMAGE)) %>% 
+  select(STATE, EPISODE_NARRATIVE) %>% 
+  slice(1L:5L) %>% 
+  kable() %>% 
+  kable_styling(
+    bootstrap_options = c("striped", "hover")
+  )
 ```
 
-### Most expensive episodes (property)
-
-```{r most-expensive-episodes-property}
-details %>% 
-  select(EPISODE_ID, DAMAGE_PROPERTY) %>% 
-  filter(!is.na(EPISODE_ID)) %>% 
-  group_by(EPISODE_ID) %>% 
-  summarise(n = sum(DAMAGE_PROPERTY, na.rm = TRUE)) %>% 
-  top_n(10L) %>% 
-  arrange(desc(n)) %>%
-  mutate_at(.vars = "n", .funs = scales::dollar) %>% 
-  rename(DAMAGE_PROPERTY = n) %>% 
-  left_join(episode_narratives, by = "EPISODE_ID") %>% 
-  datatable(rownames = FALSE, caption = "Top 10 Episodes by DAMAGE_PROPERTY")
-```
-
-### Most expensive events (crops)
-
-```{r most-expensive-events-crops}
-details %>% 
-  #' Apply filter to make query quicker
-  filter(DAMAGE_CROPS > 1e6) %>% 
-  mutate(YEAR = year(BEGIN_DATE_TIME)) %>% 
-  select(EVENT_ID, STATE, YEAR, EVENT_TYPE, DAMAGE_CROPS) %>% 
-  top_n(10) %>% 
-  arrange(desc(DAMAGE_CROPS)) %>%
-  mutate_at(.vars = "DAMAGE_CROPS", .funs = scales::dollar) %>% 
-  left_join(select(event_narratives, -EPISODE_ID), by = "EVENT_ID") %>% 
-  datatable(rownames = FALSE, caption = "Top 10 Events by DAMAGE_CROPS")
-```
-
-### Most expensive episodes (crops)
-
-```{r most-expensive-episodes-crops}
-details %>% 
-  select(EPISODE_ID, DAMAGE_CROPS) %>% 
-  filter(!is.na(EPISODE_ID)) %>% 
-  group_by(EPISODE_ID) %>% 
-  summarise(n = sum(DAMAGE_CROPS, na.rm = TRUE)) %>% 
-  top_n(10L) %>% 
-  arrange(desc(n)) %>%
-  mutate_at(.vars = "n", .funs = scales::dollar) %>% 
-  rename(DAMAGE_CROPS = n) %>% 
-  left_join(episode_narratives, by = "EPISODE_ID") %>% 
-  datatable(rownames = FALSE, caption = "Top 10 Episodes by DAMAGE_CROPS")
-```
