@@ -17,4 +17,3 @@ output:
     toc: yes
     toc_float: no
     highlight: pygment
-    css: analysis/style.css
