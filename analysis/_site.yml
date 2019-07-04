@@ -10,7 +10,7 @@ navbar:
   right:
     - icon: fa-github
       href: https://github.com/timtrice/ncdc_storm_events
-    - icon: fab-docker
+    - icon: fa-docker
       href: https://cloud.docker.com/repository/docker/timtrice/ncdc_storm_events/general
 output:
   workflowr::wflow_html:
