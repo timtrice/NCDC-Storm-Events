@@ -3,15 +3,18 @@ output_dir: ../docs
 navbar:
   title: "NCDC Storm Events"
   left:
-  - text: Home
-    href: index.html
-  - text: About
-    href: about.html
-  - text: License
-    href: license.html
+    - text: "Damages"
+      href: damages.html
+    - text: "About"
+      href: about.html
+  right:
+    - icon: fa-github
+      href: https://github.com/timtrice/ncdc_storm_events
+    - icon: fab-docker
+      href: https://cloud.docker.com/repository/docker/timtrice/ncdc_storm_events/general
 output:
   workflowr::wflow_html:
     toc: yes
-    toc_float: yes
-    theme: cosmo
-    highlight: textmate
+    toc_float: no
+    highlight: pygment
+    css: analysis/style.css
