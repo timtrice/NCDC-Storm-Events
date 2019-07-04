@@ -4,7 +4,10 @@ navbar:
   title: "NCDC Storm Events"
   left:
     - text: "Damages"
-      href: damages.html
+      icon: fa-gear
+      menu:
+        - text: "Property Damage"
+          href: property_damages.html
     - text: "About"
       href: about.html
   right:
