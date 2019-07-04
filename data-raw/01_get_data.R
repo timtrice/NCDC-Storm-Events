@@ -5,17 +5,23 @@
 # ---- libraries ----
 library(curl)
 library(data.table)
+library(DBI)
 library(dplyr)
 library(glue)
 library(lubridate)
 library(purrr)
 library(rlang)
+library(RSQLite)
+library(stringr)
 library(tidyr)
 library(usethis)
 library(vroom)
 
 # ---- sources ----
 source(here::here("./R/functions.R"))
+
+# ---- db-connection ----
+con <- dbConnect(SQLite(), here::here("./data/ncdc.db"))
 
 # ---- settings ----
 #' FTP URL
@@ -44,41 +50,11 @@ by_table <-
   set_names(nm = tables)
 
 # ---- details-read ----
-details <- vroom::vroom(
+details <- vroom(
   file = by_table$details,
   delim = ",",
   col_types = cols(.default = col_character())
 )
-
-# ---- details-episode-narratives ----
-#' This and the next section aren't necessarily "tidying" as they fit the tidy
-#' principals. But, these variables are repetitive across observations and many
-#' do not even exist. I can reduce the filesize of `details` from a very heavy
-#' 1034M to a much more comfortable 297M; the next two CSV files weighing 176M.
-#' I like savings.
-
-episode_narratives <-
-  details %>%
-  select(EPISODE_ID, EPISODE_NARRATIVE) %>%
-  distinct() %>%
-  na.omit() %>%
-  arrange(EPISODE_ID)
-
-details$EPISODE_NARRATIVE <- NULL
-
-use_data(episode_narratives, overwrite = TRUE)
-
-# ---- details-event-narratives ----
-event_narratives <-
-  details %>%
-  select(EPISODE_ID, EVENT_ID, EVENT_NARRATIVE) %>%
-  distinct() %>%
-  na.omit() %>%
-  arrange(EPISODE_ID, EVENT_ID)
-
-details$EVENT_NARRATIVE <- NULL
-
-use_data(event_narratives, overwrite = TRUE)
 
 # ---- details-dates ----
 #' In the `details` dataset, there are numerous columns with some type of
@@ -109,25 +85,19 @@ use_data(event_narratives, overwrite = TRUE)
 #' character saving the date and time values but losing the timezone values.
 
 details <-
+  details %>%
   select(
-    details,
     -c(
       BEGIN_YEARMONTH, BEGIN_DAY, BEGIN_TIME, END_YEARMONTH, END_DAY, END_TIME,
       YEAR, MONTH_NAME, CZ_TIMEZONE
     )
-  )
-
-details <-
-  details %>%
+  ) %>%
   mutate_at(
     .vars = vars("BEGIN_DATE_TIME", "END_DATE_TIME"),
     .funs = parse_date_time2,
     orders = "%d!-%m!-%y!* %H!:%M!:%S!",
     cutoff_2000 = 49L
-  )
-
-details <-
-  details %>%
+  )  %>%
   #' Make character string; timezones are invalid and junk.
   mutate_at(
     .vars = vars("BEGIN_DATE_TIME", "END_DATE_TIME"),
@@ -174,11 +144,84 @@ details <-
     DAMAGE_CROPS_KEY
   ))
 
+# ---- details-reclass ----
+# Reclass data types
+details <-
+  details %>%
+  mutate_at(
+    .vars = c(
+      "EPISODE_ID", "EVENT_ID", "STATE_FIPS", "CZ_FIPS", "INJURIES_DIRECT",
+      "INJURIES_INDIRECT", "DEATHS_DIRECT", "DEATHS_INDIRECT", "MAGNITUDE",
+      "CATEGORY", "TOR_LENGTH", "TOR_WIDTH", "TOR_OTHER_CZ_FIPS", "BEGIN_RANGE",
+      "END_RANGE", "BEGIN_LAT", "BEGIN_LON", "END_LAT", "END_LON"
+    ),
+    .funs = as.numeric
+  )
+
+# ---- details-episode-narratives ----
+#' This and the next section aren't necessarily "tidying" as they fit the tidy
+#' principals. But, these variables are repetitive across observations and many
+#' do not even exist. I can reduce the filesize of `details` from a very heavy
+#' 1034M to a much more comfortable 297M; the next two CSV files weighing 176M.
+#' I like savings.
+episode_narratives <-
+  details %>%
+  select(EPISODE_ID, EPISODE_NARRATIVE) %>%
+  distinct() %>%
+  na.omit() %>%
+  arrange(EPISODE_ID)
+
+details$EPISODE_NARRATIVE <- NULL
+
+use_data(episode_narratives, overwrite = TRUE)
+dbWriteTable(con, "episode_narratives", episode_narratives)
+
+# ---- details-event-narratives ----
+event_narratives <-
+  details %>%
+  select(EPISODE_ID, EVENT_ID, EVENT_NARRATIVE) %>%
+  distinct() %>%
+  na.omit() %>%
+  arrange(EPISODE_ID, EVENT_ID)
+
+details$EVENT_NARRATIVE <- NULL
+
+use_data(event_narratives, overwrite = TRUE)
+dbWriteTable(con, "event_narratives", event_narratives)
+
+# --- details-event-types ----
+# Clean `EVENT_TYPE`; multiple entries are stored comma-delimited
+details$EVENT_TYPE[details$EVENT_TYPE == "HAIL FLOODING"] <- "Hail, Flood"
+# "Icy Roads" is not a valid entry; will use "Ice Storm"
+details$EVENT_TYPE[details$EVENT_TYPE == "HAIL/ICY ROADS"] <- "Hail, Ice Storm"
+details$EVENT_TYPE[details$EVENT_TYPE == "Heavy Wind"] <- "High Wind"
+details$EVENT_TYPE[details$EVENT_TYPE == "High Snow"] <- "Heavy Snow"
+details$EVENT_TYPE[details$EVENT_TYPE == "Hurricane"] <- "Hurricane (Typhoon)"
+# "Landslide" isn't a valid entry but there is nothing close (though "Avalanche"
+# exists). Will leave as is.
+#details$EVENT_TYPE[details$EVENT_TYPE == "Landslide"] <- "Landslide"
+# "Northern Lights' is an invalid entry
+details$EVENT_TYPE[details$EVENT_TYPE == "Northern Lights"] <- NA_character_
+details$EVENT_TYPE[details$EVENT_TYPE == "OTHER"] <- NA_character_
+details$EVENT_TYPE[details$EVENT_TYPE == "THUNDERSTORM WIND/ TREE"] <- "Thunderstorm Wind"
+details$EVENT_TYPE[details$EVENT_TYPE == "THUNDERSTORM WIND/ TREES"] <- "Thunderstorm Wind"
+details$EVENT_TYPE[details$EVENT_TYPE == "THUNDERSTORM WINDS FUNNEL CLOU"] <- "Thunderstorm Wind, Funnel Cloud"
+details$EVENT_TYPE[details$EVENT_TYPE == "THUNDERSTORM WINDS HEAVY RAIN"] <- "Thunderstorm Wind, Heavy Rain"
+details$EVENT_TYPE[details$EVENT_TYPE == "THUNDERSTORM WINDS LIGHTNING"] <- "Thunderstorm Wind, Lightning"
+details$EVENT_TYPE[details$EVENT_TYPE == "THUNDERSTORM WINDS/ FLOOD"] <- "Thunderstorm Wind, Flood"
+details$EVENT_TYPE[details$EVENT_TYPE == "THUNDERSTORM WINDS/FLASH FLOOD"] <- "Thunderstorm Wind, Flash Flood"
+details$EVENT_TYPE[details$EVENT_TYPE == "THUNDERSTORM WINDS/FLOODING"] <- "Thunderstorm Wind, Flood"
+details$EVENT_TYPE[details$EVENT_TYPE == "THUNDERSTORM WINDS/HEAVY RAIN"] <- "Thunderstorm Wind, Heavy Rain"
+details$EVENT_TYPE[details$EVENT_TYPE == "TORNADO/WATERSPOUT"] <- "Tornado, Waterspout"
+details$EVENT_TYPE[details$EVENT_TYPE == "TORNADOES, TSTM WIND, HAIL"] <- "Tornado, Thunderstorm Wind, Hail"
+details$EVENT_TYPE[details$EVENT_TYPE == "Volcanic Ashfall"] <- "Volcanic Ash"
+
 # ---- details-save ----
 usethis::use_data(details, overwrite = TRUE)
+dbWriteTable(con, "details", details)
 
 # ---- fatalities-read ----
-fatalities <- vroom::vroom(
+fatalities <- vroom(
   file = by_table$fatalities,
   delim = ",",
   col_types = cols(.default = col_character())
@@ -243,11 +286,20 @@ fatalities <-
     .funs = as.character
   )
 
+# ---- fatalities-reclass ----
+fatalities <-
+  mutate_at(
+    .tbl = fatalities,
+    .vars = c("FATALITY_ID", "EVENT_ID", "FATALITY_AGE"),
+    .funs = as.numeric
+  )
+
 # ---- fatalities-save ----
 usethis::use_data(fatalities, overwrite = TRUE)
+dbWriteTable(con, "fatalities", fatalities)
 
 # ---- locations-read ----
-locations <- vroom::vroom(
+locations <- vroom(
   file = by_table$locations,
   delim = ",",
   col_types = cols(.default = col_character())
@@ -259,3 +311,7 @@ locations <- select(locations, -YEARMONTH)
 
 # ---- locations-save ----
 usethis::use_data(locations, overwrite = TRUE)
+dbWriteTable(con, "locations", locations)
+
+# ---- db-disconnect ----
+dbDisconnect(con)
