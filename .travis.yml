@@ -6,4 +6,4 @@ script:
   - bash deploy.sh
 on:
   all_branches: true
-  condition: $TRAVIS_BRANCH =~ ^master|develop$
+  condition: $TRAVIS_BRANCH =~ ^master|develop|workflowr$
