@@ -7,38 +7,40 @@ Authors@R:
            family = "Trice",
            role = c("aut", "cre"),
            email = "tim.trice@gmail.com")
-Description: An analysis of the NCDC Storm Events dataset.
+Description: An analysis of the NCDC Storm Events
+    dataset.s
 License: MIT + file LICENSE
-Encoding: UTF-8
-LazyData: true
 Depends: 
     curl,
-    data.table, 
-    DBI, 
-    desc, 
+    data.table,
+    DBI,
+    desc,
     dplyr,
-    forcats, 
-    ggplot2, 
+    forcats,
+    ggplot2,
     glue,
     here,
-    kableExtra, 
-    knitr, 
+    holepunch,
+    kableExtra,
+    knitr,
     lubridate,
     purrr,
     readr,
     remotes,
-    rlang, 
-    rmarkdown, 
-    rnaturalearth, 
-    RSQLite, 
-    scales, 
-    sessioninfo, 
-    stringr, 
-    tibble, 
-    tidyr, 
+    rlang,
+    rmarkdown,
+    rnaturalearth,
+    RSQLite,
+    scales,
+    sessioninfo,
+    stringr,
+    tibble,
+    tidyr,
     usethis,
-    viridis, 
-    vroom, 
+    viridis,
+    vroom,
     workflowr
+Encoding: UTF-8
+LazyData: true
 URL: https://github.com/timtrice/ncdc_storm_events
 BugReports: https://github.com/timtrice/ncdc_storm_events/issues
