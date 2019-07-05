@@ -18,7 +18,7 @@ library(usethis)
 library(vroom)
 
 # ---- sources ----
-source(here::here("./R/functions.R"))
+source(here::here("./code/functions.R"))
 
 # ---- db-connection ----
 con <- dbConnect(SQLite(), here::here("./data/ncdc.db"))
