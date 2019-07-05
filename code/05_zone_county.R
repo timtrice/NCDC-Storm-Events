@@ -4,6 +4,10 @@
 #' @details `fips` helps validate location data; we can use the "ZoneCounty"
 #'   dataset from the National Weather Service to get timezone information.
 #' @source https://www.weather.gov/gis/ZoneCounty
+
+# ---- libraries ----
+
+# ---- data ----
 zone_county <-
   read_delim(
     "https://www.weather.gov/source/gis/Shapefiles/County/bp02oc18.dbx",
@@ -13,5 +17,10 @@ zone_county <-
       "TIME_ZONE", "FE_AREA", "LAT", "LON"
     ),
     col_types = cols()
-  ) %>%
-  write_csv(here::here("./output/zone_county.csv"))
+  )
+
+
+# ---- sqlite ----
+con <- dbConnect(SQLite(), here::here("./output/ncdc.db"))
+dbWriteTable(con, "zone_county", zone_county)
+dbDisconnect(con)

@@ -25,6 +25,15 @@
 #'     part of any MCD.
 #' @source https://www.census.gov/geo/reference/codes/cou.html
 
+# ---- libraries ----
+library(DBI)
+library(dplyr)
+library(glue)
+library(purrr)
+library(readr)
+library(RSQLite)
+
+# ---- data ----
 domain <- "https://www2.census.gov/geo/docs/reference/codes/files/"
 
 urls <-
@@ -60,5 +69,9 @@ fips <-
       col_types = column_classes
     )
   ) %>%
-  distinct() %>%
-  write_csv(path = here::here("./data/fips.csv"))
+  distinct()
+
+# ---- sqlite ----
+con <- dbConnect(SQLite(), here::here("./output/ncdc.db"))
+dbWriteTable(con, "fips", fips)
+dbDisconnect(con)
