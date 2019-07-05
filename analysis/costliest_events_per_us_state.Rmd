@@ -30,7 +30,7 @@ library(RSQLite)
 ```
 
 ```{r db-connect}
-con <- dbConnect(SQLite(), here::here("./data/ncdc.db"))
+con <- dbConnect(SQLite(), here::here("./output/ncdc.db"))
 ```
 
 ```{sql query, connection = con, output.var = "costliest_event_by_state"}
