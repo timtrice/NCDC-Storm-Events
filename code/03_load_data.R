@@ -3,8 +3,6 @@
 #' @source https://www.ncdc.noaa.gov/stormevents/
 
 # ---- libraries ----
-library(curl)
-library(data.table)
 library(DBI)
 library(dplyr)
 library(glue)
@@ -14,44 +12,11 @@ library(rlang)
 library(RSQLite)
 library(stringr)
 library(tidyr)
-library(usethis)
 library(vroom)
-
-# ---- sources ----
-source(here::here("./code/functions.R"))
-
-# ---- db-connection ----
-con <- dbConnect(SQLite(), here::here("./data/ncdc.db"))
-
-# ---- settings ----
-#' FTP URL
-ftp <- "ftp://ftp.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/"
-
-#' Three datasets to download and their expected width
-tables <- c("details", "fatalities", "locations")
-
-# ---- connection ----
-#' Establish connection, get list of gz datasets
-con = curl(ftp, "r")
-tbl = read.table(con, stringsAsFactors = TRUE, fill = TRUE)
-close(con)
-
-# ---- by_table ----
-#' Split out the datasets into their own lists. Will end up with a list of
-#' length 3 for each table containing all related dataset URLs
-by_table <-
-  map(
-    .x = glue("^StormEvents_{tables}"),
-    .f = grep,
-    x = tbl$V9,
-    value = TRUE
-  ) %>%
-  map(~glue("{ftp}{.x}")) %>%
-  set_names(nm = tables)
 
 # ---- details-read ----
 details <- vroom(
-  file = by_table$details,
+  file = list.files(path = here::here("./data/"), pattern = "details"),
   delim = ",",
   col_types = cols(.default = col_character())
 )
@@ -173,9 +138,6 @@ episode_narratives <-
 
 details$EPISODE_NARRATIVE <- NULL
 
-use_data(episode_narratives, overwrite = TRUE)
-dbWriteTable(con, "episode_narratives", episode_narratives)
-
 # ---- details-event-narratives ----
 event_narratives <-
   details %>%
@@ -185,9 +147,6 @@ event_narratives <-
   arrange(EPISODE_ID, EVENT_ID)
 
 details$EVENT_NARRATIVE <- NULL
-
-use_data(event_narratives, overwrite = TRUE)
-dbWriteTable(con, "event_narratives", event_narratives)
 
 # --- details-event-types ----
 # Clean `EVENT_TYPE`; multiple entries are stored comma-delimited
@@ -216,13 +175,9 @@ details$EVENT_TYPE[details$EVENT_TYPE == "TORNADO/WATERSPOUT"] <- "Tornado, Wate
 details$EVENT_TYPE[details$EVENT_TYPE == "TORNADOES, TSTM WIND, HAIL"] <- "Tornado, Thunderstorm Wind, Hail"
 details$EVENT_TYPE[details$EVENT_TYPE == "Volcanic Ashfall"] <- "Volcanic Ash"
 
-# ---- details-save ----
-usethis::use_data(details, overwrite = TRUE)
-dbWriteTable(con, "details", details)
-
 # ---- fatalities-read ----
 fatalities <- vroom(
-  file = by_table$fatalities,
+  file = list.files(path = here::here("./data/"), pattern = "fatalities"),
   delim = ",",
   col_types = cols(.default = col_character())
 )
@@ -294,13 +249,9 @@ fatalities <-
     .funs = as.numeric
   )
 
-# ---- fatalities-save ----
-usethis::use_data(fatalities, overwrite = TRUE)
-dbWriteTable(con, "fatalities", fatalities)
-
 # ---- locations-read ----
 locations <- vroom(
-  file = by_table$locations,
+  file = list.files(path = here::here("./data/"), pattern = "locations"),
   delim = ",",
   col_types = cols(.default = col_character())
 )
@@ -309,9 +260,11 @@ locations <- vroom(
 #' Drop `YEARMONTH`
 locations <- select(locations, -YEARMONTH)
 
-# ---- locations-save ----
-usethis::use_data(locations, overwrite = TRUE)
+# ---- sqlite ----
+con <- dbConnect(SQLite(), here::here("./output/ncdc.db"))
+dbWriteTable(con, "details", details)
+dbWriteTable(con, "episode_narratives", episode_narratives)
+dbWriteTable(con, "event_narratives", event_narratives)
+dbWriteTable(con, "fatalities", fatalities)
 dbWriteTable(con, "locations", locations)
-
-# ---- db-disconnect ----
 dbDisconnect(con)
