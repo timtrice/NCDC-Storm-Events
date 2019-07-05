@@ -2,47 +2,33 @@
 [![minimal R
 version](https://img.shields.io/badge/R%3E%3D-3.6.0-6666ff.svg)](https://cran.r-project.org/)
 [![Netlify
-Status](https://api.netlify.com/api/v1/badges/a1234333-6735-450f-8cba-6837a331067e/deploy-status)](https://app.netlify.com/sites/objective-wing-9cc4ad/deploys)
+Status](https://api.netlify.com/api/v1/badges/74a3e5e4-32e3-4782-8940-730b8de72600/deploy-status)](https://app.netlify.com/sites/happy-varahamihira-7ba905/deploys)
 [![Travis Build
-Status](https://travis-ci.org/timtrice/distill.svg?branch=master)](https://travis-ci.org/timtrice/distill)
+Status](https://travis-ci.org/timtrice/ncdc_storm_events.svg?branch=master)](https://travis-ci.org/timtrice/ncdc_storm_events)
 [![Docker Cloud Build
-Status](https://img.shields.io/docker/cloud/build/timtrice/distill.svg?style=popout)](https://cloud.docker.com/repository/docker/timtrice/distill)
+Status](https://img.shields.io/docker/cloud/build/timtrice/ncdc_storm_events.svg?style=popout)](https://cloud.docker.com/repository/docker/timtrice/ncdc_storm_events)
 [![Launch
-rstudio.cloud](https://img.shields.io/badge/launch-rstudio.cloud-yellowgreen.svg)](https://rstudio.cloud/project/398007)
-[![Launch Rstudio
-Binder](http://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/timtrice/distill/master?urlpath=rstudio)
+rstudio.cloud](https://img.shields.io/badge/launch-rstudio.cloud-yellowgreen.svg)](https://rstudio.cloud/project/400006)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![gitter
-chat](https://badges.gitter.im/timtrice_distill/community.svg)](https://gitter.im/timtrice_distill/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-# Distill (0.0.1)
+# ncdc\_storm\_events (0.0.0.9000)
 
-## A Distill Website
+## NCDC Storm Events
 
 ### Prerequisites
 
-| Package     | Version |
-| :---------- | :------ |
-| desc        | \*      |
-| distill     | \*      |
-| dplyr       | \*      |
-| git2r       | \*      |
-| here        | \*      |
-| kableExtra  | \*      |
-| knitr       | \*      |
-| magrittr    | \*      |
-| purrr       | \*      |
-| remotes     | \*      |
-| rlang       | \*      |
-| rmarkdown   | \*      |
-| sessioninfo | \*      |
-| stringr     | \*      |
-| styler      | \*      |
-| tools       | \*      |
-| usethis     | \*      |
-| utils       | \*      |
-| workflowr   | \*      |
+| Package    | Version |
+| :--------- | :------ |
+| curl       | \*      |
+| dplyr      | \*      |
+| glue       | \*      |
+| here       | \*      |
+| kableExtra | \*      |
+| lubridate  | \*      |
+| purrr      | \*      |
+| readr      | \*      |
+| remotes    | \*      |
 
 Version not specified
 
@@ -51,7 +37,7 @@ Version not specified
 A Docker image of this project is available for
     use.
 
-  - [timtrice/distill](https://cloud.docker.com/repository/docker/timtrice/distill)
+  - [timtrice/ncdc\_storm\_events](https://cloud.docker.com/repository/docker/timtrice/ncdc_storm_events)
 
 ##### Run
 
@@ -59,12 +45,12 @@ A Docker image of this project is available for
       -dti \
       -e DISABLE_AUTH=true \
       -p 8787:8787 \
-      --name distill \
-      timtrice/distill:release
+      --name ncdc_storm_events \
+      timtrice/ncdc_storm_events:release
 
 ##### Shell
 
-    docker exec -ti distill /bin/bash
+    docker exec -ti ncdc_storm_events /bin/bash
 
 ### Built With
 
@@ -79,9 +65,9 @@ requests to us.
 
 ### Code of Conduct
 
-Please note that the ‘Distill’ project is released with a [Contributor
-Code of Conduct](/blob/master/.github/CODE_OF_CONDUCT.md). By
-contributing to this project, you agree to abide by its terms.
+Please note that the ‘ncdc\_storm\_events’ project is released with a
+[Contributor Code of Conduct](/blob/master/.github/CODE_OF_CONDUCT.md).
+By contributing to this project, you agree to abide by its terms.
 
 ### Versioning
 

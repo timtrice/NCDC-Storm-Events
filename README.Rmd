@@ -30,10 +30,8 @@ packages <- desc::desc_get_deps()
 [![Netlify Status](https://api.netlify.com/api/v1/badges/74a3e5e4-32e3-4782-8940-730b8de72600/deploy-status)](https://app.netlify.com/sites/happy-varahamihira-7ba905/deploys)
 [![Travis Build Status](https://travis-ci.org/timtrice/ncdc_storm_events.svg?branch=master)](https://travis-ci.org/timtrice/ncdc_storm_events)
 [![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/timtrice/ncdc_storm_events.svg?style=popout)](https://cloud.docker.com/repository/docker/timtrice/ncdc_storm_events)
-[![Launch rstudio.cloud](https://img.shields.io/badge/launch-rstudio.cloud-yellowgreen.svg)](https://rstudio.cloud/project/398941)
-[![Launch Rstudio Binder](http://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/timtrice/ncdc_storm_events/master?urlpath=rstudio)
+[![Launch rstudio.cloud](https://img.shields.io/badge/launch-rstudio.cloud-yellowgreen.svg)](https://rstudio.cloud/project/400006)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![gitter chat](https://badges.gitter.im/ncdc_storm_events/community.svg)](https://gitter.im/ncdc_storm_events/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # `r desc::desc_get_field("Package")` (`r desc::desc_get_version() `)
 
