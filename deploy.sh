@@ -1,8 +1,4 @@
 #!/bin/bash
-
-# Test curl
-curl -q ftp://ftp.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/
-
 GH_REPO="@github.com/$TRAVIS_REPO_SLUG.git"
 FULL_REPO="https://$GH_TOKEN$GH_REPO"
 git config --global user.name "Travis CI"
@@ -13,8 +9,9 @@ cd ncdc_storm_events
 # to be properly created.
 # [Travis Build #66](https://travis-ci.org/timtrice/ncdc_storm_events/builds/554708489)
 # [Install on Travis fails](https://github.com/JoshuaWise/better-sqlite3/issues/25)
-mkdir data
-Rscript --verbose code/02_get_data.R
+mkdir output
+Rscript --verbose code/02_download_data.R
+Rscript --verbose code/03_load_data.R
 Rscript -e 'workflowr::build()'
 
 if [ ! -d "docs" ]
