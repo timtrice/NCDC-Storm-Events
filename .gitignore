@@ -1,11 +1,5 @@
 *Rproj*
-docs
 .Rproj.user
-README.html
-site_libs
 .Rhistory
-data
-ncdc_storm_events.Rcheck/
-ncdc_storm_events*.tar.gz
-ncdc_storm_events*.tgz
 docs
+output
