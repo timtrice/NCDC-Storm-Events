@@ -18,17 +18,36 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 ### Prerequisites
 
-| Package    | Version |
-| :--------- | :------ |
-| curl       | \*      |
-| dplyr      | \*      |
-| glue       | \*      |
-| here       | \*      |
-| kableExtra | \*      |
-| lubridate  | \*      |
-| purrr      | \*      |
-| readr      | \*      |
-| remotes    | \*      |
+| Package       | Version |
+| :------------ | :------ |
+| curl          | \*      |
+| data.table    | \*      |
+| DBI           | \*      |
+| desc          | \*      |
+| dplyr         | \*      |
+| forcats       | \*      |
+| ggplot2       | \*      |
+| glue          | \*      |
+| here          | \*      |
+| kableExtra    | \*      |
+| knitr         | \*      |
+| lubridate     | \*      |
+| purrr         | \*      |
+| readr         | \*      |
+| remotes       | \*      |
+| rlang         | \*      |
+| rmarkdown     | \*      |
+| rnaturalearth | \*      |
+| RSQLite       | \*      |
+| scales        | \*      |
+| sessioninfo   | \*      |
+| stringr       | \*      |
+| tibble        | \*      |
+| tidyr         | \*      |
+| usethis       | \*      |
+| viridis       | \*      |
+| vroom         | \*      |
+| workflowr     | \*      |
 
 Version not specified
 
