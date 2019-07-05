@@ -13,12 +13,32 @@ Encoding: UTF-8
 LazyData: true
 Depends: 
     curl,
+    data.table, 
+    DBI, 
+    desc, 
     dplyr,
+    forcats, 
+    ggplot2, 
     glue,
     here,
+    kableExtra, 
+    knitr, 
     lubridate,
     purrr,
     readr,
-    remotes
+    remotes,
+    rlang, 
+    rmarkdown, 
+    rnaturalearth, 
+    RSQLite, 
+    scales, 
+    sessioninfo, 
+    stringr, 
+    tibble, 
+    tidyr, 
+    usethis,
+    viridis, 
+    vroom, 
+    workflowr
 URL: https://github.com/timtrice/ncdc_storm_events
 BugReports: https://github.com/timtrice/ncdc_storm_events/issues
