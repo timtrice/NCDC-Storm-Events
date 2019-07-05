@@ -16,7 +16,10 @@ library(vroom)
 
 # ---- details-read ----
 details <- vroom(
-  file = list.files(path = here::here("./data/"), pattern = "details"),
+  file = here::here(
+    "./data/",
+    list.files(path = here::here("./data/"), pattern = "details")
+  ),
   delim = ",",
   col_types = cols(.default = col_character())
 )
@@ -177,7 +180,10 @@ details$EVENT_TYPE[details$EVENT_TYPE == "Volcanic Ashfall"] <- "Volcanic Ash"
 
 # ---- fatalities-read ----
 fatalities <- vroom(
-  file = list.files(path = here::here("./data/"), pattern = "fatalities"),
+  file = here::here(
+    "./data/",
+    list.files(path = here::here("./data/"), pattern = "fatalities")
+  ),
   delim = ",",
   col_types = cols(.default = col_character())
 )
@@ -251,7 +257,10 @@ fatalities <-
 
 # ---- locations-read ----
 locations <- vroom(
-  file = list.files(path = here::here("./data/"), pattern = "locations"),
+  file = here::here(
+    "./data/",
+    list.files(path = here::here("./data/"), pattern = "locations")
+  ),
   delim = ",",
   col_types = cols(.default = col_character())
 )
