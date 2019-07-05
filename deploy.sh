@@ -11,6 +11,8 @@ cd ncdc_storm_events
 # [Install on Travis fails](https://github.com/JoshuaWise/better-sqlite3/issues/25)
 mkdir output
 Rscript --verbose code/03_load_data.R
+Rscript --verbose code/04_fips.R
+Rscript --verbose code/05_zone_county.R
 Rscript -e 'workflowr::wflow_build()'
 
 if [ ! -d "docs" ]
