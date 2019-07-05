@@ -1,0 +1,97 @@
+---
+title: "Highest Property Damage Per Event"
+author: "Tim Trice"
+date: "`r Sys.Date()`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  message = FALSE, 
+  warning = TRUE, 
+  error = TRUE, 
+  fig.width = 10, 
+  fig.asp = 1, 
+  fig.dpi = 180
+)
+```
+
+```{r libraries, echo = FALSE}
+library(DBI)
+library(dplyr)
+library(forcats)
+library(ggplot2)
+library(kableExtra)
+library(knitr)
+library(RSQLite)
+```
+
+```{r db-connect}
+con <- dbConnect(SQLite(), here::here("./data/ncdc.db"))
+```
+
+```{sql query, connection = con, output.var = "max_damage_property"}
+SELECT
+  EVENT_TYPE, 
+  MAX(DAMAGE_PROPERTY) AS MAX_DAMAGE
+FROM 
+  details
+WHERE 
+  EVENT_TYPE IS NOT NULL
+GROUP BY 
+  EVENT_TYPE
+ORDER BY 
+  MAX_DAMAGE DESC
+LIMIT 20;
+```
+
+```{r plot, layout = "l-body-outset", fig.width = 10, fig.asp = 1, dpi = 150}
+max_damage_property %>% 
+  mutate(EVENT_TYPE = fct_reorder(EVENT_TYPE, MAX_DAMAGE)) %>% 
+  ggplot() +
+  aes(x = EVENT_TYPE, y = MAX_DAMAGE) +
+  geom_point(
+    aes(
+      fill = EVENT_TYPE
+    ), 
+    size = 3, 
+    shape = 21
+  ) +
+  geom_segment(
+    aes(
+      x = EVENT_TYPE, 
+      y = 0, 
+      xend = EVENT_TYPE, 
+      yend = MAX_DAMAGE
+    ), 
+    linetype = "dashed", 
+    size = 0.1
+  ) + 
+  scale_y_continuous(
+    labels = scales::dollar, 
+    expand = c(0, 0), 
+    breaks = seq(from = 0, to = 20e9, by = 5e9), 
+    minor_breaks = seq(from = 0, to = 20e9, by = 2.5e9)
+  ) + 
+  expand_limits(x = 0, y = c(0, 1.85e10)) + 
+  coord_flip() + 
+  theme_minimal() + 
+  theme(
+    panel.grid.major.y = element_blank(), 
+    panel.grid.minor.y = element_blank(), 
+    legend.position = "none"
+  ) + 
+  labs(
+    title = "Top 20 Damage Costs by EVENT_TYPE", 
+    x = "Damage (USD)", 
+    y = "Event Type", 
+    caption = "@timtrice"
+  )
+```
+
+```{r db-disconnect}
+dbDisconnect(con)
+```

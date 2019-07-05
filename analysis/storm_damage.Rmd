@@ -1,0 +1,20 @@
+---
+title: "Storm Damage"
+author: "Tim Trice"
+date: "`r Sys.Date()`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  message = FALSE, 
+  warning = TRUE, 
+  error = TRUE, 
+  fig.width = 10, 
+  fig.asp = 1, 
+  fig.dpi = 180
+)
+```
