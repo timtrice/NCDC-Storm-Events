@@ -7,6 +7,13 @@ git clone https://github.com/timtrice/ncdc_storm_events.git --branch $TRAVIS_BRA
 cd ncdc_storm_events
 Rscript --verbose code/02_get_data.R
 Rscript -e 'workflowr::build()'
+
+if [ ! -d "docs" ]
+then
+  echo "Docs directory does not exist"
+  exit 1
+fi
+
 git add --force docs
 MSG="Rebuild website #$TRAVIS_BUILD_NUMBER [skip ci]"
 git commit -m "$MSG"
