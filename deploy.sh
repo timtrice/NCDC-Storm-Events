@@ -5,6 +5,11 @@ git config --global user.name "Travis CI"
 git config --global user.email "tim.trice@gmail.com"
 git clone https://github.com/timtrice/ncdc_storm_events.git --branch $TRAVIS_BRANCH --single-branch
 cd ncdc_storm_events
+# Since the data dir is ignored, it must be created in order for the database
+# to be properly created.
+# [Travis Build #66](https://travis-ci.org/timtrice/ncdc_storm_events/builds/554708489)
+# [Install on Travis fails](https://github.com/JoshuaWise/better-sqlite3/issues/25)
+mkdir data
 Rscript --verbose code/02_get_data.R
 Rscript -e 'workflowr::build()'
 
