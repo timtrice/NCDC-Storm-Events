@@ -6,8 +6,11 @@ script:
   - bash deploy.sh
 addons:
   apt:
+    sources:
+      - sourceline: 'ppa:ubuntugis/ppa'
     packages:
       - libudunits2-dev
+      - libgdal-dev
 on:
   all_branches: true
   condition: $TRAVIS_BRANCH =~ ^master|develop|workflowr$
