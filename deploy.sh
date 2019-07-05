@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Test curl
+curl -q ftp://ftp.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/
+
 GH_REPO="@github.com/$TRAVIS_REPO_SLUG.git"
 FULL_REPO="https://$GH_TOKEN$GH_REPO"
 git config --global user.name "Travis CI"
