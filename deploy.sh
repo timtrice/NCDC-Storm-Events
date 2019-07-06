@@ -1,7 +1,4 @@
 #!/bin/bash
-Rscript -e 'installed.packages();'
-exit 1
-
 GH_REPO="@github.com/$TRAVIS_REPO_SLUG.git"
 FULL_REPO="https://$GH_TOKEN$GH_REPO"
 git config --global user.name "Travis CI"
