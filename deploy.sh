@@ -3,7 +3,7 @@ GH_REPO="@github.com/$TRAVIS_REPO_SLUG.git"
 FULL_REPO="https://$GH_TOKEN$GH_REPO"
 git config --global user.name "Travis CI"
 git config --global user.email "tim.trice@gmail.com"
-git clone https://github.com/timtrice/ncdc_storm_events.git --branch $TRAVIS_BRANCH --single-branch
+git clone -v https://github.com/timtrice/ncdc_storm_events.git --branch $TRAVIS_BRANCH --single-branch
 cd ncdc_storm_events
 # Since the data dir is ignored, it must be created in order for the database
 # to be properly created.
