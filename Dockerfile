@@ -1,4 +1,4 @@
-FROM rocker/rstudio:latest
+FROM rocker/rstudio:3.6.0
 
 ARG REPO_URL="https://github.com/timtrice/ncdc_storm_events.git"
 ARG DIR="ncdc_storm_events"
