@@ -9,8 +9,7 @@
 #' }
 
 # ---- libraries ----
-library(holepunch)
-library(usethis)
+#' Intentionally Left Blank '#
 
 # ---- settings  ----
 #' Intentionally Left Blank '#
@@ -33,17 +32,23 @@ library(usethis)
 # ---- execution ----
 
 #' Initiate DESCRIPTION
-write_compendium_description(
+holepunch::write_compendium_description(
   package = getOption("usethis.description")$Package,
   description = getOption("usethis.description")$Description,
   version = "0.0.0.9000"
 )
 
+#' Remove `holepunch` from Imports which is added due to the above call.
+desc::desc_del_dep("holepunch")
+
+#' Add Remote packages
+usethis::use_dev_package("holepunch")
+
 #' Set License
-use_mit_license(name = "Tim Trice")
+usethis::use_mit_license(name = "Tim Trice")
 
 #' Add GitHub URL and Bug Reports
-use_github_links()
+usethis::use_github_links()
 
 # ---- reset-options ----
 #' Intentionally Left Blank '#

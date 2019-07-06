@@ -39,9 +39,11 @@ Depends:
     viridis,
     vroom,
     workflowr
-Remotes:
-    github::karthik/holepunch
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    holepunch (>= 0.1.18.9000)
+Remotes: 
+    karthik/holepunch
 URL: https://github.com/timtrice/ncdc_storm_events
 BugReports: https://github.com/timtrice/ncdc_storm_events/issues
