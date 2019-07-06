@@ -22,6 +22,7 @@ Depends:
     kableExtra,
     knitr,
     lubridate,
+    mapproj,
     maps,
     purrr,
     readr,
