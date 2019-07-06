@@ -7,8 +7,7 @@ Authors@R:
            family = "Trice",
            role = c("aut", "cre"),
            email = "tim.trice@gmail.com")
-Description: An analysis of the NCDC Storm Events
-    dataset.s
+Description: An analysis of the NCDC Storm Events datasets.
 License: MIT + file LICENSE
 Depends: 
     curl,
