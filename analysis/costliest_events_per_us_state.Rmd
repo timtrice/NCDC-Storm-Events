@@ -26,6 +26,7 @@ library(forcats)
 library(ggplot2)
 library(kableExtra)
 library(knitr)
+library(maps)
 library(RSQLite)
 ```
 
