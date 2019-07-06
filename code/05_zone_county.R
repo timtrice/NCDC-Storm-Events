@@ -6,6 +6,7 @@
 #' @source https://www.weather.gov/gis/ZoneCounty
 
 # ---- libraries ----
+library(readr)
 
 # ---- data ----
 zone_county <-
