@@ -19,7 +19,6 @@ Depends:
     ggplot2,
     glue,
     here,
-    holepunch,
     kableExtra,
     knitr,
     lubridate,
@@ -39,6 +38,8 @@ Depends:
     viridis,
     vroom,
     workflowr
+Remotes:
+    github::karthik/holepunch
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/timtrice/ncdc_storm_events

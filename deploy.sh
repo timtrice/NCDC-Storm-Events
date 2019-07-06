@@ -10,6 +10,7 @@ cd ncdc_storm_events
 # [Travis Build #66](https://travis-ci.org/timtrice/ncdc_storm_events/builds/554708489)
 # [Install on Travis fails](https://github.com/JoshuaWise/better-sqlite3/issues/25)
 mkdir output
+Rscript -e 'remotes::install_github("karthik/holepunch");'
 Rscript --verbose code/03_load_data.R
 Rscript --verbose code/04_fips.R
 Rscript --verbose code/05_zone_county.R
