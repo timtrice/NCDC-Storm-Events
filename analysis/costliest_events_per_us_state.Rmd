@@ -143,18 +143,23 @@ costliest_event_by_state %>%
 ```
 
 ```{r, ref.label = "libraries", eval = FALSE}
+NULL
 ```
 
 ```{r, ref.label = "query", eval = FALSE}
+NULL
 ```
 
 ```{r, ref.label = "filter-dataset", eval = FALSE}
+NULL
 ```
 
 ```{r, ref.label = "plot", eval = FALSE}
+NULL
 ```
 
 ```{r, ref.label = "table", eval = FALSE}
+NULL
 ```
 
 ```{r db-disconnect}
