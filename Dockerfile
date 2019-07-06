@@ -7,12 +7,13 @@ ENV ENV_REPO_URL=$REPO_URL
 ENV ENV_DIR=$DIR
 
 RUN apt-get update \
-  && apt-get install -y \
+  && apt-get -y install --no-install-recommends \
     libgdal-dev \
     libpng-dev \
     libudunits2-dev \
     libxml2-dev \
-    vim
+    vim \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN cd /home/rstudio \
   && git clone -v $ENV_REPO_URL --branch workflowr --single-branch \
