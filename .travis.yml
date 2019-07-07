@@ -13,4 +13,4 @@ addons:
       - libgdal-dev
 on:
   all_branches: true
-  condition: $TRAVIS_BRANCH =~ ^master|develop|workflowr$
+  condition: $TRAVIS_BRANCH =~ ^master|develop$
