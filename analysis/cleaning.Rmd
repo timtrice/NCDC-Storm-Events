@@ -254,7 +254,17 @@ Calculate the distance matrix between `BEGIN_LON` and `END_LON` in `good_lon`.
 ```{r}
 # TODO
 # details[, (cols) := lapply(.SD, str_pad, width = 4L, side = "left", pad = "0"), .SDcols = cols]
-good_lon[, distm := distm(x = list(BEGIN_LAT, BEGIN_LON), y = list(END_LAT, END_LON))]
+good_lon <- good_lon[
+  complete.cases(good_lon[, c("BEGIN_LAT", "BEGIN_LON", "END_LAT", "END_LON")])
+]
+
+good_lon <- good_lon[!("BEGIN_LAT" == "END_LAT" & "BEGIN_LON" == "END_LON")]
+
+x <- 
+    distm(
+      x = good_lon[c(1:100), c("BEGIN_LON", "BEGIN_LAT")], 
+      y = good_lon[c(1:100), c("END_LON", "END_LAT")]
+    )
 ```
 
 #### CZ_TIMEZONE
