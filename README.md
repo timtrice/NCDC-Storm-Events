@@ -16,90 +16,87 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 ## NCDC Storm Events
 
+An analysis of the NCDC Storm Events datasets.
+
 ### Prerequisites
 
-| Package       | Version |
-| :------------ | :------ |
-| curl          | \*      |
-| data.table    | \*      |
-| DBI           | \*      |
-| desc          | \*      |
-| dplyr         | \*      |
-| forcats       | \*      |
-| ggplot2       | \*      |
-| glue          | \*      |
-| here          | \*      |
-| kableExtra    | \*      |
-| knitr         | \*      |
-| lubridate     | \*      |
-| purrr         | \*      |
-| readr         | \*      |
-| remotes       | \*      |
-| rlang         | \*      |
-| rmarkdown     | \*      |
-| rnaturalearth | \*      |
-| RSQLite       | \*      |
-| scales        | \*      |
-| sessioninfo   | \*      |
-| stringr       | \*      |
-| tibble        | \*      |
-| tidyr         | \*      |
-| usethis       | \*      |
-| viridis       | \*      |
-| vroom         | \*      |
-| workflowr     | \*      |
+| Package       | Version         |
+| :------------ | :-------------- |
+| curl          | \*              |
+| data.table    | \*              |
+| DBI           | \*              |
+| desc          | \*              |
+| dplyr         | \*              |
+| forcats       | \*              |
+| ggplot2       | \*              |
+| glue          | \*              |
+| here          | \*              |
+| kableExtra    | \*              |
+| knitr         | \*              |
+| lubridate     | \*              |
+| mapproj       | \*              |
+| maps          | \*              |
+| purrr         | \*              |
+| readr         | \*              |
+| remotes       | \*              |
+| rlang         | \*              |
+| rmarkdown     | \*              |
+| rnaturalearth | \*              |
+| RSQLite       | \*              |
+| scales        | \*              |
+| sessioninfo   | \*              |
+| stringr       | \*              |
+| tibble        | \*              |
+| tidyr         | \*              |
+| usethis       | \*              |
+| viridis       | \*              |
+| vroom         | \*              |
+| workflowr     | \*              |
+| holepunch     | \>= 0.1.18.9000 |
 
-Version not specified
+Required R packages to run this project.
 
-#### Docker
+## Built With
 
-A Docker image of this project is available for
-    use.
-
-  - [timtrice/ncdc\_storm\_events](https://cloud.docker.com/repository/docker/timtrice/ncdc_storm_events)
-
-##### Run
-
-    docker run \
-      -dti \
-      -e DISABLE_AUTH=true \
-      -p 8787:8787 \
-      --name ncdc_storm_events \
-      timtrice/ncdc_storm_events:release
-
-##### Shell
-
-    docker exec -ti ncdc_storm_events /bin/bash
-
-### Built With
-
-  - [R 3.6.0](https://www.r-project.org/) - The R Project for
+  - [R 3.6.1](https://www.r-project.org/) - The R Project for
     Statistical Computing
 
-### Contributing
+## Support
 
-Please read [CONTRIBUTING.md](/blob/master/.github/CONTRIBUTING.md) for
-details on our code of conduct, and the process for submitting pull
+Please see
+[SUPPORT](https://github.com/timtrice/ncdc_storm_events/blob/master/.github/SUPPORT.md)
+if you should find any discrepancies in this project.
+
+## Contributing
+
+Please read
+[CONTRIBUTING.md](https://github.com/timtrice/ncdc_storm_events/blob/master/.github/CONTRIBUTING.md)
+for details on our code of conduct, and the process for submitting pull
 requests to us.
 
-### Code of Conduct
-
 Please note that the ‘ncdc\_storm\_events’ project is released with a
-[Contributor Code of Conduct](/blob/master/.github/CODE_OF_CONDUCT.md).
+[Contributor Code of
+Conduct](https://github.com/timtrice/ncdc_storm_events/blob/master/.github/CODE_OF_CONDUCT.md).
 By contributing to this project, you agree to abide by its terms.
 
-### Versioning
+## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions
-available, see the [tags on this repository](/tags).
+available, see the [tags on this
+repository](https://github.com/timtrice/ncdc_storm_events/tags).
 
-### Authors
-
-  - Trice, Tim (Role(s): aut, cre)
-
-### License
+## License
 
 This project is licensed under the MIT License - see the
-[LICENSE.md](/blob/master/LICENSE.md) file for details
+[LICENSE](https://github.com/timtrice/ncdc_storm_events/blob/master/LICENSE.md)
+file for details
 
-### Acknowledgements
+## Authors
+
+  - [timtrice](https://github.com/timtrice)
+
+## Acknowledgements
+
+See the list of
+[contributors](https://github.com/timtrice/ncdc_storm_events/contributors)
+who participated in this project.
