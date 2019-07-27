@@ -27,5 +27,3 @@ output:
   workflowr::wflow_html:
     toc: no
     highlight: pygment
-    include:
-      after_body: footer.md
