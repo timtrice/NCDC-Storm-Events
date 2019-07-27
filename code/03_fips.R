@@ -73,5 +73,5 @@ fips <-
 
 # ---- sqlite ----
 con <- dbConnect(SQLite(), here::here("./output/ncdc.db"))
-dbWriteTable(con, "fips", fips)
+dbWriteTable(con, "fips", fips, overwrite = TRUE)
 dbDisconnect(con)
