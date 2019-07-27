@@ -25,5 +25,5 @@ zone_county <-
 
 # ---- sqlite ----
 con <- dbConnect(SQLite(), here::here("./output/ncdc.db"))
-dbWriteTable(con, "zone_county", zone_county)
+dbWriteTable(con, "zone_county", zone_county, overwrite = TRUE)
 dbDisconnect(con)
