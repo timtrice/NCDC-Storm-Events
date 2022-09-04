@@ -3,6 +3,8 @@ output_dir: ../docs
 navbar:
   title: "NCDC Storm Events"
   left:
+    - text: "Exploratory"
+      href: "exploratory.html"
     - text: "Damage"
       icon: fa-bars
       menu:

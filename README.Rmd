@@ -25,6 +25,41 @@ knitr::kable(
 )
 ```
 
+### Docker
+
+A Dockerfile is available in this repository to enhance reproducibility.
+
+To build the Dockerfile, 
+
+```
+docker build --tag timtrice/ncdc_storm_events:latest --rm .
+```
+
+Docker images are pre-built using [Docker Hub](https://hub.docker.com/). Use this as a faster alternative to building the image locally.
+
+```
+docker pull timtrice/ncdc_storm_events:latest
+```
+
+By default, the docker images clone the repository within the image. The advantage is that everything is set up and good to go immediately. The disadvantage is any changes made to the repository remain inside the container (and can be lost). 
+
+To run the Docker image in a container, 
+
+```
+docker run \
+  -dti \
+  -e DISABLE_AUTH=true \
+  -p 8787:8787 \
+  --name ncdc_storm_events \
+  timtrice/ncdc_storm_events:latest
+```
+
+To log into the Docker shell, 
+
+```
+docker exec -ti ncdc_storm_events /bin/bash
+```
+
 ## Built With
 
 * [R `r getOption("ew.required.r")`](https://www.r-project.org/) - The R Project for Statistical Computing

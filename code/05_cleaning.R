@@ -1,0 +1,328 @@
+# ---- libraries ----
+library(data.table)
+library(geosphere)
+library(ggplot2)
+library(here)
+library(purrr)
+library(R.utils) # for data.table::fread
+library(stringr)
+
+# ---- details ----
+details_files <- list.files(
+  path = here("./data"),
+  pattern = "details",
+  full.names = TRUE
+)
+
+# ---- details-rownames ----
+details_header <- fread(details_files[1], header = FALSE, nrows = 1L)
+
+# ---- details-read ----
+details <-
+  map_df(
+    .x = details_files,
+    .f = fread,
+    colClasses = list(
+      character = c(
+        "STATE", "MONTH_NAME", "EVENT_TYPE", "CZ_TYPE", "CZ_NAME", "WFO",
+        "SOURCE", "MAGNITUDE_TYPE", "FLOOD_CAUSE", "CATEGORY", "TOR_F_SCALE",
+        "TOR_OTHER_WFO", "TOR_OTHER_CZ_STATE", "TOR_OTHER_CZ_FIPS",
+        "TOR_OTHER_CZ_NAME", "BEGIN_AZIMUTH", "BEGIN_LOCATION", "END_AZIMUTH",
+        "END_LOCATION", "EPISODE_NARRATIVE", "EVENT_NARRATIVE", "DATA_SOURCE"
+      ),
+      integer = c(
+        "BEGIN_YEARMONTH", "BEGIN_DAY", "BEGIN_TIME", "END_YEARMONTH",
+        "END_DAY", "END_TIME", "EPISODE_ID", "EVENT_ID", "STATE_FIPS", "YEAR",
+        "CZ_FIPS", "INJURIES_DIRECT", "INJURIES_INDIRECT", "DEATHS_DIRECT",
+        "DEATHS_INDIRECT", "BEGIN_RANGE", "END_RANGE"
+      ),
+      datetime = c("BEGIN_DATE_TIME", "END_DATE_TIME"),
+      number = c("DAMAGE_PROPERTY", "DAMAGE_CROPS"),
+      double = c(
+        "MAGNITUDE", "TOR_LENGTH", "TOR_WIDTH", "BEGIN_LAT", "BEGIN_LON",
+        "END_LAT", "END_LON"
+      )
+    ),
+    showProgress = FALSE
+  )
+
+setDT(details)
+
+keys <- c("EPISODE_ID", "EVENT_ID")
+
+setkeyv(details, keys)
+
+# ----- details-dates ----
+date_vars <- c(
+  "BEGIN_YEARMONTH", "BEGIN_DAY", "BEGIN_TIME", "END_YEARMONTH", "END_DAY",
+  "END_TIME", "YEAR", "MONTH_NAME"
+)
+details[, (date_vars) := NULL]
+
+#'
+#' details_dates <- details[, .SD, .SDcol = c(keys, date_vars)]
+#'
+#' #' The major question is do the variables line up with each other, i.e., is
+#' #' `BEGIN_DAY` the same as the day value in `BEGIN_DATE_TIME`?
+#'
+#' #' Normalize some vars
+#' cols <- c("BEGIN_DAY", "END_DAY")
+#' details_dates[,
+#'               (cols) := lapply(
+#'                 .SD,
+#'                 str_pad,
+#'                 width = 2L,
+#'                 side = "left",
+#'                 pad = "0"
+#'               ),
+#'               .SDcols = cols
+#'               ]
+#'
+#' cols <- c("BEGIN_TIME", "END_TIME")
+#'
+#' details_dates[,
+#'               (cols) := lapply(
+#'                 .SD,
+#'                 str_pad,
+#'                 width = 4L,
+#'                 side = "left",
+#'                 pad = "0"
+#'               ),
+#'               .SDcols = cols
+#'               ]
+#'
+#' details_dates[,
+#'               `:=`(
+#'                 BEGIN_DATE_TIME_PASTED = paste(
+#'                   paste(
+#'                     details_dates$BEGIN_DAY,
+#'                     toupper(
+#'                       month.abb[as.numeric(substr(
+#'                         x = details_dates$BEGIN_YEARMONTH,
+#'                         start = 5L,
+#'                         stop = 6L
+#'                       ))]
+#'                     ),
+#'                     substr(
+#'                       x = details_dates$BEGIN_YEARMONTH,
+#'                       start = 3L,
+#'                       stop = 4L
+#'                       ),
+#'                     sep = "-"),
+#'                   paste(
+#'                     substr(
+#'                       x = details_dates$BEGIN_TIME,
+#'                       start = 1L,
+#'                       stop = 2L
+#'                       ),
+#'                     substr(
+#'                       x = details_dates$BEGIN_TIME,
+#'                       start = 3L,
+#'                       stop = 4L
+#'                       ),
+#'                     "00",
+#'                     sep = ":"
+#'                   ),
+#'                   sep = " "),
+#'                 END_DATE_TIME_PASTED = paste(
+#'                   paste(
+#'                     details_dates$END_DAY,
+#'                     toupper(
+#'                       month.abb[as.numeric(substr(
+#'                         x = details_dates$END_YEARMONTH,
+#'                         start = 5L,
+#'                         stop = 6L
+#'                       ))]
+#'                     ),
+#'                     substr(
+#'                       x = details_dates$END_YEARMONTH,
+#'                       start = 3L,
+#'                       stop = 4L
+#'                       ),
+#'                     sep = "-"),
+#'                   paste(
+#'                     substr(
+#'                       x = details_dates$END_TIME,
+#'                       start = 1L,
+#'                       stop = 2L
+#'                       ),
+#'                     substr(
+#'                       x = details_dates$END_TIME,
+#'                       start = 3L,
+#'                       stop = 4L
+#'                       ),
+#'                     "00",
+#'                     sep = ":"
+#'                   ),
+#'                   sep = " ")
+#'               )
+#'               ]
+#'
+#' details_dates[BEGIN_DATE_TIME != BEGIN_DATE_TIME_PASTED | END_DATE_TIME != END_DATE_TIME_PASTED]
+
+#' The following discrepancies remain (by row):
+#'   1. `BEGIN_DATE_TIME` has a hour value of "00" while `BEGIN_TIME` has a
+#'     value of "1500".
+#'   2. `END_DATE_TIME` discrepancy exists in the minute value.
+#'   3. `END_DATE_TIME` discrepancy also in the minute value.
+#'   4. `END_DATE_TIME` discrepancy exists in the hour and minute value.
+#'   5. `BEGIN_DATE_TIME` has a second value of "01"; this can't be confirmed
+#'     in other fields so is assumed true.
+#'
+#' Of the five discrepancies, the only one I find concerning is row 1 where
+#'   `BEGIN_TIME` is "1500" but the hour/minute value in `BEGIN_DATE_TIME` is
+#'   "00:00". Based on the information at hand there is no way to verify which
+#'   is accurate. Being that of over 1.5 million rows of comparisons this is
+#'   the only record with a mismatch, I'm happy to give credence to
+#'   `BEGIN_DATE_TIME`.
+#'
+#' What about `YEAR`?
+
+# head(details[YEAR != substr(x = BEGIN_YEARMONTH, start = 1L, stop = 4L)])
+# head(details[YEAR != substr(x = END_YEARMONTH, start = 1L, stop = 4L)])
+
+# The `YEAR` value matches that of `BEGIN_YEARMONTH` exactly. There are
+# discrepancies that exist in `END_YEARMONTH` which I feel can be safely
+# ignored The `YEAR` column can be dropped.
+#
+# At this point I'm comfortable dropping all vars except
+# `[BEGIN|END]_DATE_TIME`. For curiosity, I'll examine `MONTH_NAME`.
+
+# head(details[MONTH_NAME != month.name[as.numeric(substr(x = BEGIN_YEARMONTH, start = 5L, stop = 6L))]])
+# head(details[MONTH_NAME != month.name[as.numeric(substr(x = END_YEARMONTH, start = 5L, stop = 6L))]])
+
+# Again, perfect matches in `BEGIN_YEARMONTH` but not `END_YEARMONTH`.
+#
+# With that, we now know we can ignore all date/time variables with the
+# exception of `BEGIN_DATE_TIME` and `END_DATE_TIME`.
+
+# ---- details-location ----
+location_vars <- c(
+  "STATE", "STATE_FIPS", "CZ_TYPE", "CZ_FIPS", "CZ_NAME", "CZ_TIMEZONE",
+  "END_LOCATION", "BEGIN_LAT", "BEGIN_LON", "END_LAT", "END_LON"
+)
+
+details_locations <- details[, .SD, .SDcols = c(keys, location_vars)]
+
+# Load fips datasource (created in ./code/03_fips.R)
+# and zone_county datasource (./code/04_zone_county.R)
+fips <- fread(file = here("./output/fips.csv"))
+zone_county <- fread(file = here("./output/zone_county.csv"))
+
+# Validate all `STATE` and `STATE_FIPS` in `details` are correct.
+state_fips <- details_locations[, c("STATE", "STATE_FIPS")]
+state_fips <- unique(state_fips)
+# Merge `fips` on `STATE_FIPS` = `STATEFP`
+state_fips <- merge(state_fips, fips, by.x = "STATE_FIPS", by.y = "STATEFP")
+state_fips <- state_fips[, c("STATE_FIPS", "STATE.x", "STATE.y")]
+state_fips <- unique(state_fips)
+
+# Verify `EVENT_ID` is unique; a primary key
+length(unique(details$EVENT_ID)) == nrow(details)
+
+
+# ---- details-lat ----
+details[BEGIN_LAT <= -90 | END_LAT <= -90 | BEGIN_LAT >= 90 | END_LAT >= 90]
+
+
+# ---- details-lon ----
+bad_lon <- details[
+  BEGIN_LON <= -180 | END_LON <= -180 | BEGIN_LON >= 180 | END_LON >= 180
+  ]
+bad_lon
+
+# ...aye...
+#
+# If we take all values outside of the range $-180 \le \text{x} \le 180$ and
+# move the decimal one place to the right,
+
+# ---- clean-bad-lon ----
+bad_lon[BEGIN_LON <= -180, BEGIN_LON := BEGIN_LON * 0.1]
+bad_lon[END_LON <= -180, END_LON := END_LON * 0.1]
+bad_lon[BEGIN_LON >= 180, BEGIN_LON := BEGIN_LON * 0.1]
+bad_lon[END_LON >= 180, END_LON := END_LON * 0.1]
+
+# I want to compare the measurements in the original `details` dataset with
+# `bad_lon` subsetted against those of `bad_lon`. I'm hopeful most, if not all,
+# of `bad_lon` will fall within the 25th-75th percentile.
+
+# ---- good-lon ----
+good_lon <- details[!unique(details[bad_lon, which = TRUE])]
+
+# Calculate the distance matrix between `BEGIN_LON` and `END_LON` in `good_lon`.
+
+# TODO
+# details[, (cols) := lapply(.SD, str_pad, width = 4L, side = "left", pad = "0"), .SDcols = cols]
+good_lon <- good_lon[
+  complete.cases(good_lon[, c("BEGIN_LAT", "BEGIN_LON", "END_LAT", "END_LON")])
+  ]
+
+bad_lon <- bad_lon[
+  ,
+  distm := as.vector(distm(
+    x = bad_lon[, c("BEGIN_LON", "BEGIN_LAT")],
+    y = bad_lon[, c("END_LON", "END_LAT")]
+  ))
+  ]
+
+#### CZ_TIMEZONE
+
+sort(unique(details$CZ_TIMEZONE))
+
+# Timezone values are inconsistent. I'll clean this up first.
+
+# Make all upper-case
+details$CZ_TIMEZONE <- toupper(details$CZ_TIMEZONE)
+# Extract timezone
+details$CZ_TIMEZONE <- gsub(
+  pattern = "^([[:alpha:]]+)-*\\d+",
+  replacement = "\\1",
+  x = details$CZ_TIMEZONE
+  )
+# "UNK" is not a valid timezone. Make NA
+details$CZ_TIMEZONE[details$CZ_TIMEZONE == "UNK"] <- NA_character_
+sort(unique(details$CZ_TIMEZONE))
+
+# Where do these timezones lie?
+
+# ---- plot-cz-timezone, cache = TRUE ----
+details[complete.cases(details)] %>%
+  ggplot() +
+  aes(x = BEGIN_LON, y = BEGIN_LAT, color = CZ_TIMEZONE) +
+  geom_point() +
+  scale_x_continuous(
+    breaks = c(-180, 0, 180),
+    minor_breaks = seq(from = -170, to = 170, by = 10)
+  ) +
+  scale_y_continuous(
+    breaks = c(-90, 0, 90),
+    minor_breaks = seq(from = -80, to = 80, by = 10)
+  )
+
+# The plot above reveals significant discrepancies in the longitude values.
+# I'll redo the plot above excluding bad `BEGIN_LON` values.
+
+# ---- plot-cz-timezone-2
+details[complete.cases(details) & BEGIN_LON >= -180 & BEGIN_LON <= 180] %>%
+  ggplot() +
+  aes(x = BEGIN_LON, y = BEGIN_LAT, color = CZ_TIMEZONE) +
+  geom_point() +
+  scale_x_continuous(
+    breaks = c(-180, 0, 180),
+    minor_breaks = seq(from = -170, to = 170, by = 10)
+  ) +
+  scale_y_continuous(
+    breaks = c(-90, 0, 90),
+    minor_breaks = seq(from = -80, to = 80, by = 10)
+  ) +
+  theme_minimal()
+
+## Fatalities
+
+# ---- fatalities-read ----
+files_fatalities <- list.files(here("./data"), pattern = "fatalities")
+
+## Locations
+
+# ---- locations-read ----
+files_locations <- list.files(here("./data"), pattern = "locations")

@@ -7,15 +7,17 @@ Authors@R:
            family = "Trice",
            role = c("aut", "cre"),
            email = "tim.trice@gmail.com")
-Description: An analysis of the NCDC Storm Events datasets.
+Description: An analysis of the NCDC Storm Events Database.
 License: MIT + file LICENSE
 Depends: 
     curl,
     data.table,
     DBI,
     desc,
+    devtools,
     dplyr,
     forcats,
+    geosphere,
     ggplot2,
     glue,
     here,
@@ -30,6 +32,7 @@ Depends:
     rlang,
     rmarkdown,
     rnaturalearth,
+    roxygen2,
     RSQLite,
     scales,
     sessioninfo,
@@ -42,9 +45,9 @@ Depends:
     workflowr
 Encoding: UTF-8
 LazyData: true
-Imports: 
-    holepunch (>= 0.1.18.9000)
-Remotes: 
-    karthik/holepunch
 URL: https://github.com/timtrice/ncdc_storm_events
 BugReports: https://github.com/timtrice/ncdc_storm_events/issues
+Imports: 
+    holepunch (>= 0.1.19.9000)
+Remotes:  
+    karthik/holepunch
